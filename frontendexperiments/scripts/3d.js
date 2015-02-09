@@ -159,7 +159,7 @@
         if(window.DeviceOrientationEvent){
           console.log('shit be supported')
         }
-        setTimeout(function(){updateValues()},1000) //no idea why, but this only
+        setTimeout(function(){updateValues()},200) //no idea why, but this only
         // works with a setTimeout that waits (even 10ms is enough) to fire it
 
     } //end setup
@@ -302,7 +302,7 @@
       }
 
       if(pan){
-        var panTarget = {x: camera.position.x + panTgt.x, y: camera.position.y + panTgt.y}
+        //var panTarget = {x: camera.position.x + panTgt.x, y: camera.position.y + panTgt.y}
         var pan = {x: camera.position.x, y: camera.position.y}
         var panTween = new TWEEN.Tween(pan)
         var updatepan = function(){

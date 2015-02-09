@@ -2,24 +2,34 @@ html {
 	overflow: hidden;
 	background-color: black;
 }
+
+.label {
+	font-family: 'Fira Sans', sans-serif;
+}
+
+.spelled {
+	font-family: 'Source Serif Pro', serif;
+}
+
 #top {
 	margin-top: 7%;
 	position: absolute;
 	width: 100%;
 }
-#topInfo{
-	font-family: 'Fira Sans', sans-serif;
-	font-size: 18pt;
-	letter-spacing: 0.13em;
-	color: white;
-}
-#resource{ text-align: right;}
-#atText{ text-align: center; font-weight: 300; letter-spacing: 0.08em;}
-#scale{ text-align: left;}
+	#topInfo{
+		font-family: 'Fira Sans', sans-serif;
+		font-size: 18pt;
+		letter-spacing: 0.13em;
+		color: white;
+	}
+	#resource{ text-align: right;}
+	#atText{ text-align: center; font-weight: 300; letter-spacing: 0.08em;}
+	#scale{ text-align: left;}
 
-#debugEtc{
-	text-align: center;
-}
+	#debugEtc{
+		text-align: center;
+	}
+
 
 #uiNav /* holds fixed UI nav at bottom */ {
 	position: fixed;
@@ -33,31 +43,17 @@ html {
 	z-index: 2;
 	width: 100%;
 	bottom: 8%;
-	font-size: 36pt;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.03em;
-	font-weight: 300;
 	color: white;
 }
 
 #uiBodyTitle {
 	text-align: center;
+	font-size: 36pt;
+	font-weight: 600;
 }
 
-section{
-	display: none;
-	overflow: hidden;
-	height: 0;
-}
-section#view .columns, section#view .column {
-	background-color: yellow;
-	text-align: center;
-}
-
-section#data td {
-	background-color: blue;
-	padding: 0.5em;
-}
 
 .navbutt {
 
@@ -74,6 +70,28 @@ section#data td {
 }
 #helpnav {
 	background-color: violet;
+}
+
+
+section{
+	display: none;
+	overflow: hidden;
+	height: 0;
+	margin-top: -10px;/*
+	border: 1px white solid;*/
+}
+section#view .columns, section#view .column {
+	
+}
+
+#viewNum{ font-size: 50pt; line-height: .95em; font-weight: 300;}
+#viewUnit{ font-size: 18pt; font-weight: 300; padding-left: 0.2em; letter-spacing: 0.05em;
+line-height: 1.3em;}
+
+
+section#data td {
+	background-color: blue;
+	padding: 0.5em;
 }
 
 section#talk {

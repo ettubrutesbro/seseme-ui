@@ -8,11 +8,7 @@ var container = document.querySelector(".container")
 var navs = [].slice.call(nav.children) 
 
 var currentSection
-var htArray = ["2em","15em","13em","2em"]
-
-//default camera positions: zoom 0.8, x-20, y13, z20
-var ncArr = [{zm:1.25,x:0,y:0},{zm:.6,x:10,y:-5},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
-
+var htArray = ["5em","15em","13em","2em"]
 
 
 navs.forEach(function(ele,i,arr){
@@ -24,23 +20,31 @@ navs.forEach(function(ele,i,arr){
 			console.log('clicked same one')
 			// if you clicked the same nav icon for what's already displayed
 			//this will need a special behavior if you are clicking VIEW
+			Velocity(currentSection,{height:0},{duration:300})
+			cameraMove(true,0.8,true,{x:-20,y:13})
+			currentSection = ''
 		}else{
 			//if you clicked on a nav that isnt already expanded
 			var index = navs.indexOf(ele)
 			var sectionContainer = document.getElementById('sectionContainer')
 			
 			sectionContainer.appendChild(section)
+			//default camera positions: zoom 0.8, x-20, y13, z20
+			var ncArr = [{zm:1.75,x:-20,y:21},{zm:.6,x:-20,y:-2},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
 
 			if(currentSection==undefined){
 				section.style["display"] = "block"
 				Velocity(section,{height: htArray[index]})
 				// var camAmt = htArray[index].replace('em','')
-				cameraMove(true,ncArr[index].zm,false,{x:0,y:0})
+				cameraMove(true,ncArr[index].zm,true,{x:ncArr[index].x
+					,y:ncArr[index].y})
 				//cameraMove(true,1.25,false,{x:0,y:0})
 			} else if (currentSection!=undefined){
 				Velocity(currentSection,{height: 0},{duration: 300})
 				section.style["display"] = "block"
 				Velocity(section,{height: htArray[index]},{delay:0})
+				cameraMove(true,ncArr[index].zm,true,{x:ncArr[index].x
+					,y:ncArr[index].y})
 			}
 			currentSection = section
 		}
