@@ -1,0 +1,7 @@
+
+#containerUI /*class container holds all UI (2d overlay)*/ {
+	position: absolute;
+	top: 10%;
+	z-index: 2;
+	opacity: 0.5;
+}

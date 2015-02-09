@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basic Three.js App</title>
+    <style>
+      html, body { margin: 0 padding: 0 overflow: hidden }
+    </style>
+  </head>
+  <body>
+    <script src="libs/three.min.js"></script>
+    <script>
+      var scene = new THREE.Scene()
+      var aspect = window.innerWidth / window.innerHeight
+      var d = 20
+      var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 )
+      var loader = new THREE.JSONLoader()
+      var renderer
+
+      var projector, mouseLocation = new THREE.Vector2()
+      , raycaster, INTERSECTED
+      //, intersects
+      
+      var seseme = new THREE.Group()
+      var pedestal, orb
+      var pillar1, pillar2, pillar3, pillar4
+      var pillargroup = new THREE.Group()
+
+    
+
+      
+      var val1, val2, val3, val4
+      var valarray = [val1, val2, val3, val4]
+
+
+    setup()
+    animate()
+
+
+    function setup(){
+      console.log(valarray)
+      camera.position.set( -20, 20, 20 )
+      camera.rotation.order = 'YXZ'
+      camera.rotation.y = - Math.PI / 4
+      camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
+
+      mouseLocation = { x:0, y:0, z:1 }
+      raycaster = new THREE.Raycaster()
+      intersects = []
+
+      window.addEventListener( 'mousemove', onMouseMove, false)
+     
+      var sesememtl = new THREE.MeshNormalMaterial()
+      var orbmtl = new THREE.MeshNormalMaterial()
+
+      
+      renderer = new THREE.WebGLRenderer()
+      renderer.setSize( window.innerWidth, window.innerHeight )
+      document.body.appendChild( renderer.domElement )
+
+     
+        loader.load("pedestal.js", function(geometry,evt){
+        pedestal = new THREE.Mesh(geometry, sesememtl)
+        pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
+        pedestal.scale.set(0.5,0.5,0.5)
+        pedestal.name = "pedestal"
+        pedestal.overdraw = true
+        seseme.add (pedestal)
+      }) 
+
+     
+      orb = new THREE.Mesh( new THREE.SphereGeometry( 2.75, 7, 5 ), orbmtl )
+      orb.position.set(0,-3,0)
+      seseme.add (orb)
+
+      loader.load("pillarA.js", function(geometry,evt){
+        pillar1 = new THREE.Mesh(geometry, sesememtl)
+        pillar1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
+        pillar1.scale.set(0.5,0.5,0.5)
+        pillar1.overdraw = true
+        pillar1.name = "pillar1"
+        pillargroup.add(pillar1)
+
+        pillar3 = new THREE.Mesh(geometry, sesememtl)
+        pillar3.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
+        pillar3.scale.set(0.5,0.5,0.5)
+        pillar3.rotation.y = -90 * Math.PI / 180
+        pillar3.overdraw = true
+        pillar3.name = "pillar3"
+        pillargroup.add(pillar3)
+      })
+
+      loader.load("pillarB.js", function(geometry,evt){
+        pillar2 = new THREE.Mesh(geometry, sesememtl)
+        pillar2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
+        pillar2.scale.set(0.5,0.5,0.5)
+        pillar2.overdraw = true
+        pillar2.name = "pillar2"
+        pillargroup.add(pillar2)
+
+        pillar4 = new THREE.Mesh(geometry, sesememtl)
+        pillar4.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
+        pillar4.scale.set(0.5,0.5,0.5)
+        pillar4.rotation.y = 90 * Math.PI / 180
+        pillar4.overdraw = true
+        pillar4.name = "pillar4"
+        pillargroup.add(pillar4)
+      })
+      seseme.add(pillargroup)
+      scene.add (seseme)
+
+      updateValues(1, 10, 100)
+      updateValues(2, 3, 30)
+      updateValues(3, 5, 80)
+      updateValues(4, 0, 0)
+
+      
+
+    }
+
+      function animate(){
+        requestAnimationFrame( animate )
+        render()
+        pillargroup.children.forEach(function(ele,i,array){
+          if(valarray[i].value > 0.01 || valarray[i].value < -0.01 ){
+            var s = valarray[i].value / valarray[i].duration
+            ele.position.y += s
+            valarray[i].value -= s
+          }else{
+            valarray[i].value=0
+          }
+        })
+      }
+
+    function render() {
+        renderer.render( scene, camera )
+        //scene.rotation.y += 0.01
+        seseme.rotation.y += 0.01
+
+        raycaster.setFromCamera(mouseLocation, camera)
+        var intersects = raycaster.intersectObjects(pillargroup.children)
+
+        if(intersects.length > 0){
+          console.log(intersects[0].object.name)
+        }
+
+    }
+
+    function onMouseMove(evt){
+      evt.preventDefault()
+
+      mouseLocation.x = ( evt.clientX / window.innerWidth ) * 2 - 1;
+      mouseLocation.y = - ( evt.clientY / window.innerHeight ) * 2 + 1;
+     }
+
+    function updateValues(index, change, duration){ 
+      valarray[index-1] = {"value": change, "duration": duration}
+      console.log(valarray[index-1])
+    }
+
+
+    
+
+    </script>
+  </body>
+</html>

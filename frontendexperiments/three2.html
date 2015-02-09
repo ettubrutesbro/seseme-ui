@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basic Three.js App</title>
+    <style>
+      html, body { margin: 0 padding: 0 overflow: hidden }
+    </style>
+  </head>
+  <body>
+    <script src="three.min.js"></script>
+    <script>
+      var scene = new THREE.Scene()
+      var aspect = window.innerWidth / window.innerHeight
+      var d = 20
+      var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 )
+      var loader = new THREE.JSONLoader()
+      var zmesh
+      var renderer
+
+      var cubegroup = new THREE.Group()
+      var cube1, cube2, cube3, cube4
+      var val1, val2, val3, val4
+
+      var valarray = [val1, val2, val3, val4]
+
+
+      // var createMesh = function ( geometry,x,y,z,s ){
+      //   console.log(geometry)
+      //   zmesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial() )
+      //   zmesh.position.set( 15, 8, -10 )
+      //   zmesh.scale.set( 0.5, 0.5, 0.5)
+      //   zmesh.overdraw = true
+      //   scene.add( zmesh )
+      // }
+
+      // loader.load( "mesh.js", createMesh)
+
+
+    setup()
+    animate()
+    
+
+    cubegroup.children.forEach(function(ele,i,array){
+          // ele.geometry.vertices[0].y += 0.001
+          // ele.geometry.vertices[1].y += 0.001
+          // ele.geometry.vertices[4].y += 0.001
+          // ele.geometry.vertices[5].y += 0.001
+          ele.geometry.verticesNeedUpdate = true
+    })
+
+    function setup(){
+      camera.position.set( -20, 20, 20 )
+      camera.rotation.order = 'YXZ'
+      camera.rotation.y = - Math.PI / 4
+      camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
+      
+      renderer = new THREE.WebGLRenderer()
+      renderer.setSize( window.innerWidth, window.innerHeight )
+      document.body.appendChild( renderer.domElement )
+
+     
+      var material = new THREE.MeshNormalMaterial()
+      
+
+      cube1 = new THREE.Mesh( new THREE.BoxGeometry( 5, 5, 5 ), material )
+      cube2 = new THREE.Mesh( new THREE.BoxGeometry( 5, 5, 5 ), material )
+      cube3 = new THREE.Mesh( new THREE.BoxGeometry( 5, 5, 5 ), material )
+      cube4 = new THREE.Mesh( new THREE.BoxGeometry( 5, 5, 5 ), material )
+
+      cube1.applyMatrix( new THREE.Matrix4().makeTranslation( -4, 0, -4 ) )
+      cube2.applyMatrix( new THREE.Matrix4().makeTranslation( 4, 0, -4 ) )
+      cube3.applyMatrix( new THREE.Matrix4().makeTranslation( -4, 0, 4 ) )
+      cube4.applyMatrix( new THREE.Matrix4().makeTranslation( 4, 0, 4 ) )
+
+      scene.add ( cubegroup )
+      cubegroup.add ( cube1 )
+      cubegroup.add ( cube2 )
+      cubegroup.add ( cube3 )
+      cubegroup.add ( cube4 )
+
+      updateValues(1, 10, 100)
+      updateValues(2, 3, 30)
+      updateValues(3, -5, 80)
+      updateValues(4, 0, 0)
+
+      console.log(cubegroup.children)
+    }
+
+      function animate(){
+        requestAnimationFrame( animate )
+        render()
+
+        cubegroup.children.forEach(function(ele,i,array){
+          if(valarray[i].value > 0.01 || valarray[i].value < -0.01 ){
+            console.log(i + " moves")
+            var s = valarray[i].value / valarray[i].duration
+            ele.geometry.vertices[0].y += s
+            ele.geometry.vertices[1].y += s
+            ele.geometry.vertices[4].y += s
+            ele.geometry.vertices[5].y += s
+            valarray[i].value -= s
+            console.log(valarray[i].value)
+          }else{
+            valarray[i].value=0
+          }
+          
+          ele.geometry.verticesNeedUpdate = true
+
+        })
+
+       
+
+
+
+      }
+
+    function render() {
+        renderer.render( scene, camera )
+        
+    }
+
+    function updateValues(index, change, duration){ 
+      valarray[index-1] = {"value": change, "duration": duration}
+      console.log(valarray[index-1])
+    }
+    
+
+    </script>
+  </body>
+</html>

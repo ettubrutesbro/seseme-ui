@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8">
+    <title>Basic Three.js App</title>
+    <!-- BOOTSTRAP CSS -->
+    <link rel = "stylesheet" type = "text/css" href = "styles/normalize.css">  
+    <link rel = "stylesheet" type = "text/css" href = "styles/skeleton.css">  
+    <!-- CUSTOM CSS -->
+    <link rel = "stylesheet" type = "text/css" href = "styles/UI.css">  
+
+  </head>
+  
+  <body>
+
+    <div id = "uiNav">
+
+      <div class = "container">
+   
+        <div id = "nav" class = "row">
+          <div id = "viewnav" class = "three columns">VIEW</div>
+          <div id = "talknav" class = "three columns">TALK</div>
+          <div id = "datanav" class = "three columns">DATA</div>
+          <div id = "helpnav" class = "three columns">HELP</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id = "uiBody">
+      <div class = "container">
+       
+        <div id = "uiBodyTitle" class = "u-max-full-width">
+        TITLES / HIGHLIGHT NAME
+        </div>
+        <div id = "sectionContainer">
+        <section id = "view"> <!-- detailed view -->
+          <div id = "select" class = "row">
+            <div class = "two columns">w</div>
+            <div class = "five columns">300</div>
+            <div class = "three columns">EUI</div>
+            <div class = "two columns">w</div>
+          </div>
+        </section>
+
+        <section id = "talk"> <!-- conversation & vote -->
+          <div id = "conversate">
+            <div class = "row">
+              <div class = "nine columns">
+                <input id = "textInput" type = "text" placeholder = "say something here...">
+              </div>
+              <div class = "three columns"> 
+                <input type="submit" value="Submit"></div>
+            </div>
+
+            <div class = "row">
+              <div class = "four columns">
+                STICKERS
+              </div>
+              <div class = "two columns stickerCat">:)</div>
+              <div class = "two columns stickerCat">:(</div>
+              <div class = "two columns stickerCat">wat</div>
+              <div class = "two columns stickerCat">UCD</div>
+            </div>
+
+            <div id = "stickerDrawer" class = "u-full-width">
+              <div class = "row">
+                <div class = "three columns">oeuaoe</div>
+                <div class = "three columns">euoeau</div>
+                <div class = "three columns">.'p,</div>
+                <div class = "three columns">cgf</div>
+              </div>     
+              <div class = "row">
+                <div class = "three columns">oeuaoe</div>
+                <div class = "three columns">euoeau</div>
+                <div class = "three columns">.'p,</div>
+                <div class = "three columns">cgf</div>
+              </div>
+            </div>
+
+            <div class = "row">
+              <div class = "ten columns">
+                <ul id = "convEntries" class = "u-full-width">
+                  <li>opinion</li>
+                  <li>worthless opinion followed by an insult</li>
+                  <li>six consecutive poop emojis</li>
+                  <li>indecipherable "opinion"</li>
+                  <li>swear word</li>
+                </ul>
+              </div>
+              <div class = "two columns">
+                <ul id = "convTimes" class = "u-full-width">
+                  <li>3m </li>
+                  <li>6m</li>
+                  <li>6m</li>
+                  <li>15m</li>
+                  <li>1h</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div id = "voteDiv">
+            <div class = "u-full-width">OPTION 1</div>
+            <div class = "u-full-width">OPTION 2</div>
+            <div class = "u-full-width">OPTION 3</div>
+            <div class = "u-full-width">OPTION 4</div>
+            
+          </div>
+
+            <div id = "talkSwitcher" class = "row">
+              <div id = "switchConv" class = "four columns">
+                < conversation
+              </div>
+              <div id = "switchVote" class = "eight columns">
+                VOTE: What data do you want to see? >
+              </div>
+            </div>
+        </section> <!-- end talk section -->
+
+        <section id = "data"> <!-- data change screen  -->
+        <!-- this should just be 3 tables.... -->
+          <table class = "u-full-width">
+            <tbody>
+             
+              <tr>
+                <td>COMPARE</td>
+                <td>UCD</td>
+                <td>CAMPUSES</td>
+                <td>PLANET</td>
+              </tr>
+              <tr>
+                <td>RESOURCE</td>
+                <td>ENERGY</td>
+                <td>WATER</td>
+                <td>PLANET</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table>
+            <tbody>  
+              <tr>
+                <td>Building1</td>
+                <td>Building1Value</td>
+                <td>Building2</td>
+                <td>Building2Value</td>
+              </tr>
+              <tr>
+                <td>Building3</td>
+                <td>Building3Value</td>
+                <td>Building4</td>
+                <td>Building4Value</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </section>
+
+        <section id = "help">
+        </section>
+
+      </div> <!-- end sectioncontainer -->
+
+
+
+
+
+
+      </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LIBRARIES + CUSTOM SCRIPT SHOULD BE AT END OF DOCUMENT -->
+    <script src="libs/three.min.js"></script> 
+
+    <script src="libs/tween.min.js"></script> 
+    <script src="libs/velocity.min.js"></script>
+    <script src="libs/velocity.ui.js"></script>
+    <!-- CUSTOM  -->   
+    <script src="scripts/3d.js"></script>
+    <script src="scripts/UI.js"></script>
+  </body> 
+</html>
