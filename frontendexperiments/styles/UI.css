@@ -100,8 +100,16 @@ section#talk .column, section#talk .columns{
 	background-color: green;
 	height: 100%;
 }
+
+#stickerSelect {
+}
 section#talk input{
 	width: 100%;
+	font-size: 25pt;
+	padding: 0.25em;
+	padding-left: 0.35em;
+	color: black;
+	letter-spacing: 0;
 }
 
 section#talk ul {
@@ -113,14 +121,43 @@ section#talk ul {
 	text-align: right;
 }
 
-#stickerDrawer {	
-	border: 1px red solid;
+#stickerLabel {
+	border: 1px rgba(255,0,0,0) solid;
+}
+#stickerLabel th{
+	width: 120px;
 }
 
-#stickerDrawer .row {
+#stickerDrawer{
 	height: 0;
 	overflow: hidden;
 }
+
+#stickerDrawer tr{
+	display: none;
+}
+thead, tr, table {
+	width: 100%;
+}
+#stickerLabel th, #stickerLabel td{
+	font-size: 14pt;
+	text-align: left;
+	letter-spacing: 0.1em;
+	padding: 0.5em;
+	border: 1px white solid;
+}
+
+table#stickers {
+
+}
+
+#stickers td {
+	text-align: center;
+	width: 25%;
+	height: 90px;
+	border: 1px white solid;
+}
+
 
 #conversate {
 	overflow: hidden;
