@@ -77,17 +77,16 @@ section{
 	display: none;
 	overflow: hidden;
 	height: 0;
-	margin-top: -10px;/*
-	border: 1px white solid;*/
 }
 section#view .columns, section#view .column {
 	
 }
 
-#viewNum{ font-size: 50pt; line-height: .95em; font-weight: 300;}
-#viewUnit{ font-size: 18pt; font-weight: 300; padding-left: 0.2em; letter-spacing: 0.05em;
+#viewNum{ font-size: 50pt; line-height: .95em; font-weight: 300; text-align: right;}
+#viewUnit{ font-size: 18pt; font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
 line-height: 1.3em;}
-
+#optButton{font-size: 36pt; border: 1px white solid; line-height: 1.25em; height: 55px;}
+#assessment{height: 55px; border: 1px white solid;}
 
 section#data td {
 	background-color: blue;
