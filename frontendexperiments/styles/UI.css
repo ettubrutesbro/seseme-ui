@@ -18,7 +18,7 @@ html {
 }
 	#topInfo{
 		font-family: 'Fira Sans', sans-serif;
-		font-size: 18pt;
+		font-size: 2.5rem;
 		letter-spacing: 0.13em;
 		color: white;
 	}
@@ -50,7 +50,7 @@ html {
 
 #uiBodyTitle {
 	text-align: center;
-	font-size: 36pt;
+	font-size: 6rem;
 	font-weight: 600;
 }
 
@@ -82,8 +82,8 @@ section#view .columns, section#view .column {
 	
 }
 
-#viewNum{ font-size: 50pt; line-height: .95em; font-weight: 300; text-align: right;}
-#viewUnit{ font-size: 18pt; font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
+#viewNum{ font-size: 7.25rem; line-height: .95em; font-weight: 300; text-align: right;}
+#viewUnit{ font-size: 2.6rem; font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
 line-height: 1.3em;}
 #optButton{font-size: 36pt; border: 1px white solid; line-height: 1.25em; height: 55px;}
 #assessment{height: 55px; border: 1px white solid;}
