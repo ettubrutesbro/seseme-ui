@@ -14,20 +14,22 @@
   </head> 
     
   <body>
-    <div class = "container">
+    <div class = "container" id = "top">
       
-        <table id = "topInfo">
-          <thead><tr>
-            <th>ENERGY USE</th>
-            <th><h6>at</h6></th>
-            <th>UC DAVIS</th>
-          </tr></thead>
-        </table>
-      
+      <div id = "topInfo">
+        <h6>
+        <div id = "topResource">
+          ENERGY USE 
+        </div>
+        <div id = "topScale">
+          <span>at</span> UC DAVIS
+        </div>
+        </h6>
+      </div>
+
     </div>
 
     <div id = "uiNav">
-
       <div class = "container">
    
         <div id = "nav" class = "row">
@@ -45,12 +47,13 @@
        
 
         <div id = "uiBodyTitle" class = "u-max-full-width">
-        <h1>Shields Library</h1>
+        <h2>Shields Library</h2>
         </div>
+
         <div id = "sectionContainer">
         <section id = "view"> <!-- detailed view -->
           <div id = "select" class = "row">
-            <div id = "viewNum" class = "three columns"><h1>90</h1></div>
+            <div id = "viewNum" class = "varLength"><h1>90</h1></div>
             <div id = "viewUnit" class = "five columns label">ENERGY USE INTENSITY</div>
             <div id = "optButton" class = "two columns"> </div>
             <div id = "assessment" class = "two columns"></div>
@@ -133,7 +136,7 @@
 
             <div id = "talkSwitcher" class = "row">
               <div id = "switchConv" class = "four columns">
-                < conversation
+                < conv
               </div>
               <div id = "switchVote" class = "eight columns">
                 VOTE TO PICK DATA >

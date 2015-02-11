@@ -9,7 +9,7 @@ var navs = [].slice.call(nav.children)
 
 var currentSection
 var stickerCategory
-var htArray = ["5em","22em","13em","2em"]
+var htArray = ["4em","17em","13em","2em"]
 
 
 navs.forEach(function(ele,i,arr){
@@ -111,7 +111,7 @@ navs.forEach(function(ele,i,arr){
 
 		voteButton.addEventListener('click',function(){
 			Velocity(stickerLabel, "transition.slideRightOut", {duration: 500})
-			Velocity(section, {height: "8em"}, {delay:200}, {duration: 500})
+			Velocity(section, {height: "9.5em"}, {delay:200}, {duration: 500})
 
 			Velocity(voteButton, "transition.slideRightOut", {duration: 200})
 			Velocity(convButton, "transition.slideLeftIn", {delay: 1000})
@@ -119,11 +119,11 @@ navs.forEach(function(ele,i,arr){
 			setTimeout(function(){
 				Velocity(vote, "transition.slideLeftIn", {stagger: 150},{duration: 500})
 			},350)
-			htArray[1]="8em"
+			htArray[1]="9.5em"
 		})
 		
 		convButton.addEventListener('click', function(){
-			Velocity(section, {height: "22em"}, {duration: 700})
+			Velocity(section, {height: "17em"}, {duration: 700})
 			
 			Velocity(voteButton, "transition.slideRightIn", {delay: 1000})
 			Velocity(convButton, "transition.slideLeftOut", {duration: 300})
@@ -135,7 +135,7 @@ navs.forEach(function(ele,i,arr){
 				Velocity(conv, "transition.slideRightIn", {stagger: 10})
 				Velocity(stickerLabel, "transition.slideRightIn", {duration: 600})
 			},350)
-			htArray[1]="22em"
+			htArray[1]="17em"
 			
 		
 		})	

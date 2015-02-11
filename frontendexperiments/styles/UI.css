@@ -1,6 +1,6 @@
 html {
 	overflow: hidden;
-	background-color: black;
+	background-color: grey;
 	font-size: 24px;
 }
 
@@ -13,25 +13,22 @@ html {
 }
 
 #topInfo{
-	position: absolute;
 	font-family: 'Fira Sans', sans-serif;
-	letter-spacing: 0.13em;
-	color: white;
-	margin-left: auto;
-	margin-right: auto; 
+	letter-spacing: 0.13rem;
+	color: white;	
+	position: absolute;
+	text-align: center;
+	width: 420px;
+	margin-top: -1rem;
 }
-	#topInfo th{
-		padding: 0;
 
-	}
-	#topInfo th:nth-child(2){
-		padding: 1em;
-	}
-
+#topInfo span{
+	font-weight: 300;
+}
 
 #uiNav /* holds fixed UI nav at bottom */ {
 	position: fixed;
-	bottom: 2em;
+	bottom: 2rem;
 	z-index: 3;
 	width: 100%;
 }
@@ -42,7 +39,7 @@ html {
 	width: 100%;
 	bottom: 8%;
 	font-family: 'Source Serif Pro', serif;
-	letter-spacing: 0.03em;
+	letter-spacing: 0.03rem;
 	color: white;
 }
 
@@ -79,7 +76,7 @@ section#view .columns, section#view .column {
 	
 }
 
-#viewNum{ line-height: .95em; font-weight: 300; text-align: right;}
+#viewNum{ font-weight: 300; text-align: right; margin-top: -0.2rem;}
 #viewUnit{ font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
 line-height: 1.3em;}
 #optButton{ border: 1px white solid; line-height: 1.25em; height: 55px;}
@@ -202,6 +199,10 @@ table#stickers {
 	margin-left:0;
 }
 
+.varLength {
+	float: left;
+}
+
   .one.column,
   .one.columns                    { width: 4.66666666667%; }
   .two.columns                    { width: 13.3333333333%; }
@@ -221,7 +222,9 @@ table#stickers {
 
   .one-half.column                { width: 48%; }
 
-  h6{ font-size: 1.1em;	font-weight: 300;}
+  h6{ font-size: 1.1rem; }
+  h1{ margin: 0; font-size: 2.6rem;}
+  h2{ margin: 0; font-size: 2.1rem;}
 
 /*@media (min-width: x px) {
 
