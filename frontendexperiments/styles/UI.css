@@ -7,12 +7,11 @@ html {
 .label {
 	font-family: 'Fira Sans', sans-serif;
 }
-
 .spelled {
 	font-family: 'Source Serif Pro', serif;
 }
 
-#topInfo{
+#topInfo{ /* small summary info at top */
 	font-family: 'Fira Sans', sans-serif;
 	letter-spacing: 0.13rem;
 	color: white;	
@@ -21,22 +20,26 @@ html {
 	width: 420px;
 	margin-top: -1rem;
 }
-
-#topInfo span{
-	font-weight: 300;
-}
+	#topInfo span{
+		font-weight: 300;
+	}
 
 #uiNav /* holds fixed UI nav at bottom */ {
-	position: fixed;
-	bottom: 2rem;
+	position: absolute;
+	bottom: 1.25rem;
 	z-index: 3;
-	width: 100%;
+	width: 420px;
 }
+	.navbutt {
+		float: left;
+		width: 25%;
+		height: 90px;
+	}
 
 #uiBody { /*holds dynamic UI data/content */
 	position: absolute;
 	z-index: 2;
-	width: 100%;
+	width: 420px;
 	bottom: 8%;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.03rem;
@@ -48,10 +51,6 @@ html {
 	font-weight: 600;
 }
 
-
-.navbutt {
-
-}
 
 #viewnav {
 	background-color: yellow;
@@ -76,9 +75,9 @@ section#view .columns, section#view .column {
 	
 }
 
-#viewNum{ font-weight: 300; text-align: right; margin-top: -0.2rem;}
+#viewNum{ font-weight: 300; text-align: right; margin-top: -0.4rem;}
 #viewUnit{ font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
-line-height: 1.3em;}
+}
 #optButton{ border: 1px white solid; line-height: 1.25em; height: 55px;}
 #assessment{height: 55px; border: 1px white solid;}
 
@@ -95,15 +94,13 @@ section#talk .column, section#talk .columns{
 	height: 100%;
 }
 
-#stickerSelect {
-}
-section#talk input{
-	width: 100%;
 
-	padding: 0.25em;
-	padding-left: 0.35em;
-	color: black;
-	letter-spacing: 0;
+#talkInput {
+	width: 85%;
+}
+#talkEnter {
+	border-radius: 5px;
+	width: 15%;
 }
 
 section#talk ul {

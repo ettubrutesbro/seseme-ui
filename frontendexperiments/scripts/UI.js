@@ -3,9 +3,9 @@
 
 var stickerDrawerOpen = false
 
-var nav = document.getElementById("nav")
+var buttonBar = document.getElementById("buttonBar")
 var container = document.querySelector(".container")
-var navs = [].slice.call(nav.children) 
+var navs = [].slice.call(buttonBar.children) 
 
 var currentSection
 var stickerCategory
@@ -144,6 +144,8 @@ navs.forEach(function(ele,i,arr){
 	window.onload = function(){
 		stickerDrawer()
 		voteConv()
+
+		alert('screen stats: ' + window.innerWidth)
 		
 	}
 

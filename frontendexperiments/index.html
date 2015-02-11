@@ -2,20 +2,21 @@
 <html lang = "en">
   <head>
     <meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.0, user-scalable=0">
     <title></title>
     <!-- FONTS -->
     <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600' rel='stylesheet' type='text/css'>
     <!-- OUTSIDE CSS -->  
-
     <!-- CUSTOM CSS -->
     <link rel = "stylesheet" type = "text/css" href = "styles/UI.css">  
 
   </head> 
     
   <body>
-    <div class = "container" id = "top">
-      
+<!-- #top .container has abs-positioned data at top -->
+<!-- tells users what SESEME is showing (mb # users?) -->
+    <div class = "container" id = "top"> 
       <div id = "topInfo">
         <h6>
         <div id = "topResource">
@@ -26,169 +27,163 @@
         </div>
         </h6>
       </div>
+    </div> <!-- end top container -->
 
-    </div>
-
-    <div id = "uiNav">
-      <div class = "container">
-   
-        <div id = "nav" class = "row">
-          <div id = "viewnav" class = "navbutt three columns">VIEW</div>
-          <div id = "talknav" class = "navbutt three columns">TALK</div>
-          <div id = "datanav" class = "navbutt three columns">DATA</div>
-          <div id = "helpnav" class = "navbutt three columns">HELP</div>
+<!-- #bottom .container has abs-positioned four button row
+navigates to core functions  -->
+      <div id = "bottom" class = "container">
+        <div id = "uiNav">
+          <div id = "buttonBar">
+            <div id = "viewnav" class = "navbutt">VIEW</div>
+            <div id = "talknav" class = "navbutt">TALK</div>
+            <div id = "datanav" class = "navbutt">DATA</div>
+            <div id = "helpnav" class = "navbutt">HELP</div>
         </div>
       </div>
-    </div>
+    </div> <!-- end button bar -->
+    <!-- how can this be made vertical / better for larger
+    screen layouts? media query remove float, visible spans.... -->
 
+    
+      <div id = "mid" class = "container">
+        <div id = "uiBody">   
 
-    <div id = "uiBody">
-      <div class = "container">
-       
-
-        <div id = "uiBodyTitle" class = "u-max-full-width">
+        <div id = "uiBodyTitle" class = "spelled">
         <h2>Shields Library</h2>
         </div>
 
         <div id = "sectionContainer">
-        <section id = "view"> <!-- detailed view -->
-          <div id = "select" class = "row">
-            <div id = "viewNum" class = "varLength"><h1>90</h1></div>
-            <div id = "viewUnit" class = "five columns label">ENERGY USE INTENSITY</div>
-            <div id = "optButton" class = "two columns"> </div>
-            <div id = "assessment" class = "two columns"></div>
-            </div>
-        </section>
+          <section id = "view"> <!-- detailed view -->
+              <div id = "viewNum" class = "varLength"><h1>90</h1></div>
+              <div id = "viewUnit" class = "varLength">ENERGY USE INTENSITY</div>
+          </section>
 
-        <section id = "talk"> <!-- conversation & vote -->
-          <div id = "conversate">
-            <div class = "row">
-              <div class = "ten columns">
-                <input id = "textInput" type = "text" placeholder = "say something here...">
-              </div>
-              <div class = "two columns"> 
-                <input type="submit" value="G"></div>
-            </div>
-
-            <div id ="stickerLabel" class = "u-max-full-width">
+          <section id = "talk"> <!-- conversation & vote -->
+            <div id = "conversate">
+                  <input id = "talkInput" type = "text" placeholder = "say something here...">
+                 
+                  <input id = "talkEnter" type="submit" value="G">
               
-              <table>
-                <thead>
-                  <tr>
-                    <th class = "label">STICKERS</th>
-                    <td>c1</td>
-                    <td>c2</td>
-                    <td>c3</td>
-                    <td>c4</td>
-                    <td>c5</td>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-              <div id = "stickerDrawer" class = "u-max-full-width">
-              <table id = "stickers">
-                <tbody>
-                  <tr>
-                    <td>A</td>
-                    <td>B</td>
-                    <td>C</td>
-                    <td>D</td>
-                  </tr>
-                  <tr>
-                    <td>E</td>
-                    <td>F</td>
-                    <td>G</td>
-                    <td>H</td>
-                  </tr>
-              </table>
-            
-            </div>
 
-            <div class = "row">
-              <div class = "ten columns">
-                <ul id = "convEntries" class = "u-full-width">
-                  <li>opinion</li>
-                  <li>worthless opinion followed by an insult</li>
-                  <li>six consecutive poop emojis</li>
-                  <li>indecipherable "opinion"</li>
-                  <li>swear word</li>
-                </ul>
+              <div id ="stickerLabel" class = "u-max-full-width">
+                
+                <table>
+                  <thead>
+                    <tr>
+                      <th class = "label">STICKERS</th>
+                      <td>c1</td>
+                      <td>c2</td>
+                      <td>c3</td>
+                      <td>c4</td>
+                      <td>c5</td>
+                    </tr>
+                  </thead>
+                </table>
               </div>
-              <div class = "two columns">
-                <ul id = "convTimes" class = "u-full-width">
-                  <li>3m </li>
-                  <li>6m</li>
-                  <li>6m</li>
-                  <li>15m</li>
-                  <li>1h</li>
-                </ul>
+                <div id = "stickerDrawer" class = "u-max-full-width">
+                <table id = "stickers">
+                  <tbody>
+                    <tr>
+                      <td>A</td>
+                      <td>B</td>
+                      <td>C</td>
+                      <td>D</td>
+                    </tr>
+                    <tr>
+                      <td>E</td>
+                      <td>F</td>
+                      <td>G</td>
+                      <td>H</td>
+                    </tr>
+                </table>
+              
               </div>
-            </div>
-          </div>
 
-          <div id = "voteDiv">
-            <div class = "u-full-width">OPTION 1</div>
-            <div class = "u-full-width">OPTION 2</div>
-            <div class = "u-full-width">OPTION 3</div>
-            <div class = "u-full-width">OPTION 4</div>
-            
-          </div>
-
-            <div id = "talkSwitcher" class = "row">
-              <div id = "switchConv" class = "four columns">
-                < conv
-              </div>
-              <div id = "switchVote" class = "eight columns">
-                VOTE TO PICK DATA >
+              <div class = "row">
+                <div class = "ten columns">
+                  <ul id = "convEntries" class = "u-full-width">
+                    <li>opinion</li>
+                    <li>worthless opinion followed by an insult</li>
+                    <li>six consecutive poop emojis</li>
+                    <li>indecipherable "opinion"</li>
+                    <li>swear word</li>
+                  </ul>
+                </div>
+                <div class = "two columns">
+                  <ul id = "convTimes" class = "u-full-width">
+                    <li>3m </li>
+                    <li>6m</li>
+                    <li>6m</li>
+                    <li>15m</li>
+                    <li>1h</li>
+                  </ul>
+                </div>
               </div>
             </div>
-        </section> <!-- end talk section -->
 
-        <section id = "data"> <!-- data change screen  -->
-        <!-- this should just be 3 tables.... -->
-          <table class = "u-full-width">
-            <tbody>
-             
-              <tr>
-                <td>COMPARE</td>
-                <td>UCD</td>
-                <td>CAMPUSES</td>
-                <td>PLANET</td>
-              </tr>
-              <tr>
-                <td>RESOURCE</td>
-                <td>ENERGY</td>
-                <td>WATER</td>
-                <td>PLANET</td>
-              </tr>
-            </tbody>
-          </table>
+            <div id = "voteDiv">
+              <div class = "u-full-width">OPTION 1</div>
+              <div class = "u-full-width">OPTION 2</div>
+              <div class = "u-full-width">OPTION 3</div>
+              <div class = "u-full-width">OPTION 4</div>
+              
+            </div>
 
-          <table>
-            <tbody>  
-              <tr>
-                <td>Building1</td>
-                <td>Building1Value</td>
-                <td>Building2</td>
-                <td>Building2Value</td>
-              </tr>
-              <tr>
-                <td>Building3</td>
-                <td>Building3Value</td>
-                <td>Building4</td>
-                <td>Building4Value</td>
-              </tr>
-            </tbody>
-          </table>
+              <div id = "talkSwitcher" class = "row">
+                <div id = "switchConv" class = "four columns">
+                  < conv
+                </div>
+                <div id = "switchVote" class = "eight columns">
+                  VOTE TO PICK DATA >
+                </div>
+              </div>
+          </section> <!-- end talk section -->
 
-        </section>
+          <section id = "data"> <!-- data change screen  -->
+          <!-- this should just be 3 tables.... -->
+            <table class = "u-full-width">
+              <tbody>
+               
+                <tr>
+                  <td>COMPARE</td>
+                  <td>UCD</td>
+                  <td>CAMPUSES</td>
+                  <td>PLANET</td>
+                </tr>
+                <tr>
+                  <td>RESOURCE</td>
+                  <td>ENERGY</td>
+                  <td>WATER</td>
+                  <td>PLANET</td>
+                </tr>
+              </tbody>
+            </table>
 
-        <section id = "help">
-        </section>
+            <table>
+              <tbody>  
+                <tr>
+                  <td>Building1</td>
+                  <td>Building1Value</td>
+                  <td>Building2</td>
+                  <td>Building2Value</td>
+                </tr>
+                <tr>
+                  <td>Building3</td>
+                  <td>Building3Value</td>
+                  <td>Building4</td>
+                  <td>Building4Value</td>
+                </tr>
+              </tbody>
+            </table>
 
-      </div> <!-- end sectioncontainer -->
-      </div>
-    </div>
+          </section>
+
+          <section id = "help">
+          </section>
+
+        </div> <!-- end sectioncontainer -->
+      </div> <!-- end uibody -->
+    </div> <!-- end mid container -->
 
 
     <!-- JAVASCRIPT LIBRARIES + CUSTOM SCRIPT SHOULD BE AT END OF DOCUMENT -->
