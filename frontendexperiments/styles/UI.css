@@ -1,6 +1,7 @@
 html {
 	overflow: hidden;
 	background-color: black;
+	font-size: 24px;
 }
 
 .label {
@@ -11,23 +12,20 @@ html {
 	font-family: 'Source Serif Pro', serif;
 }
 
-#top {
-	margin-top: 7%;
+#topInfo{
 	position: absolute;
-	width: 100%;
+	font-family: 'Fira Sans', sans-serif;
+	letter-spacing: 0.13em;
+	color: white;
+	margin-left: auto;
+	margin-right: auto; 
 }
-	#topInfo{
-		font-family: 'Fira Sans', sans-serif;
-		font-size: 2.5rem;
-		letter-spacing: 0.13em;
-		color: white;
-	}
-	#resource{ text-align: right;}
-	#atText{ text-align: center; font-weight: 300; letter-spacing: 0.08em;}
-	#scale{ text-align: left;}
+	#topInfo th{
+		padding: 0;
 
-	#debugEtc{
-		text-align: center;
+	}
+	#topInfo th:nth-child(2){
+		padding: 1em;
 	}
 
 
@@ -50,7 +48,6 @@ html {
 
 #uiBodyTitle {
 	text-align: center;
-	font-size: 6rem;
 	font-weight: 600;
 }
 
@@ -82,10 +79,10 @@ section#view .columns, section#view .column {
 	
 }
 
-#viewNum{ font-size: 7.25rem; line-height: .95em; font-weight: 300; text-align: right;}
-#viewUnit{ font-size: 2.6rem; font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
+#viewNum{ line-height: .95em; font-weight: 300; text-align: right;}
+#viewUnit{ font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
 line-height: 1.3em;}
-#optButton{font-size: 36pt; border: 1px white solid; line-height: 1.25em; height: 55px;}
+#optButton{ border: 1px white solid; line-height: 1.25em; height: 55px;}
 #assessment{height: 55px; border: 1px white solid;}
 
 section#data td {
@@ -105,7 +102,7 @@ section#talk .column, section#talk .columns{
 }
 section#talk input{
 	width: 100%;
-	font-size: 25pt;
+
 	padding: 0.25em;
 	padding-left: 0.35em;
 	color: black;
@@ -136,11 +133,11 @@ section#talk ul {
 #stickerDrawer tr{
 	display: none;
 }
-thead, tr, table {
+thead, tr, #stickerDrawer table, #stickerLabel table{
 	width: 100%;
 }
 #stickerLabel th, #stickerLabel td{
-	font-size: 14pt;
+	
 	text-align: left;
 	letter-spacing: 0.1em;
 	padding: 0.5em;
@@ -183,3 +180,49 @@ table#stickers {
 #containerSESEME {
 }
 
+
+
+
+.container {
+	width: 100%;
+	max-width: 460px;
+	margin: 0 auto;
+	padding: 0 20px;
+ 	box-sizing: border-box;
+}
+
+.column,
+.columns {
+	margin-left: 4%;
+	width: 100%;
+	float: left;
+	box-sizing: border-box;
+}
+.columns:first-child{
+	margin-left:0;
+}
+
+  .one.column,
+  .one.columns                    { width: 4.66666666667%; }
+  .two.columns                    { width: 13.3333333333%; }
+  .three.columns                  { width: 22%;            }
+  .four.columns                   { width: 30.6666666667%; }
+  .five.columns                   { width: 39.3333333333%; }
+  .six.columns                    { width: 48%;            }
+  .seven.columns                  { width: 56.6666666667%; }
+  .eight.columns                  { width: 65.3333333333%; }
+  .nine.columns                   { width: 74.0%;          }
+  .ten.columns                    { width: 82.6666666667%; }
+  .eleven.columns                 { width: 91.3333333333%; }
+  .twelve.columns                 { width: 100%; margin-left: 0; }
+
+  .one-third.column               { width: 30.6666666667%; }
+  .two-thirds.column              { width: 65.3333333333%; }
+
+  .one-half.column                { width: 48%; }
+
+  h6{ font-size: 1.1em;	font-weight: 300;}
+
+/*@media (min-width: x px) {
+
+}*/

@@ -257,8 +257,8 @@
       console.log(evt.gamma) 
       console.log(evt.beta) 
       console.log(evt.alpha) 
-      debugEtc.innerHTML("gamma: " + evt.gamma + " beta: " + evt.beta +
-        " alpha: " + evt.alpha)
+      debugEtc.textElement = "gamma: " + evt.gamma + " beta: " + evt.beta +
+        " alpha: " + evt.alpha
     }
 
     function initTouchEvents(){

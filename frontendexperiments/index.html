@@ -7,26 +7,25 @@
     <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600' rel='stylesheet' type='text/css'>
     <!-- OUTSIDE CSS -->  
-    <link rel = "stylesheet" type = "text/css" href = "styles/normalize.css">
-    <link rel = "stylesheet" type = "text/css" href = "styles/skeleton.css">  
+
     <!-- CUSTOM CSS -->
     <link rel = "stylesheet" type = "text/css" href = "styles/UI.css">  
 
   </head> 
     
   <body>
-    <div id = "top">
-      <div id = "topInfo" class = "u-max-full-width">
-        <div class = "row">
-          <div class = "five columns" id = "resource">ENERGY USE</div>
-          <div class = "two columns" id = "atText">at</div>
-          <div class = "five columns" id = "scale">UC DAVIS</div>
-        </div>
-        <div class = "row" id = "debugEtc">
-         
-        </div>
-      </div>
+    <div class = "container">
+      
+        <table id = "topInfo">
+          <thead><tr>
+            <th>ENERGY USE</th>
+            <th><h6>at</h6></th>
+            <th>UC DAVIS</th>
+          </tr></thead>
+        </table>
+      
     </div>
+
     <div id = "uiNav">
 
       <div class = "container">
@@ -46,12 +45,12 @@
        
 
         <div id = "uiBodyTitle" class = "u-max-full-width">
-        Shields Library
+        <h1>Shields Library</h1>
         </div>
         <div id = "sectionContainer">
         <section id = "view"> <!-- detailed view -->
           <div id = "select" class = "row">
-            <div id = "viewNum" class = "three columns">90</div>
+            <div id = "viewNum" class = "three columns"><h1>90</h1></div>
             <div id = "viewUnit" class = "five columns label">ENERGY USE INTENSITY</div>
             <div id = "optButton" class = "two columns"> </div>
             <div id = "assessment" class = "two columns"></div>
