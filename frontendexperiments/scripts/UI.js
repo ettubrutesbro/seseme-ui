@@ -1,4 +1,4 @@
-
+//this needs better organization
 // SESEME UI custom JS - no jQuery
 
 var stickerDrawerOpen = false
