@@ -9,7 +9,7 @@ var navs = [].slice.call(buttonBar.children)
 
 var currentSection
 var stickerCategory
-var htArray = ["4em","17em","13em","2em"]
+var htArray = ["7em","17em","13em","2em"]
 
 
 navs.forEach(function(ele,i,arr){
@@ -55,7 +55,7 @@ navs.forEach(function(ele,i,arr){
 		var categories = [].slice.call(document.querySelectorAll('#stickerLabel td'))
 		var expand = document.getElementById('stickerDrawer')
 		var target = document.querySelectorAll('#stickers tr')
-		var stickerCats = ['PLACES', 'RESOURCES', 'UCD, TODAY', 'THINGS', 'FEELINGS']
+		var stickerCats = ['PLACES', 'RESOURCES', 'TODAY', 'THINGS', 'FEELINGS']
 		var label = document.querySelector('#stickerLabel th.label')
 		
 		//var section = document.getElementById('talk')
@@ -104,7 +104,7 @@ navs.forEach(function(ele,i,arr){
 		var voteButton = document.getElementById('switchVote')
 		var convButton = document.getElementById('switchConv')
 		var stickerLabel = document.getElementById('stickerLabel')
-		var conv = document.getElementById("conversate").querySelectorAll(".columns")
+		var conv = document.getElementById("conversate").querySelectorAll("div")
 		conv = [].slice.call(conv)
 		var vote = document.getElementById("voteDiv").querySelectorAll("div")
 		vote = [].slice.call(vote)
@@ -127,14 +127,15 @@ navs.forEach(function(ele,i,arr){
 			
 			Velocity(voteButton, "transition.slideRightIn", {delay: 1000})
 			Velocity(convButton, "transition.slideLeftOut", {duration: 300})
-			Velocity(vote, "reverse", {duration: 200})
+			Velocity(vote, "reverse", {duration: 200},{complete: function(){
+
+			}})
 			setTimeout(function(){
 				vote.forEach(function(ele){
 					ele.style["display"] = 'none'
 				})
 				Velocity(conv, "transition.slideRightIn", {stagger: 10})
-				Velocity(stickerLabel, "transition.slideRightIn", {duration: 600})
-			},350)
+			},300)
 			htArray[1]="17em"
 			
 		

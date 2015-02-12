@@ -76,106 +76,83 @@ section#view .columns, section#view .column {
 }
 
 #viewNum{ font-weight: 300; text-align: right; margin-top: -0.4rem;}
-#viewUnit{ font-weight: 300; padding-left: 0.1em; letter-spacing: 0.05em;
-}
-#optButton{ border: 1px white solid; line-height: 1.25em; height: 55px;}
-#assessment{height: 55px; border: 1px white solid;}
-
-section#data td {
-	background-color: blue;
-	padding: 0.5em;
+#viewUnit{ font-weight: 300; padding-left: 0.1rem; letter-spacing: 0.05rem;
 }
 
 section#talk {
 }
+	#conversate {
+		overflow: hidden;
+	}
+		#talkInput {
+			width: 80%;
+			font-size: 1.15rem;
+			padding: 0.3rem;
+			padding-left: 0.6rem;	
+			font-weight: 300;
+			letter-spacing: 0;
+		}
+		#talkEnter {
+			border-radius: 5px;
+			width: 12%;
+			font-size: 1rem;
+			height: 2rem;
+		}
+		#stickerLabel {
+			border: 1px rgba(255,0,0,0) solid;
+			font-size: 0.8rem;
+		}
+		#stickerLabel th{
+			width: 120px;
+		}
+		#stickerDrawer{
+			height: 0;
+			overflow: hidden;
+		}
+		#stickerDrawer tr{
+			display: none;
+		}
+		thead, tr, #stickerDrawer table, #stickerLabel table{
+			width: 100%;
+		}
+		#stickerLabel th, #stickerLabel td{
+			text-align: left;
+			letter-spacing: 0.1rem;
+			padding: 0.5rem;
+			border: 1px white solid;
+		}
+		#stickers td {
+			text-align: center;
+			width: 25%;
+			height: 90px;
+			border: 1px white solid;
+		}
+		#convEntries td:first-child{
+			font-weight: 400;
+			padding-right: 0.5rem;
+		}
+		#convEntries td:nth-child(2){
+			font-family: 'Fira Sans', sans-serif;
+			font-size: 0.8rem;
+			letter-spacing: 0.05rem;
+			text-align: right;
+		}
+	#voteDiv {
+	}
 
-section#talk .column, section#talk .columns{
-	background-color: green;
-	height: 100%;
-}
+		#voteDiv div {
+			background-color: green;
+			text-align: center;
+			display: none;
+		}
 
+	#switchVote {
+		float: right;
+	}
 
-#talkInput {
-	width: 85%;
-}
-#talkEnter {
-	border-radius: 5px;
-	width: 15%;
-}
-
-section#talk ul {
-	padding-left: 0;
-	list-style-type: none;
-}
-
-#convTimes {
-	text-align: right;
-}
-
-#stickerLabel {
-	border: 1px rgba(255,0,0,0) solid;
-}
-#stickerLabel th{
-	width: 120px;
-}
-
-#stickerDrawer{
-	height: 0;
-	overflow: hidden;
-}
-
-#stickerDrawer tr{
-	display: none;
-}
-thead, tr, #stickerDrawer table, #stickerLabel table{
-	width: 100%;
-}
-#stickerLabel th, #stickerLabel td{
-	
-	text-align: left;
-	letter-spacing: 0.1em;
-	padding: 0.5em;
-	border: 1px white solid;
-}
-
-table#stickers {
-
-}
-
-#stickers td {
-	text-align: center;
-	width: 25%;
-	height: 90px;
-	border: 1px white solid;
-}
-
-
-#conversate {
-	overflow: hidden;
-}
-
-#voteDiv {
-}
-
-#voteDiv div {
-	background-color: green;
-	text-align: center;
-	display: none;
-}
-
-#switchVote {
-	float: right;
-}
-
-#switchConv {
-	display: none;
-}
-
-#containerSESEME {
-}
-
-
-
+	#switchConv {
+		display: none;
+	}
 
 .container {
 	width: 100%;
@@ -184,40 +161,6 @@ table#stickers {
 	padding: 0 20px;
  	box-sizing: border-box;
 }
-
-.column,
-.columns {
-	margin-left: 4%;
-	width: 100%;
-	float: left;
-	box-sizing: border-box;
-}
-.columns:first-child{
-	margin-left:0;
-}
-
-.varLength {
-	float: left;
-}
-
-  .one.column,
-  .one.columns                    { width: 4.66666666667%; }
-  .two.columns                    { width: 13.3333333333%; }
-  .three.columns                  { width: 22%;            }
-  .four.columns                   { width: 30.6666666667%; }
-  .five.columns                   { width: 39.3333333333%; }
-  .six.columns                    { width: 48%;            }
-  .seven.columns                  { width: 56.6666666667%; }
-  .eight.columns                  { width: 65.3333333333%; }
-  .nine.columns                   { width: 74.0%;          }
-  .ten.columns                    { width: 82.6666666667%; }
-  .eleven.columns                 { width: 91.3333333333%; }
-  .twelve.columns                 { width: 100%; margin-left: 0; }
-
-  .one-third.column               { width: 30.6666666667%; }
-  .two-thirds.column              { width: 65.3333333333%; }
-
-  .one-half.column                { width: 48%; }
 
   h6{ font-size: 1.1rem; }
   h1{ margin: 0; font-size: 2.6rem;}

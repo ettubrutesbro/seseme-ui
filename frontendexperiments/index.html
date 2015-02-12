@@ -13,7 +13,7 @@
 
   </head> 
     
-  <body>
+  <body> 
 <!-- #top .container has abs-positioned data at top -->
 <!-- tells users what SESEME is showing (mb # users?) -->
     <div class = "container" id = "top"> 
@@ -55,18 +55,18 @@ navigates to core functions  -->
         <div id = "sectionContainer">
           <section id = "view"> <!-- detailed view -->
               <div id = "viewNum" class = "varLength"><h1>90</h1></div>
-              <div id = "viewUnit" class = "varLength">ENERGY USE INTENSITY</div>
+              <div id = "viewUnit">ENERGY USE INTENSITY</div>
           </section>
 
           <section id = "talk"> <!-- conversation & vote -->
             <div id = "conversate">
-                  <input id = "talkInput" type = "text" placeholder = "say something here...">
-                 
+              <div id = "userInput">
+                  <input id = "talkInput" class = "label" type = "text" placeholder = "say something here...">
                   <input id = "talkEnter" type="submit" value="G">
+                </div>
               
 
-              <div id ="stickerLabel" class = "u-max-full-width">
-                
+              <div id ="stickerLabel">
                 <table>
                   <thead>
                     <tr>
@@ -80,7 +80,8 @@ navigates to core functions  -->
                   </thead>
                 </table>
               </div>
-                <div id = "stickerDrawer" class = "u-max-full-width">
+
+              <div id = "stickerDrawer">
                 <table id = "stickers">
                   <tbody>
                     <tr>
@@ -96,36 +97,25 @@ navigates to core functions  -->
                       <td>H</td>
                     </tr>
                 </table>
-              
+              </div> <!-- end of sticker drawer -->
+              <div id = "conversationEntries">
+                <table id = "convEntries">
+                  <tbody>
+                    <tr><td>entry</td><td>2m</td></tr>
+                    <tr><td>blah blah blah</td><td>5m</td></tr>
+                    <tr><td>opinions</td><td>5m</td></tr>
+                    <tr><td>six consecutive poop emojis and a winking face</td><td>20m</td></tr>
+                    <tr><td>indecipherable profanity</td><td>1h</td></tr>
+                </table>
               </div>
 
-              <div class = "row">
-                <div class = "ten columns">
-                  <ul id = "convEntries" class = "u-full-width">
-                    <li>opinion</li>
-                    <li>worthless opinion followed by an insult</li>
-                    <li>six consecutive poop emojis</li>
-                    <li>indecipherable "opinion"</li>
-                    <li>swear word</li>
-                  </ul>
-                </div>
-                <div class = "two columns">
-                  <ul id = "convTimes" class = "u-full-width">
-                    <li>3m </li>
-                    <li>6m</li>
-                    <li>6m</li>
-                    <li>15m</li>
-                    <li>1h</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            </div> <!-- end div conversate -->
 
             <div id = "voteDiv">
-              <div class = "u-full-width">OPTION 1</div>
-              <div class = "u-full-width">OPTION 2</div>
-              <div class = "u-full-width">OPTION 3</div>
-              <div class = "u-full-width">OPTION 4</div>
+              <div>OPTION 1</div>
+              <div>OPTION 2</div>
+              <div>OPTION 3</div>
+              <div>OPTION 4</div>
               
             </div>
 
