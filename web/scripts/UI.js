@@ -62,8 +62,7 @@ function stickerDrawer(){
 	var categories = [].slice.call(document.querySelectorAll('#stickerLabel td'))
 	var expand = document.getElementById('stickerDrawer')
 	var target = document.querySelectorAll('#stickers tr')
-	var stickerCats = ['PLACES', 'RESOURCES', 'TODAY', 'THINGS', 'FEELINGS']
-	var label = document.querySelector('#stickerLabel th h6')
+
 	
 	//var section = document.getElementById('talk')
 
@@ -71,19 +70,12 @@ function stickerDrawer(){
 		ele.addEventListener('click',function(){
 			if(i!=stickerCategory){
 				if(!stickerDrawerOpen){
-					Velocity(label, {opacity:0},{duration:500, complete: function(){
-						label.textContent = stickerCats[i]
-					}})
-					Velocity(label, {opacity:1},{duration:500})
+					
 					
 					Velocity(expand, {height: 195},{duration:500})
 					Velocity(target, 'transition.slideDownIn', {stagger: 200})
 					stickerDrawerOpen = true
 				}else if(stickerDrawerOpen){
-					Velocity(label, {opacity:0},{duration:500, complete: function(){
-						label.textContent = stickerCats[i]
-					}})
-					Velocity(label, {opacity:1},{duration:500})
 					Velocity(target, {opacity: 0},{complete: function(){
 						//switch sesemojis
 					}})
@@ -96,10 +88,6 @@ function stickerDrawer(){
 				Velocity(expand, {height: 0}, {duration: 500})
 				stickerDrawerOpen = false
 				stickerCategory = null
-				Velocity(label, {opacity:0},{duration:500, complete: function(){
-						label.textContent = 'STICKERS'
-					}})
-				Velocity(label, {opacity:1},{duration:500})
 			}
 		})
 	})
