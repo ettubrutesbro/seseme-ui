@@ -2,7 +2,7 @@
 <html lang = "en">
   <head>
     <meta charset = "UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title></title>
     <!-- FONTS -->
     <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
@@ -21,9 +21,8 @@
         <h6>
         <div id = "topResource">
           ENERGY USE 
-        </div>
-        <div id = "topScale">
           <span>at</span> UC DAVIS
+          <span id = "debug">eaoe</span>
         </div>
         </h6>
       </div>
@@ -34,7 +33,7 @@ navigates to core functions  -->
       <div id = "bottom" class = "container">
         <div id = "uiNav">
           <div id = "buttonBar">
-            <div id = "viewnav" class = "navbutt">VIEW</div>
+            <div id = "viewnav" class = "navbutt">nooo</div>
             <div id = "talknav" class = "navbutt">TALK</div>
             <div id = "datanav" class = "navbutt">DATA</div>
             <div id = "helpnav" class = "navbutt">HELP</div>
@@ -48,29 +47,30 @@ navigates to core functions  -->
       <div id = "mid" class = "container">
         <div id = "uiBody">   
 
-        <div id = "uiBodyTitle" class = "spelled">
-        <h2>Shields Library</h2>
+        <div id = "uiBodyTitle">
+        <h2></h2>
         </div>
 
         <div id = "sectionContainer">
           <section id = "view"> <!-- detailed view -->
               <div id = "viewNum" class = "varLength"><h1>90</h1></div>
-              <div id = "viewUnit">ENERGY USE INTENSITY</div>
+              <div id = "viewUnit"><h5>ENERGY USE INTENSITY</h5></div>
           </section>
 
           <section id = "talk"> <!-- conversation & vote -->
             <div id = "conversate">
               <div id = "userInput">
-                  <input id = "talkInput" class = "label" type = "text" placeholder = "say something here...">
-                  <input id = "talkEnter" type="submit" value="G">
-                </div>
+                  <div id = "talkInput" contentEditable = "true">write a thing maybe</div>
+                  <div id = "talkButton">65</div>
+              </div>
+                
+                
               
 
               <div id ="stickerLabel">
                 <table>
                   <thead>
                     <tr>
-                      <th class = "label">STICKERS</th>
                       <td>c1</td>
                       <td>c2</td>
                       <td>c3</td>
@@ -98,40 +98,40 @@ navigates to core functions  -->
                     </tr>
                 </table>
               </div> <!-- end of sticker drawer -->
+
               <div id = "conversationEntries">
                 <table id = "convEntries">
-                  <tbody>
+                  <tbody> <!-- 65 char limit -->
                     <tr><td>entry</td><td>2m</td></tr>
                     <tr><td>blah blah blah</td><td>5m</td></tr>
                     <tr><td>opinions</td><td>5m</td></tr>
-                    <tr><td>six consecutive poop emojis and a winking face</td><td>20m</td></tr>
+                    <tr><td>six consecutive poop emojis and a winking face symbolize valentine's</td><td>20m</td></tr>
                     <tr><td>indecipherable profanity</td><td>1h</td></tr>
                 </table>
               </div>
 
             </div> <!-- end div conversate -->
 
-            <div id = "voteDiv">
-              <div>OPTION 1</div>
-              <div>OPTION 2</div>
-              <div>OPTION 3</div>
-              <div>OPTION 4</div>
-              
+            <div id = "voteDiv"><h3>
+              <div>WILDLIFE</div>
+              <div>TRANSPORT</div>
+              <div>POLLUTION</div>
+              <div>DIVESTMENT</div>  
+            </h3>
             </div>
 
-              <div id = "talkSwitcher" class = "row">
-                <div id = "switchConv" class = "four columns">
-                  < conv
-                </div>
-                <div id = "switchVote" class = "eight columns">
-                  VOTE TO PICK DATA >
-                </div>
-              </div>
+<!-- these two buttons handle switch b/w talk and vote -->
+            <div id = "switchConv">
+              < conv
+            </div>
+            <div id = "switchVote">
+              VOTE TO PICK DATA >
+            </div>
+
           </section> <!-- end talk section -->
 
           <section id = "data"> <!-- data change screen  -->
-          <!-- this should just be 3 tables.... -->
-            <table class = "u-full-width">
+            <table>
               <tbody>
                
                 <tr>

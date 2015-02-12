@@ -7,6 +7,15 @@
     // in the near future this will need to be dependent on 
     // parent container's dimensions not the window
     var aspect = window.innerWidth / window.innerHeight
+    var dips = window.devicePixelRatio
+
+    var uiScale = 1//Math.abs(((aspect*aspect) - aspect).toFixed(2))
+    if(dips>2){
+      uiScale=2.2
+    }else if(dips<2){
+      uiScale=0.5
+    } //uiScale is there to make touch interactions that measure pixels
+    //equal across multiple devices
 
     var d = 20
     var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 )
@@ -33,7 +42,7 @@
     var pillarTargets = [{y:2},{y:5},{y:1},{y:3}]
 
     //debug
-    var debugInfo = document.getElementById('debugEtc')
+    var debugInfo = document.querySelector('#debug')
     //-----------------------------------------------
     // END GLOBAL VARIABLE DECLARATION
     //-----------------------------------------------
@@ -44,11 +53,15 @@
     //cameraMove(false,0,true,{x: -10, y: 8})
 
     function setup(){
-      camera.position.set( -20, 13, 20 )
+
+      camera.position.set( -19, 13, 20 )
+      //camera.position.set( -19, 0, 20 )
+      //camera.position.set( 0, 13, 0 )
       camera.rotation.order = 'YXZ'
       camera.rotation.y = - Math.PI / 4
       camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
-      camera.zoom = .8
+      //camera.rotation.x = 20*(Math.PI/180)
+      camera.zoom = .83
       camera.updateProjectionMatrix()
 
       //place the renderer(canvas) within DOM element (div)
@@ -76,7 +89,7 @@
       window.addEventListener( 'mousemove', onMouseMove, false)
       window.addEventListener( 'mouseup', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
-      window.addEventListener( 'deviceorientation', onDeviceOrient, false)
+     window.addEventListener( 'deviceorientation', onDeviceOrient, false)
 
       mouseLocation = { x:0, y:0, z:1 }
       raycaster = new THREE.Raycaster()
@@ -156,9 +169,8 @@
       seseme.add(pillargroup)
       scene.add (seseme)
 
-        if(window.DeviceOrientationEvent){
-          console.log('shit be supported')
-        }
+      debugInfo.textContent = camera.rotation.x*(180/Math.PI)
+
         setTimeout(function(){updateValues()},200) //no idea why, but this only
         // works with a setTimeout that waits (even 10ms is enough) to fire it
 
@@ -166,8 +178,10 @@
 
     function animate(){ //put 3d animations here
         requestAnimationFrame( animate )
+        //camera.rotation.x+=0.001
         render()
         TWEEN.update()
+
 
       } // end animate
 
@@ -254,31 +268,42 @@
     }
 
     function onDeviceOrient(evt){
-      console.log(evt.gamma) 
-      console.log(evt.beta) 
-      console.log(evt.alpha) 
-      debugEtc.textElement = "gamma: " + evt.gamma + " beta: " + evt.beta +
-        " alpha: " + evt.alpha
+      debugInfo.textContent = evt.beta
+      // if(evt.beta > 50){
+      //   camera.rotation.x +=0.0007*(Math.abs(evt.beta-45))
+      //   camera.position.x -=0.01*(Math.abs(45-evt.beta))
+      //   camera.position.z +=0.01*(Math.abs(45-evt.beta))
+      //   camera.position.y -=0.01*(Math.abs(45-evt.beta))
+      // }
+      // if(evt.beta < 40){
+      //   camera.rotation.x -=0.0007*(Math.abs(45-evt.beta))
+      //   camera.position.x +=0.01*(Math.abs(45-evt.beta))
+      //   camera.position.z -=0.01*(Math.abs(45-evt.beta))
+      //   camera.position.y +=0.01*(Math.abs(45-evt.beta))
+      // }
+      
+
     }
 
     function initTouchEvents(){
       var myElement = document.getElementById('containerSESEME')
       touchEvts = new Hammer(myElement)
       touchEvts.on('pan',function(evt){
-        scene.rotation.y-=(evt.velocity)*(Math.PI/90)
+        scene.rotation.y-=(evt.velocity*uiScale)*(Math.PI/90)
       })
       touchEvts.on('panend',function(evt){
        
-        var currentSpeed = {speed: evt.velocity}
+        var currentSpeed = {speed: evt.velocity*uiScale}
         var update = function(){
-          scene.rotation.y-=(currentSpeed.speed * (Math.PI/90))
+          scene.rotation.y-=(currentSpeed.speed * (Math.PI/90)) 
         }
         rotationDeceleration = new TWEEN.Tween(currentSpeed)
-        rotationDeceleration.to({speed: 0},1200)
+        rotationDeceleration.to({speed: 0},1400)
         rotationDeceleration.onUpdate(update)
         rotationDeceleration.easing(TWEEN.Easing.Cubic.Out)
         rotationDeceleration.onComplete(function(){
-           console.log(scene.rotation.y*(180/Math.PI))
+           
+           
            //something here to SET rotation to a 0-380 val
         })
         rotationDeceleration.start()
