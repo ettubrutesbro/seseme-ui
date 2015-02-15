@@ -39,7 +39,7 @@
     var targetPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
-    var pillarTargets = [{y:8},{y:5},{y:1},{y:6}]
+    var pillarTargets = [{y:2},{y:5},{y:1},{y:3}]
 
     //debug
     var debugInfo = document.querySelector('#debug')
@@ -169,7 +169,7 @@
       seseme.add(pillargroup)
       scene.add (seseme)
 
-      //debugInfo.textContent = camera.rotation.x*(180/Math.PI)
+      debugInfo.textContent = camera.rotation.x*(180/Math.PI)
 
         setTimeout(function(){updateValues()},200) //no idea why, but this only
         // works with a setTimeout that waits (even 10ms is enough) to fire it
@@ -268,7 +268,7 @@
     }
 
     function onDeviceOrient(evt){
-      // debugInfo.textContent = evt.beta
+      debugInfo.textContent = evt.beta
       // if(evt.beta > 50){
       //   camera.rotation.x +=0.0007*(Math.abs(evt.beta-45))
       //   camera.position.x -=0.01*(Math.abs(45-evt.beta))
