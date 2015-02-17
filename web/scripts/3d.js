@@ -24,7 +24,7 @@
    
     //dividing loaded model into manipulable groups 
     var seseme = new THREE.Group()
-    var pedestal, orb
+    var pedestal
     var pillargroup = new THREE.Group()
 
     //variables for INTERACT functions
@@ -73,17 +73,28 @@
       container.appendChild( renderer.domElement )
 
       //materials for seseme & orb (eventually need multiples for seseme?)
-      var sesememtl = new THREE.MeshLambertMaterial(0x0000ff)
+      var sesememtl = new THREE.MeshPhongMaterial({color: 0x28292a, shininess: 80, specular: 0x222222})
+      var groundmtl = new THREE.MeshPhongMaterial({color: 0x28292a, shininess: 0, specular: 0x1a1a1a, emissive: 0x000000})
+      
       //var sesememtl = new THREE.MeshNormalMaterial(0x0000ff)
-      var orbmtl = new THREE.MeshPhongMaterial(0xffffff)
+      var orbmtl = new THREE.MeshPhongMaterial(0x000000)
       var outlinemtl = new THREE.MeshBasicMaterial( { color: 0xff0000, linewidth: 4} )
 
+
       //LIGHTING
-      light = new THREE.PointLight(0xffffff, 0.5)
-      light2 = new THREE.AmbientLight(0x1a1a1a, 0)
-      light.position.set(0,17,10)
+      lighthelpergeo = new THREE.CubeGeometry(3,3,3)
+      helper1 = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
+      helper2 = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
+      light = new THREE.PointLight(0xffffff, 0.45)
+      light.add(helper1)
+      light2 = new THREE.PointLight(0xffffff, 0.55)
+      light2.add(helper2)
+      //light2 = new THREE.AmbientLight(0x1a1a1a, 0)
+      light.position.set(6,8,25)
+      light2.position.set(15,20,-25)
       scene.add(light)
       scene.add(light2)
+      //scene.add(light2)
 
       // INTERACT setup -- event listener, initializing interact vars
       window.addEventListener( 'mousemove', onMouseMove, false)
@@ -161,9 +172,18 @@
       })
 
       //the orb is generated here (adjust segments for smooth)
-      orb = new THREE.Mesh( new THREE.SphereGeometry( 2.75, 7, 5 ), orbmtl )
+      var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.75, 7, 5 ), orbmtl )
+      orb.name = "orb"
+      orbmtl.shading = THREE.FlatShading
       orb.position.set(0,-3,0) //it's down but visible
-      seseme.add (orb)
+      seseme.add (orb)  
+
+      //groundplane
+      var ground = new THREE.Mesh(new THREE.PlaneGeometry( 2000, 2000, 2000 ), 
+        groundmtl)
+      ground.position.set(0,-18,0)
+      ground.rotation.x = -90*(Math.PI/180)
+      scene.add(ground)
 
       console.log(pillargroup)  
       seseme.add(pillargroup)
@@ -171,7 +191,7 @@
 
       debugInfo.textContent = camera.rotation.x*(180/Math.PI)
 
-        setTimeout(function(){updateValues()},200) //no idea why, but this only
+        setTimeout(function(){updateValues()},500) //no idea why, but this only
         // works with a setTimeout that waits (even 10ms is enough) to fire it
 
     } //end setup
@@ -179,6 +199,7 @@
     function animate(){ //put 3d animations here
         requestAnimationFrame( animate )
         //camera.rotation.x+=0.001
+      
         render()
         TWEEN.update()
 

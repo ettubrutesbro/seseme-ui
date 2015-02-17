@@ -153,6 +153,10 @@ section#talk {
 		thead, tr, #stickerDrawer table, #stickerLabel table{
 			width: 100%;
 		}
+		#inputs {
+			height: 1.85rem;
+		}
+
 		#stickerLabel td{
 			display: none;
 			text-align: center;
