@@ -18,7 +18,7 @@
     //equal across multiple devices
 
     var d = 20
-    var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 )
+    var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 10, 100 )
     var loader = new THREE.JSONLoader()
     var renderer
    
@@ -39,10 +39,13 @@
     var targetPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
-    var pillarTargets = [{y:2},{y:5},{y:1},{y:3}]
+    var pillarTargets = [{y:2},{y:13},{y:1},{y:3}]
 
     //debug
+    var debugState = 0
     var debugInfo = document.querySelector('#debug')
+    var debugInput = document.querySelector('#debugInput')
+    var debugButton = document.querySelector('#debugButton')
     //-----------------------------------------------
     // END GLOBAL VARIABLE DECLARATION
     //-----------------------------------------------
@@ -50,6 +53,7 @@
     setup()
     animate() //render() is nested in here
     initTouchEvents()
+    lightDebug()
     //cameraMove(false,0,true,{x: -10, y: 8})
 
     function setup(){
@@ -69,38 +73,60 @@
       document.body.appendChild(container)
       container.id = "containerSESEME"
       renderer = new THREE.WebGLRenderer({antialias: true})
+      renderer.shadowMapEnabled = true
+      renderer.shadowMapType = THREE.PCFSoftShadowMap
       renderer.setSize( window.innerWidth, window.innerHeight )
       container.appendChild( renderer.domElement )
 
       //materials for seseme & orb (eventually need multiples for seseme?)
-      var sesememtl = new THREE.MeshPhongMaterial({color: 0x28292a, shininess: 80, specular: 0x222222})
-      var groundmtl = new THREE.MeshPhongMaterial({color: 0x28292a, shininess: 0, specular: 0x1a1a1a, emissive: 0x000000})
+      var sesememtl = new THREE.MeshPhongMaterial({color: 0x1b1d1e, shininess: 16, specular: 0x413632})
+      sesememtl.shading = THREE.FlatShading
+   
+      var groundmtl = new THREE.MeshBasicMaterial({color: 0x878787})
       
-      //var sesememtl = new THREE.MeshNormalMaterial(0x0000ff)
+      
       var orbmtl = new THREE.MeshPhongMaterial(0x000000)
       var outlinemtl = new THREE.MeshBasicMaterial( { color: 0xff0000, linewidth: 4} )
 
+      var hilightmtl = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide })
+
 
       //LIGHTING
-      lighthelpergeo = new THREE.CubeGeometry(3,3,3)
-      helper1 = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
-      helper2 = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
-      light = new THREE.PointLight(0xffffff, 0.45)
-      light.add(helper1)
-      light2 = new THREE.PointLight(0xffffff, 0.55)
-      light2.add(helper2)
-      //light2 = new THREE.AmbientLight(0x1a1a1a, 0)
-      light.position.set(6,8,25)
-      light2.position.set(15,20,-25)
-      scene.add(light)
+      lighthelpergeo = new THREE.BoxGeometry(3,3,3)
+      targethelpergeo = new THREE.BoxGeometry(1,1,1)
+      helper = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
+      helper.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
+
+      light = new THREE.SpotLight(0xffffff, 1.6)
+      light.add(helper)
+      light.position.set(24,80,20)
+      light.castShadow = true
+      light.shadowDarkness = 0.3
+      // light.shadowCameraVisible = true
+
+      light.target.position.set(2,1,0)
+
+      light.shadowMapWidth = 768; // default is 512
+      light.shadowMapHeight = 768; // default is 512
+
+
+      seseme.add(light)
+     
+
+      light2 = new THREE.PointLight(0xffffff, .4)
+      //light2.add(helper2)
+      // //light2 = new THREE.AmbientLight(0x1a1a1a, 0)
+      
+      light2.position.set(camera.position.x,camera.position.y-6,camera.position.z)
+      
       scene.add(light2)
-      //scene.add(light2)
 
       // INTERACT setup -- event listener, initializing interact vars
       window.addEventListener( 'mousemove', onMouseMove, false)
       window.addEventListener( 'mouseup', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
      window.addEventListener( 'deviceorientation', onDeviceOrient, false)
+     //debugButton.addEventListener('click', lightDebug, false)
 
       mouseLocation = { x:0, y:0, z:1 }
       raycaster = new THREE.Raycaster()
@@ -111,6 +137,8 @@
         pedestal = new THREE.Mesh(geometry, sesememtl)
         pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
         pedestal.scale.set(0.5,0.5,0.5)
+        pedestal.castShadow = true
+        pedestal.receiveShadow = true
         pedestal.name = "pedestal"
         pedestal.overdraw = true
         seseme.add(pedestal)
@@ -119,9 +147,9 @@
 
       loader.load("assets/pillarA.js", function(geometry,evt){
 
-         var outTgt = geometry.vertices
-         // var outlineGeometry = new THREE.Geometry()
-         // outlineGeometry.vertices.push(outTgt[2], outTgt[3], outTgt[0], outTgt[8])
+        //  var outTgt = geometry.vertices
+        //  var outlineGeometry = new THREE.Geometry()
+        //  outlineGeometry.vertices.push(outTgt[2], outTgt[3], outTgt[0], outTgt[8])
         // var outlineGeometry2 = new THREE.Geometry()
         // outlineGeometry2.vertices.push(outTgt[2], outTgt[1], outTgt[0])
         // var outlineGeometry3 = new THREE.Geometry()
@@ -133,12 +161,30 @@
         // var outlineGeometry6 = new THREE.Geometry()
         // outlineGeometry6.vertices.push(outTgt[9], outTgt[6])
 
+        // var lineobject = new THREE.Mesh(outlineGeometry, outlinemtl)
+        // lineobject.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
+        // lineobject.scale.set(0.5,0.5,0.5)
+        // lineobject.overdraw = true
+
+      
+        
+
        var pillar1 = new THREE.Mesh(geometry, sesememtl)
         pillar1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
         pillar1.scale.set(0.5,0.5,0.5)
         pillar1.overdraw = true
         pillar1.name = "pillar1"
+        pillar1.receiveShadow = true
+        pillar1.castShadow = true
         pillargroup.add(pillar1)
+
+        var pillar1b = new THREE.Mesh(geometry, hilightmtl)
+        pillar1b.scale.set(3,3,3)
+        pillar1b.overdraw = true
+        pillar1b.applyMatrix( new THREE.Matrix4().makeTranslation( -0.5, 0.5, -1 ) )
+        pillar1.add(pillar1b)
+
+     
 
       var pillar4 = new THREE.Mesh(geometry, sesememtl)
         pillar4.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
@@ -146,6 +192,8 @@
         pillar4.rotation.y = -90 * Math.PI / 180
         pillar4.overdraw = true
         pillar4.name = "pillar4"
+        pillar4.receiveShadow = true
+        pillar4.castShadow = true
         setTimeout(function(){
           pillargroup.add(pillar4)
         },10) //this is awful and should not be
@@ -159,6 +207,8 @@
         pillar2.scale.set(0.5,0.5,0.5)
         pillar2.overdraw = true
         pillar2.name = "pillar2"
+        pillar2.receiveShadow = true
+        pillar2.castShadow = true
         pillargroup.add(pillar2)
 
       var pillar3 = new THREE.Mesh(geometry, sesememtl)
@@ -166,6 +216,8 @@
         pillar3.scale.set(0.5,0.5,0.5)
         pillar3.rotation.y = 90 * Math.PI / 180
         pillar3.overdraw = true
+        pillar3.receiveShadow = true
+        pillar3.castShadow = true
         pillar3.name = "pillar3"
         pillargroup.add(pillar3)
 
@@ -176,20 +228,23 @@
       orb.name = "orb"
       orbmtl.shading = THREE.FlatShading
       orb.position.set(0,-3,0) //it's down but visible
-      seseme.add (orb)  
+      //seseme.add (orb)  
 
       //groundplane
-      var ground = new THREE.Mesh(new THREE.PlaneGeometry( 2000, 2000, 2000 ), 
+      var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 175, 175, 175 ), 
         groundmtl)
-      ground.position.set(0,-18,0)
+      ground.position.set(0,-17.7,0)
       ground.rotation.x = -90*(Math.PI/180)
+      ground.receiveShadow = true
       scene.add(ground)
 
       console.log(pillargroup)  
       seseme.add(pillargroup)
+
+      seseme.receiveShadow = true
+
       scene.add (seseme)
 
-      debugInfo.textContent = camera.rotation.x*(180/Math.PI)
 
         setTimeout(function(){updateValues()},500) //no idea why, but this only
         // works with a setTimeout that waits (even 10ms is enough) to fire it
@@ -221,48 +276,54 @@
      function onMouseDown(evt){
       raycaster.setFromCamera(mouseLocation, camera)
       var intersects = raycaster.intersectObjects(pillargroup.children)
-      mouseTarget = intersects[0].object.name
+      if(intersects != ''){
+        console.log(intersects)
+        mouseTarget = intersects[0].object.name
+      }
      }
      function onMouseUp(evt){
 
       //get real rotation
       raycaster.setFromCamera(mouseLocation, camera)
       var intersects = raycaster.intersectObjects(pillargroup.children)
-      console.log(intersects[0].object.name)
-      if(intersects[0].object.name == mouseTarget){ //did you let go on the same pillar you started on?
-        var index = (intersects[0].object.name).replace('pillar','') 
-        var oldRotation, newRotation, realRotation 
-        //old / new to determine direction, then realRot to make relevant to (>360? rotations)
-      currentPosition.ry = scene.rotation.y
+      
+      if(intersects!=''){
+        console.log(intersects[0].object.name)
+        if(intersects[0].object.name == mouseTarget){ //did you let go on the same pillar you started on?
+          var index = (intersects[0].object.name).replace('pillar','') 
+          var oldRotation, newRotation, realRotation 
+          //old / new to determine direction, then realRot to make relevant to (>360? rotations)
+        currentPosition.ry = seseme.rotation.y
 
-      targetPosition.ry = rotationTargetArray[index-1]*(Math.PI / 180)
+        targetPosition.ry = rotationTargetArray[index-1]*(Math.PI / 180)
 
-      console.log('began at ' + scene.rotation.y*(180/Math.PI))
-      oldRotation = scene.rotation.y*(180/Math.PI)
+        console.log('began at ' + seseme.rotation.y*(180/Math.PI))
+        oldRotation = seseme.rotation.y*(180/Math.PI)
 
-      var rotationTween = new TWEEN.Tween(currentPosition)
+        var rotationTween = new TWEEN.Tween(currentPosition)
 
-      var update = function(){
-        scene.rotation.y = currentPosition.ry
-      }
+        var update = function(){
+          seseme.rotation.y = currentPosition.ry
+        }
 
-      rotationTween.to(targetPosition,750) 
-      rotationTween.easing(TWEEN.Easing.Quadratic.Out)
-      rotationTween.onUpdate(update)
-      rotationTween.onComplete(function(){
-        console.log('finished at ' + scene.rotation.y*(180/Math.PI))
-        newRotation = scene.rotation.y*(180/Math.PI)
-         if(oldRotation>newRotation){ //1>2, 2>4, etc
-            console.log('you rotated backwards') 
-          } else {
-            console.log('you rotated forwards')//reconf. array to go pos
-          }
-      })
-      rotationTween.start()
+        rotationTween.to(targetPosition,750) 
+        rotationTween.easing(TWEEN.Easing.Quadratic.Out)
+        rotationTween.onUpdate(update)
+        rotationTween.onComplete(function(){
+          console.log('finished at ' + seseme.rotation.y*(180/Math.PI))
+          newRotation = seseme.rotation.y*(180/Math.PI)
+           if(oldRotation>newRotation){ //1>2, 2>4, etc
+              console.log('you rotated backwards') 
+            } else {
+              console.log('you rotated forwards')//reconf. array to go pos
+            }
+        })
+        rotationTween.start()
 
-      } else { //didn't mousedown on a pillar to begin with
-        console.log('no')
-      }
+        } else { //didn't mousedown on a pillar to begin with
+          console.log('no')
+        }
+      } // end if !undefined
 
      }
 
@@ -289,7 +350,7 @@
     }
 
     function onDeviceOrient(evt){
-      debugInfo.textContent = evt.beta
+      //debugInfo.textContent = evt.beta
       // if(evt.beta > 50){
       //   camera.rotation.x +=0.0007*(Math.abs(evt.beta-45))
       //   camera.position.x -=0.01*(Math.abs(45-evt.beta))
@@ -310,13 +371,13 @@
       var myElement = document.getElementById('containerSESEME')
       touchEvts = new Hammer(myElement)
       touchEvts.on('pan',function(evt){
-        scene.rotation.y-=(evt.velocity*uiScale)*(Math.PI/90)
+        seseme.rotation.y-=(evt.velocity*uiScale)*(Math.PI/90)
       })
       touchEvts.on('panend',function(evt){
        
         var currentSpeed = {speed: evt.velocity*uiScale}
         var update = function(){
-          scene.rotation.y-=(currentSpeed.speed * (Math.PI/90)) 
+          seseme.rotation.y-=(currentSpeed.speed * (Math.PI/90)) 
         }
         rotationDeceleration = new TWEEN.Tween(currentSpeed)
         rotationDeceleration.to({speed: 0},1400)
@@ -361,4 +422,27 @@
         panTween.start()
 
       }
+    }
+
+    function lightDebug(){
+      if(debugState == 1){
+        var newInfo = debugInput.textContent
+        newInfo = newInfo.split(" ")
+        console.log(newInfo)
+
+        light.position.x = newInfo[0]
+        light.position.y = newInfo[1]
+        light.position.z = newInfo[2]
+
+        light.target.position.set(newInfo[3],newInfo[4],newInfo[5])
+        //light.shadowCameraVisible = true
+
+
+        debugInfo.textContent = "x:" + light.position.x +
+        " y:" + light.position.y + " z:" + light.position.z + 
+        " px: " + light.target.position.x + " py:" + light.target.position.y +
+        " pz:" + light.target.position.z
+
+      }
+ 
     }

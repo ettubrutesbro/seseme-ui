@@ -205,3 +205,11 @@ section#talk {
 	}
 
 
+
+
+/* DEBUG STUFF */
+
+#debugButton {
+	border: 1px green solid;
+	cursor: pointer;
+}
