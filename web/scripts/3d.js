@@ -97,7 +97,7 @@
       helper = new THREE.Mesh(lighthelpergeo, new THREE.MeshNormalMaterial())
       helper.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
 
-      light = new THREE.SpotLight(0xffffff, 1.6)
+      light = new THREE.SpotLight(0xffffff, 1.8)
       light.add(helper)
       light.position.set(24,80,20)
       light.castShadow = true
@@ -113,11 +113,11 @@
       seseme.add(light)
      
 
-      light2 = new THREE.PointLight(0xffffff, .4)
+      light2 = new THREE.PointLight(0xffffff, .75)
       //light2.add(helper2)
       // //light2 = new THREE.AmbientLight(0x1a1a1a, 0)
       
-      light2.position.set(camera.position.x,camera.position.y-6,camera.position.z)
+      light2.position.set(camera.position.x,camera.position.y-8,camera.position.z)
       
       scene.add(light2)
 
