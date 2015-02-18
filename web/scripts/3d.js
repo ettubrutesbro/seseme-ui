@@ -85,7 +85,7 @@
       var groundmtl = new THREE.MeshBasicMaterial({color: 0x878787})
       
       
-      var orbmtl = new THREE.MeshPhongMaterial(0x000000)
+      var orbmtl = new THREE.MeshPhongMaterial({color: 0x000000, shininess: 10, specular: 0x878787})
       var outlinemtl = new THREE.MeshBasicMaterial( { color: 0xff0000, linewidth: 4} )
 
       var hilightmtl = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide })
@@ -109,11 +109,14 @@
       light.shadowMapWidth = 768; // default is 512
       light.shadowMapHeight = 768; // default is 512
 
-
       seseme.add(light)
      
 
-      light2 = new THREE.PointLight(0xffffff, .75)
+      light2 = new THREE.SpotLight(0xffffff, .6)
+      // light2.target.position.set(2,1,0)
+      // light2.castShadow = true
+      // light2.shadowDarkness = 0.5
+
       //light2.add(helper2)
       // //light2 = new THREE.AmbientLight(0x1a1a1a, 0)
       
@@ -138,7 +141,7 @@
         pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
         pedestal.scale.set(0.5,0.5,0.5)
         pedestal.castShadow = true
-        pedestal.receiveShadow = true
+        // pedestal.receiveShadow = true
         pedestal.name = "pedestal"
         pedestal.overdraw = true
         seseme.add(pedestal)
@@ -174,15 +177,15 @@
         pillar1.scale.set(0.5,0.5,0.5)
         pillar1.overdraw = true
         pillar1.name = "pillar1"
-        pillar1.receiveShadow = true
+        // pillar1.receiveShadow = true
         pillar1.castShadow = true
         pillargroup.add(pillar1)
 
-        var pillar1b = new THREE.Mesh(geometry, hilightmtl)
-        pillar1b.scale.set(3,3,3)
-        pillar1b.overdraw = true
-        pillar1b.applyMatrix( new THREE.Matrix4().makeTranslation( -0.5, 0.5, -1 ) )
-        pillar1.add(pillar1b)
+        // var pillar1b = new THREE.Mesh(geometry, hilightmtl)
+        // pillar1b.scale.set(3,3,3)
+        // pillar1b.overdraw = true
+        // pillar1b.applyMatrix( new THREE.Matrix4().makeTranslation( -0.5, 0.5, -1 ) )
+        // pillar1.add(pillar1b)
 
      
 
@@ -192,7 +195,7 @@
         pillar4.rotation.y = -90 * Math.PI / 180
         pillar4.overdraw = true
         pillar4.name = "pillar4"
-        pillar4.receiveShadow = true
+        // pillar4.receiveShadow = true
         pillar4.castShadow = true
         setTimeout(function(){
           pillargroup.add(pillar4)
@@ -207,7 +210,7 @@
         pillar2.scale.set(0.5,0.5,0.5)
         pillar2.overdraw = true
         pillar2.name = "pillar2"
-        pillar2.receiveShadow = true
+        // pillar2.receiveShadow = true
         pillar2.castShadow = true
         pillargroup.add(pillar2)
 
@@ -216,7 +219,7 @@
         pillar3.scale.set(0.5,0.5,0.5)
         pillar3.rotation.y = 90 * Math.PI / 180
         pillar3.overdraw = true
-        pillar3.receiveShadow = true
+        // pillar3.receiveShadow = true
         pillar3.castShadow = true
         pillar3.name = "pillar3"
         pillargroup.add(pillar3)
@@ -224,11 +227,10 @@
       })
 
       //the orb is generated here (adjust segments for smooth)
-      var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.75, 7, 5 ), orbmtl )
+      var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
       orb.name = "orb"
-      orbmtl.shading = THREE.FlatShading
-      orb.position.set(0,-3,0) //it's down but visible
-      //seseme.add (orb)  
+      orb.position.set(0,-5,0) //it's down but visible
+      seseme.add(orb)  
 
       //groundplane
       var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 175, 175, 175 ), 
@@ -241,7 +243,6 @@
       console.log(pillargroup)  
       seseme.add(pillargroup)
 
-      seseme.receiveShadow = true
 
       scene.add (seseme)
 

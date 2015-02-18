@@ -57,6 +57,8 @@ h3,h4,h5,h6 {
 	width: 325px;
 	left: 0; right: 0;
 	margin: 0 auto;
+
+	display: none;
 }
 	#topInfo span{
 		font-weight: 300;
@@ -76,7 +78,9 @@ h3,h4,h5,h6 {
 	margin: 0 auto;
 	left: 0;
 	right: 0;
+
 	border: 1px red solid;
+	display: none;
 }
 	.navbutt {
 		float: left;
