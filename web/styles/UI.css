@@ -90,6 +90,7 @@ h3,h4,h5,h6 {
 	/*display: none;*/
 }
 	.navbutt {
+		cursor: pointer;
 		float: left;
 		width: 22%;
 		height: 0px;
