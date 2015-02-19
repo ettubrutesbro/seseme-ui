@@ -317,8 +317,11 @@
            console.log(seseme.rotation.y * (180/Math.PI))
 
            if(finalRotate/360 >= 1){
-            var realRotation = finalRotate/(finalRotate/360) 
-            console.log('1+ rotation')
+            var numRevs = Math.floor(finalRotate/360)
+            var actRotation = finalRotate-(numRevs*360)
+            console.log('# of revs: ' + numRevs + ' actual rotation: ' +
+              actRotation)
+            seseme.rotation.y = actRotation / (180/Math.PI)
            }
 
            //something here to SET rotation to a 0-380 val
