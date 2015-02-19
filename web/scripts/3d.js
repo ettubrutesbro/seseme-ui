@@ -39,7 +39,7 @@
     var targetPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
-    var pillarTargets = [{y:2},{y:13},{y:1},{y:3}]
+    var pillarTargets = [{y:2},{y:8},{y:4},{y:12}]
 
     //debug
     var debugState = 0
@@ -101,7 +101,7 @@
       light.add(helper)
       light.position.set(24,80,20)
       light.castShadow = true
-      light.shadowDarkness = 0.3
+      light.shadowDarkness = 0.2
       // light.shadowCameraVisible = true
 
       light.target.position.set(2,1,0)
@@ -135,6 +135,7 @@
       raycaster = new THREE.Raycaster()
 
       // EXTERNAL LOADING - getting .js 3d models into the canvas
+      var pillar1, pillar2, pillar3, pillar4
       loader.load("assets/pedestal.js", function(geometry,evt){
 
         pedestal = new THREE.Mesh(geometry, sesememtl)
@@ -147,51 +148,18 @@
         seseme.add(pedestal)
 
       }) 
-
       loader.load("assets/pillarA.js", function(geometry,evt){
 
-        //  var outTgt = geometry.vertices
-        //  var outlineGeometry = new THREE.Geometry()
-        //  outlineGeometry.vertices.push(outTgt[2], outTgt[3], outTgt[0], outTgt[8])
-        // var outlineGeometry2 = new THREE.Geometry()
-        // outlineGeometry2.vertices.push(outTgt[2], outTgt[1], outTgt[0])
-        // var outlineGeometry3 = new THREE.Geometry()
-        // outlineGeometry3.vertices.push(outTgt[3], outTgt[5], outTgt[4])
-        // var outlineGeometry4 = new THREE.Geometry()
-        // outlineGeometry4.vertices.push(outTgt[1], outTgt[6], outTgt[7])
-        // var outlineGeometry5 = new THREE.Geometry()
-        // outlineGeometry5.vertices.push(outTgt[2], outTgt[9], outTgt[5]) 
-        // var outlineGeometry6 = new THREE.Geometry()
-        // outlineGeometry6.vertices.push(outTgt[9], outTgt[6])
-
-        // var lineobject = new THREE.Mesh(outlineGeometry, outlinemtl)
-        // lineobject.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
-        // lineobject.scale.set(0.5,0.5,0.5)
-        // lineobject.overdraw = true
-
-      
-        
-
-       var pillar1 = new THREE.Mesh(geometry, sesememtl)
+        pillar1 = new THREE.Mesh(geometry, sesememtl)
         pillar1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
-        pillar1.scale.set(0.5,0.5,0.5)
         pillar1.overdraw = true
         pillar1.name = "pillar1"
         // pillar1.receiveShadow = true
         pillar1.castShadow = true
         pillargroup.add(pillar1)
 
-        // var pillar1b = new THREE.Mesh(geometry, hilightmtl)
-        // pillar1b.scale.set(3,3,3)
-        // pillar1b.overdraw = true
-        // pillar1b.applyMatrix( new THREE.Matrix4().makeTranslation( -0.5, 0.5, -1 ) )
-        // pillar1.add(pillar1b)
-
-     
-
-      var pillar4 = new THREE.Mesh(geometry, sesememtl)
+        pillar4 = new THREE.Mesh(geometry, sesememtl)
         pillar4.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
-        pillar4.scale.set(0.5,0.5,0.5)
         pillar4.rotation.y = -90 * Math.PI / 180
         pillar4.overdraw = true
         pillar4.name = "pillar4"
@@ -200,23 +168,29 @@
         setTimeout(function(){
           pillargroup.add(pillar4)
         },10) //this is awful and should not be
-        
+
+        //pillar1.add(pillar1b)
+      })
+
+      loader.load("assets/pillarA_outline.js", function(geometry){
+        var pillar1o = new THREE.Mesh(geometry, hilightmtl)
+        var pillar4o = new THREE.Mesh(geometry, hilightmtl)
+        pillar1.add(pillar1o)
+        pillar4.add(pillar4o)
       })
 
 
       loader.load("assets/pillarB.js", function(geometry,evt){
-      var pillar2 = new THREE.Mesh(geometry, sesememtl)
+        pillar2 = new THREE.Mesh(geometry, sesememtl)
         pillar2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
-        pillar2.scale.set(0.5,0.5,0.5)
         pillar2.overdraw = true
         pillar2.name = "pillar2"
         // pillar2.receiveShadow = true
         pillar2.castShadow = true
         pillargroup.add(pillar2)
 
-      var pillar3 = new THREE.Mesh(geometry, sesememtl)
+        pillar3 = new THREE.Mesh(geometry, sesememtl)
         pillar3.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
-        pillar3.scale.set(0.5,0.5,0.5)
         pillar3.rotation.y = 90 * Math.PI / 180
         pillar3.overdraw = true
         // pillar3.receiveShadow = true

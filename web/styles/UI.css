@@ -5,12 +5,19 @@ html {
 	overflow: hidden;
 	background-color: black;
 	font-size: 24px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
 }
+	*, *:before, *:after {
+	  box-sizing: inherit;
+	  -webkit-box-sizing: inherit;
+	  -moz-box-sizing: inherit;
+	}
 .container {
 	width: 100%;
 	max-width: 460px;
 	margin: 0 auto;
- 	box-sizing: border-box;
 }
 
 #containerSESEME {
@@ -58,7 +65,7 @@ h3,h4,h5,h6 {
 	left: 0; right: 0;
 	margin: 0 auto;
 
-	display: none;
+	/*display: none;*/
 }
 	#topInfo span{
 		font-weight: 300;
@@ -79,18 +86,28 @@ h3,h4,h5,h6 {
 	left: 0;
 	right: 0;
 
-	border: 1px red solid;
-	display: none;
+	/*border: 1px red solid;*/
+	/*display: none;*/
 }
 	.navbutt {
 		float: left;
-		width: 25%;
-		height: 80px;
+		width: 22%;
+		height: 0px;
+		padding-bottom: 20%;
+		margin-left: 4%;
+		border-radius: 50%;
+		border: 3px white solid;
+		background-size: cover;
+
 	}
-		#viewnav {background-color: yellow;}
-		#talknav {background-color: green;}
-		#datanav {background-color: blue;}
-		#helpnav {background-color: violet;}
+		.navbutt:first-child{
+			margin-left: 0%
+		}
+		#viewnav {background-image: url(../assets/v_u.svg);}
+		#talknav {background-image: url(../assets/d_u.svg);}
+		
+		#datanav {background-image: url(../assets/t_u.svg);}
+		#helpnav {background-image: url(../assets/h_u.svg);}
 
 
 /*	BODY SECTIONS	*/
