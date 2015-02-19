@@ -46,6 +46,11 @@
     // var debugInfo = document.querySelector('#debug')
     // var debugInput = document.querySelector('#debugInput')
     // var debugButton = document.querySelector('#debugButton')
+
+    //experimental variables
+    var revolutionCount = 0
+
+
     //-----------------------------------------------
     // END GLOBAL VARIABLE DECLARATION
     //-----------------------------------------------
@@ -102,7 +107,7 @@
 
       // INTERACT setup -- event listener, initializing interact vars
       window.addEventListener( 'mousemove', onMouseMove, false)
-      window.addEventListener( 'mouseup', onMouseUp, false)
+      //window.addEventListener( 'mouseup', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
       window.addEventListener( 'deviceorientation', onDeviceOrient, false)
 
@@ -312,19 +317,30 @@
         rotationDeceleration.onUpdate(update)
         rotationDeceleration.easing(TWEEN.Easing.Cubic.Out)
         rotationDeceleration.onComplete(function(){
-           
            var finalRotate = seseme.rotation.y * (180/Math.PI)
-           console.log(seseme.rotation.y * (180/Math.PI))
 
-           if(finalRotate/360 >= 1){
-            var numRevs = Math.floor(finalRotate/360)
-            var actRotation = finalRotate-(numRevs*360)
-            console.log('# of revs: ' + numRevs + ' actual rotation: ' +
-              actRotation)
+           if(finalRotate < 0){
+            var actRotation = 360 + finalRotate
             seseme.rotation.y = actRotation / (180/Math.PI)
+            revolutionCount +=1
+           }
+           
+           if(Math.abs(finalRotate/360) >= 1){
+            console.log('abs value > 1')
+            var numRevs = Math.abs(Math.floor(finalRotate/360))
+            var actRotation = finalRotate-(numRevs*360)
+            if(finalRotate < 0){
+              actRotation = finalRotate+(numRevs*360)
+            }
+            seseme.rotation.y = actRotation / (180/Math.PI)
+            revolutionCount +=1
            }
 
-           //something here to SET rotation to a 0-380 val
+           console.log(seseme.rotation.y * (180/Math.PI))
+           if(revolutionCount>0){
+            console.log(revolutionCount)
+            //update value server-side with revolutionCount for this user
+           }
         })
         rotationDeceleration.start()
       })
