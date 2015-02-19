@@ -32,7 +32,7 @@
     var mouseLocation = new THREE.Vector2()
     var mouseTarget
     
-    var rotationTargetArray = [0, -90, -180, 90]
+    var rotationTargetArray = [360, 270, 180, 90]
 
     //variables for ANIMATION
     var currentPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
@@ -40,6 +40,8 @@
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
     var pillarTargets = [{y:2},{y:8},{y:4},{y:12}]
+
+    var selectedPillar = 0
 
     //debug
     // var debugState = 0
@@ -85,7 +87,11 @@
       var groundmtl = new THREE.MeshBasicMaterial({color: 0x878787})
       var orbmtl = new THREE.MeshPhongMaterial({color: 0x000000, 
         shininess: 10, specular: 0x878787})
-      var hilightmtl = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide })
+
+
+        
+      
+
 
       //LIGHTING
       backlight = new THREE.SpotLight(0xffffff, 1.8)
@@ -107,7 +113,7 @@
 
       // INTERACT setup -- event listener, initializing interact vars
       window.addEventListener( 'mousemove', onMouseMove, false)
-      //window.addEventListener( 'mouseup', onMouseUp, false)
+      window.addEventListener( 'mouseup', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
       window.addEventListener( 'deviceorientation', onDeviceOrient, false)
 
@@ -140,8 +146,11 @@
         },10) //this is awful and should not be
       })
       loader.load("assets/pillarA_outline.js", function(geometry){
-        var pillar1o = new THREE.Mesh(geometry, hilightmtl)
-        var pillar4o = new THREE.Mesh(geometry, hilightmtl)
+        var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        var mtl2 = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+
+        var pillar1o = new THREE.Mesh(geometry, mtl)
+        var pillar4o = new THREE.Mesh(geometry, mtl2)
         pillar1.add(pillar1o)
         pillar4.add(pillar4o)
       })
@@ -161,13 +170,19 @@
         pillargroup.add(pillar3)
       })
       loader.load("assets/pillarB_outline.js", function(geometry,evt){
-        var pillar2o = new THREE.Mesh(geometry, hilightmtl)
+        var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        var mtl2 = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+
+        var pillar2o = new THREE.Mesh(geometry, mtl)
+        var pillar3o = new THREE.Mesh(geometry, mtl2)
         pillar2.add(pillar2o)
-        var pillar3o = new THREE.Mesh(geometry, hilightmtl)
         pillar3.add(pillar3o)
       })
 
+
       seseme.add(pillargroup)
+
+
 
       //the orb is generated here (adjust segments for smooth)
       var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
@@ -186,7 +201,8 @@
 
       scene.add(seseme)
 
-      setTimeout(function(){updateValues()},800) //no idea why, but this only
+      setTimeout(function(){updateValues()
+      },800) //no idea why, but this only
       // works with a setTimeout that waits (even 10ms is enough) to fire it
     } //end setup
 
@@ -216,7 +232,7 @@
      }
      function onMouseUp(evt){
 
-      //get real rotation
+     
       raycaster.setFromCamera(mouseLocation, camera)
       var intersects = raycaster.intersectObjects(pillargroup.children)
       
@@ -224,13 +240,11 @@
         console.log(intersects[0].object.name)
         if(intersects[0].object.name == mouseTarget){ //did you let go on the same pillar you started on?
           var index = (intersects[0].object.name).replace('pillar','') 
-          var oldRotation, newRotation, realRotation 
-          //old / new to determine direction, then realRot to make relevant to (>360? rotations)
-        currentPosition.ry = seseme.rotation.y
+          console.log('begin at ' + seseme.rotation.y*(180/Math.PI))
+          currentPosition.ry = seseme.rotation.y
+          targetPosition.ry = rotationTargetArray[index-1]*(Math.PI / 180)
 
-        targetPosition.ry = rotationTargetArray[index-1]*(Math.PI / 180)
-
-        console.log('began at ' + seseme.rotation.y*(180/Math.PI))
+        
         oldRotation = seseme.rotation.y*(180/Math.PI)
 
         var rotationTween = new TWEEN.Tween(currentPosition)
@@ -252,6 +266,7 @@
             }
         })
         rotationTween.start()
+        
 
         } else { //didn't mousedown on a pillar to begin with
           console.log('no')
@@ -263,20 +278,16 @@
 
     function updateValues(){ //valarray[index] is updated,
       // causing pillar[index] to move by change over duration
-        console.log('updating values...')
         pillargroup.children.forEach(function(e,i){
         var index = (e.name).replace('pillar','')
-        console.log(index)
         //need to convert the above into a number
         var pillarUpd = function(){
           e.position.y = pillarHeights[index-1].y
         }
-
         var pillarTween = new TWEEN.Tween(pillarHeights[index-1])
         pillarTween.to(pillarTargets[index-1],1200)
         pillarTween.onUpdate(pillarUpd)
         pillarTween.easing(TWEEN.Easing.Quadratic.InOut)
-
         pillarTween.start()
       })
 
@@ -284,19 +295,6 @@
 
     function onDeviceOrient(evt){
       //debugInfo.textContent = evt.beta
-      // if(evt.beta > 50){
-      //   camera.rotation.x +=0.0007*(Math.abs(evt.beta-45))
-      //   camera.position.x -=0.01*(Math.abs(45-evt.beta))
-      //   camera.position.z +=0.01*(Math.abs(45-evt.beta))
-      //   camera.position.y -=0.01*(Math.abs(45-evt.beta))
-      // }
-      // if(evt.beta < 40){
-      //   camera.rotation.x -=0.0007*(Math.abs(45-evt.beta))
-      //   camera.position.x +=0.01*(Math.abs(45-evt.beta))
-      //   camera.position.z -=0.01*(Math.abs(45-evt.beta))
-      //   camera.position.y +=0.01*(Math.abs(45-evt.beta))
-      // }
-      
 
     }
 
@@ -313,9 +311,9 @@
           seseme.rotation.y-=(currentSpeed.speed * (Math.PI/90)) 
         }
         rotationDeceleration = new TWEEN.Tween(currentSpeed)
-        rotationDeceleration.to({speed: 0},1400)
+        rotationDeceleration.to({speed: 0},700)
         rotationDeceleration.onUpdate(update)
-        rotationDeceleration.easing(TWEEN.Easing.Cubic.Out)
+        rotationDeceleration.easing(TWEEN.Easing.Quadratic.Out)
         rotationDeceleration.onComplete(function(){
            var finalRotate = seseme.rotation.y * (180/Math.PI)
 
@@ -337,6 +335,7 @@
            }
 
            console.log(seseme.rotation.y * (180/Math.PI))
+           evaluateHighlight()
            if(revolutionCount>0){
             console.log(revolutionCount)
             //update value server-side with revolutionCount for this user
@@ -393,4 +392,38 @@
         " px: " + light.target.position.x + " py:" + light.target.position.y +
         " pz:" + light.target.position.z
       }
+    }
+
+    function evaluateHighlight(target){
+     var rotationArray = [{min: 335, max: 25, dual: true},{min:245,max:295},{min:155,max:205},{min: 65, max:115}]
+     var r = seseme.rotation.y * (180/Math.PI) 
+     rotationArray.forEach(function(ele,i,arr){
+      if(ele.dual==undefined){
+        if(r>ele.min && r<ele.max){
+          hilightOn(i, false)
+        }
+      }else{ //for the dual-sided 340-360, 0-20 case
+        if(r>ele.min || r<ele.max){
+          hilightOn(i, false)
+        }
+      }
+     })
+    }
+
+    function hilightOn(target, allOff){ //upgrade this with tweens
+      if(target != selectedPillar && selectedPillar!=undefined){
+        console.log('should turn off ' + selectedPillar)
+        pillargroup.children[selectedPillar].children[0].material.opacity = 0
+      }
+      var op = {opacity: pillargroup.children[target].children[0].material.opacity}
+      var opUpdate = function(){
+        pillargroup.children[target].children[0].material.opacity = op.opacity
+      }
+      var opTween = new TWEEN.Tween(op)
+      opTween.to({opacity: 1}, 350)
+      opTween.onUpdate(opUpdate)
+      opTween.easing(TWEEN.Easing.Quadratic.Out)
+      opTween.start()
+      selectedPillar = target
+      
     }
