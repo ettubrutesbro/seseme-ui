@@ -72,24 +72,26 @@
       camera.updateProjectionMatrix()
 
       //place the renderer(canvas) within DOM element (div)
-      container = document.createElement("div")
-      document.body.appendChild(container)
-      container.id = "containerSESEME"
+      container = document.getElementById("containerSESEME")
       renderer = new THREE.WebGLRenderer({antialias: true})
       renderer.shadowMapEnabled = true
       renderer.shadowMapType = THREE.PCFSoftShadowMap
-      renderer.setSize( window.innerWidth, window.innerHeight )
+      renderer.setSize( window.innerWidth*.95, window.innerHeight*.95   )
       container.appendChild( renderer.domElement )
 
       //materials for seseme & orb (eventually need multiples for seseme?)
       var sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
-        shininess: 21, specular: 0x9e6f4c, emissive: 0x101011})
+        shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
       var groundmtl = new THREE.MeshBasicMaterial({color: 0xefefef})
       var orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
         shininess: 8, specular: 0x272727})
+      var normalmtl = new THREE.MeshNormalMaterial()
+      var claymtl = new THREE.MeshLambertMaterial({color: 0x90949a, 
+        emissive: 0x545456})
+   
 
       //LIGHTING
-      backlight = new THREE.SpotLight(0xeaddb9, 1.4)
+      backlight = new THREE.SpotLight(0xeaddb9, 1.2)
       backlight.position.set(-15,75,-10)
       backlight.castShadow = true
       backlight.shadowDarkness = 0.2
@@ -101,7 +103,7 @@
       //backlight.shadowCameraVisible = true
       scene.add(backlight)
 
-      var amblight = new THREE.AmbientLight( 0x171721 )
+      var amblight = new THREE.AmbientLight( 0x232330 )
       scene.add(amblight)
      
       camlight = new THREE.SpotLight(0xffffff, .35)
@@ -113,6 +115,9 @@
       window.addEventListener( 'mouseup', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
       window.addEventListener( 'deviceorientation', onDeviceOrient, false)
+      //prevent touch scrolling?
+      document.body.addEventListener('touchmove', function(e){ e.preventDefault(); })
+
 
       mouseLocation = { x:0, y:0, z:1 }
       raycaster = new THREE.Raycaster()
@@ -194,6 +199,11 @@
       ground.rotation.x = -90*(Math.PI/180)
       ground.receiveShadow = true
       scene.add(ground)
+
+      var cubetest = new THREE.Mesh(new THREE.SphereGeometry(2.5,8,5), claymtl)
+      cubetest.position.set(-9,-12,-9)
+      cubetest.castShadow = true
+      seseme.add(cubetest)
       
 
       scene.add(seseme)
