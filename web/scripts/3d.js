@@ -18,7 +18,7 @@
     //equal across multiple devices
 
     var d = 20
-    var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 10, 100 )
+    var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
     var loader = new THREE.JSONLoader()
     var renderer
    
@@ -39,9 +39,9 @@
     var targetPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
-    var pillarTargets = [{y:2},{y:8},{y:4},{y:12}]
+    var pillarTargets = [{y:4},{y:10},{y:4},{y:8}]
 
-    var selectedPillar = 0
+    var selectedPillar
 
     //debug
     // var debugState = 0
@@ -64,11 +64,11 @@
 
     function setup(){
 
-      camera.position.set( -19, 13, 20 )
+      camera.position.set( -19, 11, 20 )
       camera.rotation.order = 'YXZ'
       camera.rotation.y = - Math.PI / 4
       camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
-      camera.zoom = .83
+      camera.zoom = .925
       camera.updateProjectionMatrix()
 
       //place the renderer(canvas) within DOM element (div)
@@ -82,33 +82,30 @@
       container.appendChild( renderer.domElement )
 
       //materials for seseme & orb (eventually need multiples for seseme?)
-      var sesememtl = new THREE.MeshPhongMaterial({color: 0x1b1d1e, 
-        shininess: 16, specular: 0x413632})
-      var groundmtl = new THREE.MeshBasicMaterial({color: 0x878787})
-      var orbmtl = new THREE.MeshPhongMaterial({color: 0x000000, 
-        shininess: 10, specular: 0x878787})
-
-
-        
-      
-
+      var sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
+        shininess: 21, specular: 0x9e6f4c, emissive: 0x101011})
+      var groundmtl = new THREE.MeshBasicMaterial({color: 0xefefef})
+      var orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
+        shininess: 8, specular: 0x272727})
 
       //LIGHTING
-      backlight = new THREE.SpotLight(0xffffff, 1.8)
-      backlight.position.set(24,80,20)
-      backlight.target.position.set(2,1,0)
+      backlight = new THREE.SpotLight(0xeaddb9, 1.4)
+      backlight.position.set(-15,75,-10)
       backlight.castShadow = true
       backlight.shadowDarkness = 0.2
-      backlight.shadowMapWidth = 768; // default is 512
-      backlight.shadowMapHeight = 768; // default is 512
+      backlight.shadowMapWidth = 768 // default is 512
+      backlight.shadowMapHeight = 768 // default is 512
       // helper = new THREE.Mesh(box, normalmtl)
       // helper.rotation.set(same as cam.x,y,z)
       // light.add(helper)
-      // light.shadowCameraVisible = true
-      seseme.add(backlight)
+      //backlight.shadowCameraVisible = true
+      scene.add(backlight)
+
+      var amblight = new THREE.AmbientLight( 0x171721 )
+      scene.add(amblight)
      
-      camlight = new THREE.SpotLight(0xffffff, .6)
-      camlight.position.set(camera.position.x,camera.position.y-8,camera.position.z)     
+      camlight = new THREE.SpotLight(0xffffff, .35)
+      camlight.position.set(camera.position.x-25,camera.position.y-29,camera.position.z-30)     
       scene.add(camlight)
 
       // INTERACT setup -- event listener, initializing interact vars
@@ -187,11 +184,11 @@
       //the orb is generated here (adjust segments for smooth)
       var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
       orb.name = "orb"
-      orb.position.set(0,-5,0) //it's down but visible
+      orb.position.set(0,-3.75,0) //it's down but visible
       seseme.add(orb)  
 
       //groundplane
-      var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 210, 210, 210 ), 
+      var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 250, 250, 250 ), 
         groundmtl)
       ground.position.set(0,-17.7,0)
       ground.rotation.x = -90*(Math.PI/180)
@@ -266,6 +263,7 @@
             }
         })
         rotationTween.start()
+        hilightOn(index-1, false)
         
 
         } else { //didn't mousedown on a pillar to begin with
@@ -395,9 +393,11 @@
     }
 
     function evaluateHighlight(target){
+      console.log('evaluating')
      var rotationArray = [{min: 335, max: 25, dual: true},{min:245,max:295},{min:155,max:205},{min: 65, max:115}]
      var r = seseme.rotation.y * (180/Math.PI) 
      rotationArray.forEach(function(ele,i,arr){
+    
       if(ele.dual==undefined){
         if(r>ele.min && r<ele.max){
           hilightOn(i, false)
@@ -410,20 +410,49 @@
      })
     }
 
-    function hilightOn(target, allOff){ //upgrade this with tweens
-      if(target != selectedPillar && selectedPillar!=undefined){
-        console.log('should turn off ' + selectedPillar)
-        pillargroup.children[selectedPillar].children[0].material.opacity = 0
+    function hilightOn(target, clear){ //upgrade this with tweens
+      if(clear){
+        if(selectedPillar != undefined){
+          console.log("clearing")
+          pillargroup.children[selectedPillar].children[0].material.opacity = 0
+          selectedPillar = undefined
+        }
+      } else{
+        console.log('turning on')
+        if(selectedPillar != target || selectedPillar == undefined){
+          if(selectedPillar != undefined){
+            pillargroup.children[selectedPillar].children[0].material.opacity = 0
+          }
+          var op = {opacity: 0}
+          var opUpdate = function(){
+            pillargroup.children[target].children[0].material.opacity = op.opacity
+          }
+          var opTween = new TWEEN.Tween(op)
+          opTween.to({opacity: 1},500)
+          opTween.easing(TWEEN.Easing.Quadratic.Out)
+          opTween.onUpdate(opUpdate)
+          opTween.start()
+          selectedPillar = target
+        }else{
+          console.log('same one')
+        }
+        
+        //turn off selection, open new one
+
       }
-      var op = {opacity: pillargroup.children[target].children[0].material.opacity}
-      var opUpdate = function(){
-        pillargroup.children[target].children[0].material.opacity = op.opacity
-      }
-      var opTween = new TWEEN.Tween(op)
-      opTween.to({opacity: 1}, 350)
-      opTween.onUpdate(opUpdate)
-      opTween.easing(TWEEN.Easing.Quadratic.Out)
-      opTween.start()
-      selectedPillar = target
+      // if(target != selectedPillar && selectedPillar!=undefined){
+      //   console.log('should turn off ' + selectedPillar)
+      //   pillargroup.children[selectedPillar].children[0].material.opacity = 0
+      // }
+      // var op = {opacity: pillargroup.children[target].children[0].material.opacity}
+      // var opUpdate = function(){
+      //   pillargroup.children[target].children[0].material.opacity = op.opacity
+      // }
+      // var opTween = new TWEEN.Tween(op)
+      // opTween.to({opacity: 1}, 350)
+      // opTween.onUpdate(opUpdate)
+      // opTween.easing(TWEEN.Easing.Quadratic.Out)
+      // opTween.start()
+      // selectedPillar = target
       
     }

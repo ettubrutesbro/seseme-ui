@@ -17,7 +17,7 @@ var navFuncArr = [viewFunc, talkFunc, dataFunc, helpFunc]
 var closeThis
 
 //default camera positions: zoom 0.8, x-19, y13, z20
-			var ncArr = [{zm:1.75,x:-19,y:21},{zm:.6,x:-19,y:7},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
+			var ncArr = [{zm:1.725,x:-19.75,y:21},{zm:.6,x:-19,y:7},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
 
 
 

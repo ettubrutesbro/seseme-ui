@@ -57,7 +57,7 @@ h3,h4,h5,h6 {
 #topInfo{ /* small summary info at top */
 	font-family: 'Fira Sans', sans-serif;
 	letter-spacing: 0.13rem;
-	color: white;	
+	color: black;	
 	position: absolute;
 	top: 6%;
 	text-align: center;
@@ -65,7 +65,7 @@ h3,h4,h5,h6 {
 	left: 0; right: 0;
 	margin: 0 auto;
 
-	/*display: none;*/
+	display: none;
 }
 	#topInfo span{
 		font-weight: 300;
@@ -92,23 +92,29 @@ h3,h4,h5,h6 {
 	.navbutt {
 		cursor: pointer;
 		float: left;
-		width: 22%;
+		width: 20%;
 		height: 0px;
-		padding-bottom: 20%;
-		margin-left: 4%;
+		padding-bottom: 18%;
+		margin-left: 4.25%;
 		border-radius: 50%;
-		border: 3px white solid;
+		box-sizing: border-box;
+		border: 3px rgba(0,0,0,0.5) solid;
 		background-size: cover;
 
 	}
-		.navbutt:first-child{
-			margin-left: 0%
-		}
-		#viewnav {background-image: url(../assets/v_u.svg);}
-		#talknav {background-image: url(../assets/d_u.svg);}
 		
-		#datanav {background-image: url(../assets/t_u.svg);}
-		#helpnav {background-image: url(../assets/h_u.svg);}
+		#viewnav {background-image: url(../assets/v_u.svg);
+
+		}
+		#talknav {background-image: url(../assets/d_u.svg);
+
+		}
+		#datanav {background-image: url(../assets/t_u.svg);
+
+		}
+		#helpnav {background-image: url(../assets/h_u.svg);
+
+		}
 
 
 /*	BODY SECTIONS	*/
@@ -120,7 +126,7 @@ h3,h4,h5,h6 {
 	bottom: 8%;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.02rem;
-	color: white;
+	color: black;
 }
 #uiBodyTitle {
 	text-align: center;
