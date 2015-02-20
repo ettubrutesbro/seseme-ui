@@ -2,24 +2,10 @@
     //3d.js: all three.js code for SESEME UI. 1) DISPLAY   2) ANIMATE   3) INTERACT
 
     //basic display 
-    var container //dom element
     var scene = new THREE.Scene()
     // in the near future this will need to be dependent on 
     // parent container's dimensions not the window
-    var aspect = window.innerWidth / window.innerHeight
-    var dips = window.devicePixelRatio
-
-    var uiScale = 1//Math.abs(((aspect*aspect) - aspect).toFixed(2))
-    if(dips>2){
-      uiScale=2.2
-    }else if(dips<2){
-      uiScale=0.5
-    } //uiScale is there to make touch interactions that measure pixels
-    //equal across multiple devices
-
-    var d = 20
-    var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
-    var loader = new THREE.JSONLoader()
+    var camera
     var renderer
    
     //dividing loaded model into manipulable groups 
@@ -40,9 +26,19 @@
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
     var pillarTargets = [{y:4},{y:10},{y:4},{y:8}]
+    var outlineArray = []
 
     var selectedPillar
 
+    //responsive 
+     var dips = window.devicePixelRatio
+      var uiScale = 1//Math.abs(((aspect*aspect) - aspect).toFixed(2))
+      if(dips>2){
+        uiScale=2.2
+      }else if(dips<2){
+        uiScale=0.5
+      } //uiScale is there to make touch interactions that measure pixels
+      //equal across multiple devices
     //debug
     // var debugState = 0
     // var debugInfo = document.querySelector('#debug')
@@ -63,7 +59,10 @@
     //lightDebug()
 
     function setup(){
-
+      var aspect = window.innerWidth / window.innerHeight
+     
+      var d = 20
+      camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
       camera.position.set( -19, 11, 20 )
       camera.rotation.order = 'YXZ'
       camera.rotation.y = - Math.PI / 4
@@ -72,7 +71,7 @@
       camera.updateProjectionMatrix()
 
       //place the renderer(canvas) within DOM element (div)
-      container = document.getElementById("containerSESEME")
+      var container = document.getElementById("containerSESEME")
       renderer = new THREE.WebGLRenderer({antialias: true})
       renderer.shadowMapEnabled = true
       renderer.shadowMapType = THREE.PCFSoftShadowMap
@@ -124,6 +123,8 @@
 
       // EXTERNAL LOADING - getting .js 3d models into the canvas
       var pillar1, pillar2, pillar3, pillar4
+      var loader = new THREE.JSONLoader()
+
       loader.load("assets/pedestal.js", function(geometry,evt){
         pedestal = new THREE.Mesh(geometry, sesememtl)
         pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
@@ -148,11 +149,11 @@
         },10) //this is awful and should not be
       })
       loader.load("assets/pillarA_outline.js", function(geometry){
-        var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
-        var mtl2 = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        outlineArray[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        outlineArray[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 
-        var pillar1o = new THREE.Mesh(geometry, mtl)
-        var pillar4o = new THREE.Mesh(geometry, mtl2)
+        var pillar1o = new THREE.Mesh(geometry, outlineArray[0])
+        var pillar4o = new THREE.Mesh(geometry, outlineArray[3])
         pillar1.add(pillar1o)
         pillar4.add(pillar4o)
       })
@@ -172,11 +173,11 @@
         pillargroup.add(pillar3)
       })
       loader.load("assets/pillarB_outline.js", function(geometry,evt){
-        var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
-        var mtl2 = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        outlineArray[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+        outlineArray[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 
-        var pillar2o = new THREE.Mesh(geometry, mtl)
-        var pillar3o = new THREE.Mesh(geometry, mtl2)
+        var pillar2o = new THREE.Mesh(geometry, outlineArray[1])
+        var pillar3o = new THREE.Mesh(geometry, outlineArray[2])
         pillar2.add(pillar2o)
         pillar3.add(pillar3o)
       })
@@ -424,18 +425,20 @@
       if(clear){
         if(selectedPillar != undefined){
           console.log("clearing")
-          pillargroup.children[selectedPillar].children[0].material.opacity = 0
+          outlineArray.forEach(function(el){
+            el.opacity = 0
+          })
           selectedPillar = undefined
         }
       } else{
         console.log('turning on')
         if(selectedPillar != target || selectedPillar == undefined){
           if(selectedPillar != undefined){
-            pillargroup.children[selectedPillar].children[0].material.opacity = 0
+            outlineArray[selectedPillar].opacity = 0
           }
           var op = {opacity: 0}
           var opUpdate = function(){
-            pillargroup.children[target].children[0].material.opacity = op.opacity
+            outlineArray[target].opacity = op.opacity
           }
           var opTween = new TWEEN.Tween(op)
           opTween.to({opacity: 1},500)
@@ -450,19 +453,5 @@
         //turn off selection, open new one
 
       }
-      // if(target != selectedPillar && selectedPillar!=undefined){
-      //   console.log('should turn off ' + selectedPillar)
-      //   pillargroup.children[selectedPillar].children[0].material.opacity = 0
-      // }
-      // var op = {opacity: pillargroup.children[target].children[0].material.opacity}
-      // var opUpdate = function(){
-      //   pillargroup.children[target].children[0].material.opacity = op.opacity
-      // }
-      // var opTween = new TWEEN.Tween(op)
-      // opTween.to({opacity: 1}, 350)
-      // opTween.onUpdate(opUpdate)
-      // opTween.easing(TWEEN.Easing.Quadratic.Out)
-      // opTween.start()
-      // selectedPillar = target
       
     }
