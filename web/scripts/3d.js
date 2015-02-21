@@ -25,7 +25,7 @@
     var targetPosition = {x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0}
 
     var pillarHeights = [{y:0},{y:0},{y:0},{y:0}]
-    var pillarTargets = [{y:4},{y:10},{y:4},{y:8}]
+    var pillarTargets = [{y:12},{y:12},{y:12},{y:12}]
     var outlineArray = []
 
     var selectedPillar
@@ -63,19 +63,20 @@
      
       var d = 20
       camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
-      camera.position.set( -19, 11, 20 )
+      camera.position.set( -19, 10, 20 )
       camera.rotation.order = 'YXZ'
       camera.rotation.y = - Math.PI / 4
       camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
-      camera.zoom = .925
+      camera.zoom = .91
       camera.updateProjectionMatrix()
 
       //place the renderer(canvas) within DOM element (div)
       var container = document.getElementById("containerSESEME")
-      renderer = new THREE.WebGLRenderer({antialias: true})
+      renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
+      //renderer.setClearColor{0xefefef, 0}
       renderer.shadowMapEnabled = true
       renderer.shadowMapType = THREE.PCFSoftShadowMap
-      renderer.setSize( window.innerWidth*.95, window.innerHeight*.95   )
+      renderer.setSize( window.innerWidth, window.innerHeight)
       container.appendChild( renderer.domElement )
 
       //materials for seseme & orb (eventually need multiples for seseme?)
@@ -84,9 +85,6 @@
       var groundmtl = new THREE.MeshBasicMaterial({color: 0xefefef})
       var orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
         shininess: 8, specular: 0x272727})
-      var normalmtl = new THREE.MeshNormalMaterial()
-      var claymtl = new THREE.MeshLambertMaterial({color: 0x90949a, 
-        emissive: 0x545456})
    
 
       //LIGHTING
@@ -112,11 +110,11 @@
       // INTERACT setup -- event listener, initializing interact vars
       window.addEventListener( 'mousemove', onMouseMove, false)
       window.addEventListener( 'mouseup', onMouseUp, false)
+      window.addEventListener( 'touchend', onMouseUp, false)
       window.addEventListener( 'mousedown', onMouseDown, false)
       window.addEventListener( 'deviceorientation', onDeviceOrient, false)
       //prevent touch scrolling?
       document.body.addEventListener('touchmove', function(e){ e.preventDefault(); })
-
 
       mouseLocation = { x:0, y:0, z:1 }
       raycaster = new THREE.Raycaster()
@@ -182,10 +180,7 @@
         pillar3.add(pillar3o)
       })
 
-
       seseme.add(pillargroup)
-
-
 
       //the orb is generated here (adjust segments for smooth)
       var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
@@ -194,18 +189,12 @@
       seseme.add(orb)  
 
       //groundplane
-      var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 250, 250, 250 ), 
+      var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 70, 70, 70 ), 
         groundmtl)
       ground.position.set(0,-17.7,0)
       ground.rotation.x = -90*(Math.PI/180)
       ground.receiveShadow = true
       scene.add(ground)
-
-      var cubetest = new THREE.Mesh(new THREE.SphereGeometry(2.5,8,5), claymtl)
-      cubetest.position.set(-9,-12,-9)
-      cubetest.castShadow = true
-      seseme.add(cubetest)
-      
 
       scene.add(seseme)
 
@@ -405,7 +394,7 @@
 
     function evaluateHighlight(target){
       console.log('evaluating')
-     var rotationArray = [{min: 335, max: 25, dual: true},{min:245,max:295},{min:155,max:205},{min: 65, max:115}]
+     var rotationArray = [{min: 315, max: 45, dual: true},{min:226,max:314},{min:136,max:225},{min: 46, max:135}]
      var r = seseme.rotation.y * (180/Math.PI) 
      rotationArray.forEach(function(ele,i,arr){
     
@@ -433,9 +422,7 @@
       } else{
         console.log('turning on')
         if(selectedPillar != target || selectedPillar == undefined){
-          if(selectedPillar != undefined){
-            outlineArray[selectedPillar].opacity = 0
-          }
+        
           var op = {opacity: 0}
           var opUpdate = function(){
             outlineArray[target].opacity = op.opacity
@@ -445,6 +432,18 @@
           opTween.easing(TWEEN.Easing.Quadratic.Out)
           opTween.onUpdate(opUpdate)
           opTween.start()
+          outlineArray.forEach(function(el,i){
+            if(i!=target){
+              var elo = {opacity: el.opacity}
+              var ftupd = function(){
+                el.opacity = elo.opacity
+              }
+              var fadeTweens = new TWEEN.Tween(elo)
+              fadeTweens.to({opacity: 0},350)
+              fadeTweens.onUpdate(ftupd)
+              fadeTweens.start()
+            }
+          })
           selectedPillar = target
         }else{
           console.log('same one')

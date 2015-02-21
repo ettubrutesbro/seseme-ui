@@ -4,7 +4,7 @@
 html {
 	overflow: hidden;
 	background-color: #efefef;
-	font-size: 24px;
+	font-size: 32px;
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -24,14 +24,14 @@ html {
 }
 
 #containerSESEME {
-	width: 95%;
 	left: 0; right: 0;
 	margin: 0 auto;
+	overflow: hidden;
 }
 
 @media (min-width: 300px) {
 	.container {
-		font-size: 16px;
+		font-size: 21px;
 		max-width: 325px;
 	}
 }
@@ -55,7 +55,7 @@ h3,h4,h5,h6 {
   h3{ font-size: 1.25rem; letter-spacing: 0.08em;}
   h4{ font-size: 1.25rem;}
   h5{ font-size: 1.1rem; letter-spacing: 0.05rem;}
-  h6{ font-size: 0.75rem; letter-spacing: 0.1em;}
+  h6{ font-size: 0.75rem; letter-spacing: 0.1em; }
 
 /* TOP BREAKDOWN OVERLAY */
 
@@ -85,14 +85,11 @@ h3,h4,h5,h6 {
 #uiNav /* holds fixed UI nav at bottom */ {
 	position: absolute;
 	bottom: 3%;
-	z-index: 3;	
+	z-index: 5;	
 	width: 325px;
 	margin: 0 auto;
 	left: 0;
 	right: 0;
-
-	/*border: 1px red solid;*/
-	/*display: none;*/
 }
 	.navbutt {
 		cursor: pointer;
@@ -129,15 +126,43 @@ h3,h4,h5,h6 {
 	position: absolute;
 	z-index: 2;
 	width: 325px;
-	bottom: 8%;
+	bottom: 2.65rem;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.02rem;
 	color: black;
 }
-#uiBodyTitle {
-	text-align: center;
+#uiBodyHeader {
+	display: flex;
+	display: -webkit-flex;
+	padding: 0 .5rem;
+	letter-spacing: 0;
 	font-weight: 600;
+	/*text-align: center;*/
 }
+	#uiBodyHeader #buildingname {
+
+	}
+	#headerRule {
+		margin: 0 .2rem;
+		flex-grow: 3;
+		flex-shrink: 0;
+		-webkit-flex-grow: 3;
+		-webkit-flex-shrink: 0;
+		background-image: url(../assets/dot.svg);
+	 	background-position: center;
+		background-size: 10px 10px;
+		background-repeat: repeat-x;
+	}
+	#uiBodyHeader #number{
+	
+	}
+	#uiBodyHeader #assessIco{
+		margin-left: 0.2rem;
+		width: 20px;
+		height: 20px;
+	}
+
+
 section{
 	display: none;
 	overflow: hidden;
