@@ -14,7 +14,7 @@ sesemeRot = {rx: 0, ry: 0, rz: 0}, tgtRot = {rx: 0, ry: 0, rz: 0},
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 
-selectedPillar,  selectedSection, outlines = [],
+selectedPillar,  mode, outlines = [],
 //what pillar is selected?  what section? (0-explore,1-view,2-data,3-talk,4-help)
 
 navs, //persistent nav buttons go to diff. sections
@@ -158,6 +158,8 @@ function setup(){
 	function eventListeners(){ //raycast and interaction
 		mouseLocation = { x:0, y:0, z:1 }
   		raycaster = new THREE.Raycaster()
+
+  		window.addEventListener('click', function(){ alert('hello') })
 	}
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 	  // setTimeout(function(){updateValues()
