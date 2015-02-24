@@ -9,7 +9,7 @@ var navs = [].slice.call(buttonBar.children)
 
 var currentSection
 var stickerCategory
-var htArray = ["7rem","13rem","13rem","2rem"]
+var htArray = ["4rem","13rem","13rem","2rem"]
 
 var viewFunc, talkFunc, dataFunc, helpFunc
 var navFuncArr = [viewFunc, talkFunc, dataFunc, helpFunc]
@@ -17,7 +17,8 @@ var navFuncArr = [viewFunc, talkFunc, dataFunc, helpFunc]
 var closeThis
 
 //default camera positions: zoom 0.8, x-19, y13, z20
-			var ncArr = [{zm:1.725,x:-19.75,y:21},{zm:.6,x:-19,y:7},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
+
+var ncArr = [{zm:1.5,x:-19.75,y:17},{zm:.6,x:-19,y:7},{zm:0,x:0,y:0},{zm:0,x:0,y:0}]
 
 
 
@@ -56,6 +57,10 @@ navs.forEach(function(ele,i,arr){ //asign click listener for every NAV BUTTON
 			}
 	})
 })
+
+function setupData(){
+
+}
 
 
 function stickerDrawer(){
@@ -137,7 +142,19 @@ function voteConv(){
 	})	
 } //end voteConv
 
-function viewFunc(){ //function runs when opening view
+function viewFunc(open){ //function runs when opening view
+	var hide = document.querySelectorAll('#header .hideMe div')
+	var big = document.querySelector('#header .name')
+	Velocity(hide, "finish")
+	Velocity(big, "finish")
+	if(open){
+		Velocity(hide, {opacity: 0}, {duration: 300})
+		Velocity(big, {rotateX: '+=90deg', opacity: 0}, {duration: 500, easing: "easeOutQuad"})
+		//Velocity(big, {scale: 1.4}, {duration: 500, delay: 300, easing: "easeOutQuad"})
+	}else{
+		Velocity(hide, "transition.slideLeftIn", {delay: 150})
+		Velocity(big, {scale: 1}, {duration: 500})
+	}
 
 }
 

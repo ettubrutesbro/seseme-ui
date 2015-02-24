@@ -3,7 +3,7 @@
 
 html {
 	overflow: hidden;
-	background-color: #efefef;
+	background-color: #ededed;
 	font-size: 32px;
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -131,19 +131,31 @@ h3,h4,h5,h6 {
 	letter-spacing: 0.02rem;
 	color: black;
 }
-#uiBodyHeader {
+#header {
 	display: flex;
 	display: -webkit-flex;
-	padding: 0 .5rem;
+	padding: 0 .25rem;
 	letter-spacing: 0;
 	font-weight: 600;
 	/*text-align: center;*/
 }
-	#uiBodyHeader #buildingname {
+	#header .name {
+		padding: .1rem .2rem 0 .2rem;
+		background-color: #ededed;
+		transform-origin: top left;
+	}
+
+	#header .hideMe {
+		display: flex;
+		display: -webkit-flex;
+		flex-grow: 3;
+		flex-shrink: 0;
+		-webkit-flex-grow: 3;
+		-webkit-flex-shrink: 0;
 
 	}
-	#headerRule {
-		margin: 0 .2rem;
+
+	.headerRule {
 		flex-grow: 3;
 		flex-shrink: 0;
 		-webkit-flex-grow: 3;
@@ -153,13 +165,9 @@ h3,h4,h5,h6 {
 		background-size: 10px 10px;
 		background-repeat: repeat-x;
 	}
-	#uiBodyHeader #number{
+	#header .littledata{
+		padding: .1rem .2rem 0 .2rem;
 	
-	}
-	#uiBodyHeader #assessIco{
-		margin-left: 0.2rem;
-		width: 20px;
-		height: 20px;
 	}
 
 
