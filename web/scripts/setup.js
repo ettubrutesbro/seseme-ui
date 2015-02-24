@@ -1,9 +1,5 @@
-// 1. get data
-// 2. load external 3d
-// 3. add event listeners (native, then custom)
+// 1. get data  2. load external 3d   3. add event listeners (native, then custom)
 // semantic, consistent naming structure
-// shorten names of high-use variables
-
 
 var displayedDataSet //currently displayed dataset 
 var scene = new THREE.Scene(), camera, renderer, //basic 3d display
@@ -26,9 +22,6 @@ navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
 userActions = [], futiles, useTime = 0 , revolutionCount = 0 
 
 function setup(){
-
-	var sesememtl, groundmtl, orbmtl
-
 	cameraSetup()
 	domSetup()
 	lightMtlSetup()
@@ -57,12 +50,6 @@ function setup(){
 	  container.appendChild( renderer.domElement )
 	}
 	function lightMtlSetup(){
-		//materials for seseme & orb 
-	  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
-	    shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
-	  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
-	  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, 
-	    shininess: 8, specular: 0x272727})
 	  //LIGHTING
 	  backlight = new THREE.SpotLight(0xeaddb9, 1.2)
 	  backlight.position.set(-15,75,-10)
@@ -80,6 +67,11 @@ function setup(){
 	  scene.add(camlight)
 	}
 	function sesemeSetup(){ //ground plane is also added here
+		//materials for seseme & orb 
+		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
+		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
+		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
+
 		  var plr1, plr2, plr3, plr4
 		  var loader = new THREE.JSONLoader()
 
