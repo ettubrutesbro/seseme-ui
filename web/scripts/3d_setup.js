@@ -2,14 +2,10 @@
     //3d.js: all three.js code for SESEME UI. 1) DISPLAY   2) ANIMATE   3) INTERACT
 
     //basic display 
-    var scene = new THREE.Scene()
-    var camera
-    var renderer
+    var scene = new THREE.Scene(), camera, renderer,
    
     //dividing loaded model into manipulable groups 
-    var seseme = new THREE.Group()
-    var pedestal
-    var pillargroup = new THREE.Group()
+    seseme = new THREE.Group(), pedestal, pillargroup = new THREE.Group()
 
     //variables for INTERACT functions
     var raycaster
