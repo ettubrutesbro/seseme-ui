@@ -84,7 +84,7 @@ function setup(){
 		    loader.load("assets/pedestal_outline.js", function(g){
 		    	outlines[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide})
 		   		var pedestalo = new THREE.Mesh(g, outlines[0])
-		   		pedestalo.applyMatrix( new THREE.Matrix4().makeTranslation(-0, 0, 0))
+		   		pedestalo.applyMatrix( new THREE.Matrix4().makeTranslation(-0, -0.5, 0))
 		   		pedestal.add(pedestalo)
 		    })
 		  }) 

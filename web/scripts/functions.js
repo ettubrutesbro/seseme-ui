@@ -4,6 +4,7 @@ function clickedSeseme(){
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
 	var clicked = intersects[0].object.name
 	if(clicked != 'ground' && clicked != 'orb'){
+		highlight(1)
 		highlight(0)
 	}
 }
