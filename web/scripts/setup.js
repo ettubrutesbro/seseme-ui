@@ -1,5 +1,5 @@
 // 1. get data  2. load external 3d   3. add event listeners (native, then custom)
-// semantic, consistent naming structure
+// semantic, consistent naming structure (there will be no pillar #0)
 
 var displayedDataSet //currently displayed dataset 
 var scene = new THREE.Scene(), camera, renderer, //basic 3d display
@@ -9,13 +9,12 @@ raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 sesemeRot = {rx: 0, ry: 0, rz: 0}, tgtRot = {rx: 0, ry: 0, rz: 0},
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
-
-selectedPillar,  mode, outlines = [],
-//what pillar is selected?  what section? (0-explore,1-view,2-data,3-talk,4-help)
+defaultPosZoom, selectedObj,  mode = 0, outlines = [],
+//what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
-viewFunc, talkFunc, dataFunc, helpFunc, 
-navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
+explore, viewFunc, talkFunc, dataFunc, helpFunc, 
+navFuncs = [explore, viewFunc, talkFunc, dataFunc, helpFunc],
 //array of functions called when buttons are pressed
 
 //experimental usage metrics
@@ -40,6 +39,7 @@ function setup(){
 	  camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
 	  camera.zoom = .91
 	  camera.updateProjectionMatrix()
+	  defaultPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom}
 	}
 	function domSetup(){
 	  var containerSESEME = document.getElementById("containerSESEME")
@@ -81,6 +81,12 @@ function setup(){
 		    pedestal.castShadow = true
 		    pedestal.name = "pedestal"
 		    seseme.add(pedestal)
+		    loader.load("assets/pedestal_outline.js", function(g){
+		    	outlines[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide})
+		   		var pedestalo = new THREE.Mesh(g, outlines[0])
+		   		pedestalo.applyMatrix( new THREE.Matrix4().makeTranslation(-0, 0, 0))
+		   		pedestal.add(pedestalo)
+		    })
 		  }) 
 
 		  loader.load("assets/pillarA.js", function(geometry,evt){
@@ -98,10 +104,10 @@ function setup(){
 		      seseme.add(plr4)
 		    },10) //this is awful and should not be
 		    loader.load("assets/pillarA_outline.js", function(g){
-		      outlines[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
-		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
-		      var plr1o = new THREE.Mesh(g, outlines[0])
-		      var plr4o = new THREE.Mesh(g, outlines[3])
+		      outlines[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+		      outlines[4] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+		      var plr1o = new THREE.Mesh(g, outlines[1])
+		      var plr4o = new THREE.Mesh(g, outlines[4])
 		      plr1.add(plr1o)
 		      setTimeout(function(){
 		        plr4.add(plr4o)
@@ -122,10 +128,10 @@ function setup(){
 		    plr3.name = "plr3"
 		    seseme.add(plr3)
 		    loader.load("assets/pillarB_outline.js", function(g){
-		      outlines[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
-		      var plr2o = new THREE.Mesh(g, outlines[1])
-		      var plr3o = new THREE.Mesh(g, outlines[2])
+		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
+		      var plr2o = new THREE.Mesh(g, outlines[2])
+		      var plr3o = new THREE.Mesh(g, outlines[3])
 		      plr2.add(plr2o)
 		      plr3.add(plr3o)
 		    })
@@ -148,57 +154,49 @@ function setup(){
 		  scene.add(seseme)
 	}
 	function eventListeners(){ //raycast and interaction
-		//var container = document.getElementById('containerSESEME')
-		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
-		window.addEventListener('mousemove', function(e){
-			e.preventDefault()
-			mousePos.x= (e.clientX / window.innerWidth)*2-1
-			mousePos.y= - (e.clientY / window.innerHeight)*2+1
-		})
-		containerSESEME.addEventListener('click', clickedSeseme)
-		navs.forEach(function(ele){
-			ele.addEventListener('click', clickedNav)
-		})
 		mousePos = { x:0, y:0, z:1 }
   		raycast = new THREE.Raycaster()
 
-  		//window.addEventListener('click', function(){ alert('hello') })
-  		var body = document.querySelector('body')
-  		hammerEvt = new Hammer(body) // special touch events (pan)
-	  		hammerEvt.on('pan',function(evt){
-	  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
-	  				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
-	  			}
-	  		})
-	  		hammerEvt.on('panend',function(evt){ //rotation deceleration
-	  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
-	  				start = {speed: evt.velocityX}
-		  			diff = (Math.abs(0-evt.velocityX)) * 90
-		  			rotDecel = new TWEEN.Tween(start)
-		  			rotDecel.to({speed:0},diff+300)
-		  			rotDecel.onUpdate(function(){
-		  				seseme.rotation.y-=(start.speed * (Math.PI/90))
-		  			})
-		  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
-		  			
-		  			rotDecel.start()
-		  			rotDecel.onComplete(function(){//"real rotation" solution
-		  				finalRot = seseme.rotation.y * (180/Math.PI)
-		  				if(finalRot < 0){
-		  					seseme.rotation.y = (360+finalRot) / (180/Math.PI)
-		  					revolutionCount +=1
-		  				}
-		  				if(Math.abs(finalRot/360) >= 1){
-		  					numRevs = Math.abs(Math.floor(finalRot/360))
-		  					actRot = finalRot - (numRevs*360)
-		  					if(finalRot < 0){
-		  						actRot = finalRot+(numRevs*360)
-		  					}
-		  					seseme.rotation.y = actRot / (180/Math.PI)
-		  					revolutionCount +=1
-		  				}
-		  			}) //end rotDecel.onComplete
-		  			highlight = [{min: 226, max:314}, {min: 136, max: 225}, {min: 46, max: 135}]
+		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
+
+		hammerSESEME = new Hammer(containerSESEME)
+		hammerSESEME.on('tap',function(e){
+			mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
+			mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
+			clickedSeseme()
+		})
+  		hammerSESEME.on('pan',function(evt){
+  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
+  				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
+  			}
+  		})
+  		hammerSESEME.on('panend',function(evt){ //rotation deceleration
+  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
+  				start = {speed: evt.velocityX}
+	  			diff = (Math.abs(0-evt.velocityX)) * 90
+	  			rotDecel = new TWEEN.Tween(start)
+	  			rotDecel.to({speed:0},diff+300)
+	  			rotDecel.onUpdate(function(){
+	  				seseme.rotation.y-=(start.speed * (Math.PI/90))
+	  			})
+	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
+	  			rotDecel.start()
+	  			rotDecel.onComplete(function(){//"real rotation" solution
+	  				finalRot = seseme.rotation.y * (180/Math.PI)
+	  				if(finalRot < 0){
+	  					seseme.rotation.y = (360+finalRot) / (180/Math.PI)
+	  					revolutionCount +=1
+	  				}
+	  				if(Math.abs(finalRot/360) >= 1){
+	  					numRevs = Math.abs(Math.floor(finalRot/360))
+	  					actRot = finalRot - (numRevs*360)
+	  					if(finalRot < 0){
+	  						actRot = finalRot+(numRevs*360)
+	  					}
+	  					seseme.rotation.y = actRot / (180/Math.PI)
+	  					revolutionCount +=1
+	  				}
+  					highlight = [{min: 226, max:314}, {min: 136, max: 225}, {min: 46, max: 135}]
 		  			rot = (seseme.rotation.y * 180/Math.PI)
 
 		  			highlight.forEach(function(ele,i){
@@ -206,10 +204,17 @@ function setup(){
 		  					//highlight outlines[i]
 		  				}
 		  			})
-		  			}
-	  		})
-		
-	}
+	  			}) //onComplete
+	  		}//horizontal pan finish
+  		})//pan finish
+
+		navs.forEach(function(ele, i){
+			hammerNav = new Hammer(ele)
+			hammerNav.on('tap',function(){
+				clickedNav(ele.id, i+1)	
+			})
+		})		
+	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 	  // setTimeout(function(){updateValues()
 	  // },800) //no idea why, but this only
