@@ -3,8 +3,8 @@
 
 var displayedDataSet //currently displayed dataset 
 var scene = new THREE.Scene(), camera, renderer, //basic 3d display
-seseme = new THREE.Group(), plrGroup = new THREE.Group(), //model organization
-raycaster, mouseLocation = new THREE.Vector2(),//interaction w/ 3d
+seseme = new THREE.Group(), //model organization
+raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 //rotations
 sesemeRot = {rx: 0, ry: 0, rz: 0}, tgtRot = {rx: 0, ry: 0, rz: 0},
 //pillar up and down movement
@@ -13,7 +13,7 @@ plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y:
 selectedPillar,  mode, outlines = [],
 //what pillar is selected?  what section? (0-explore,1-view,2-data,3-talk,4-help)
 
-navs, //persistent nav buttons go to diff. sections
+navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
 viewFunc, talkFunc, dataFunc, helpFunc, 
 navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
 //array of functions called when buttons are pressed
@@ -42,12 +42,12 @@ function setup(){
 	  camera.updateProjectionMatrix()
 	}
 	function domSetup(){
-	  var container = document.getElementById("containerSESEME")
+	  var containerSESEME = document.getElementById("containerSESEME")
 	  renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
 	  renderer.shadowMapEnabled = true
 	  renderer.shadowMapType = THREE.PCFSoftShadowMap
 	  renderer.setSize( window.innerWidth, window.innerHeight)
-	  container.appendChild( renderer.domElement )
+	  containerSESEME.appendChild( renderer.domElement )
 	}
 	function lightMtlSetup(){
 	  //LIGHTING
@@ -88,14 +88,14 @@ function setup(){
 		    plr1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr1.name = "plr1"
 		    plr1.castShadow = true
-		    plrGroup.add(plr1)
+		    seseme.add(plr1)
 		    plr4 = new THREE.Mesh(geometry, sesememtl)
 		    plr4.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
 		    plr4.rotation.y = -90 * Math.PI / 180
 		    plr4.name = "plr4"
 		    plr4.castShadow = true
 		    setTimeout(function(){
-		      plrGroup.add(plr4)
+		      seseme.add(plr4)
 		    },10) //this is awful and should not be
 		    loader.load("assets/pillarA_outline.js", function(g){
 		      outlines[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -113,14 +113,14 @@ function setup(){
 		    plr2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr2.name = "plr2"
 		    plr2.castShadow = true
-		    plrGroup.add(plr2)
+		    seseme.add(plr2)
 
 		    plr3 = new THREE.Mesh(geometry, sesememtl)
 		    plr3.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr3.rotation.y = 90 * Math.PI / 180
 		    plr3.castShadow = true
 		    plr3.name = "plr3"
-		    plrGroup.add(plr3)
+		    seseme.add(plr3)
 		    loader.load("assets/pillarB_outline.js", function(g){
 		      outlines[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -131,7 +131,6 @@ function setup(){
 		    })
 		  })
 
-		  seseme.add(plrGroup)
 		  //the orb is generated here (adjust segments for smooth)
 		  var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
 		  orb.name = "orb"
@@ -143,15 +142,73 @@ function setup(){
 		  ground.position.set(0,-17.7,0)
 		  ground.rotation.x = -90*(Math.PI/180)
 		  ground.receiveShadow = true
+		  ground.name = 'ground'
 
-		  scene.add(ground)
+		  seseme.add(ground)
 		  scene.add(seseme)
 	}
 	function eventListeners(){ //raycast and interaction
-		mouseLocation = { x:0, y:0, z:1 }
-  		raycaster = new THREE.Raycaster()
+		//var container = document.getElementById('containerSESEME')
+		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
+		window.addEventListener('mousemove', function(e){
+			e.preventDefault()
+			mousePos.x= (e.clientX / window.innerWidth)*2-1
+			mousePos.y= - (e.clientY / window.innerHeight)*2+1
+		})
+		containerSESEME.addEventListener('click', clickedSeseme)
+		navs.forEach(function(ele){
+			ele.addEventListener('click', clickedNav)
+		})
+		mousePos = { x:0, y:0, z:1 }
+  		raycast = new THREE.Raycaster()
 
-  		window.addEventListener('click', function(){ alert('hello') })
+  		//window.addEventListener('click', function(){ alert('hello') })
+  		var body = document.querySelector('body')
+  		hammerEvt = new Hammer(body) // special touch events (pan)
+	  		hammerEvt.on('pan',function(evt){
+	  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
+	  				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
+	  			}
+	  		})
+	  		hammerEvt.on('panend',function(evt){ //rotation deceleration
+	  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
+	  				start = {speed: evt.velocityX}
+		  			diff = (Math.abs(0-evt.velocityX)) * 90
+		  			rotDecel = new TWEEN.Tween(start)
+		  			rotDecel.to({speed:0},diff+300)
+		  			rotDecel.onUpdate(function(){
+		  				seseme.rotation.y-=(start.speed * (Math.PI/90))
+		  			})
+		  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
+		  			
+		  			rotDecel.start()
+		  			rotDecel.onComplete(function(){//"real rotation" solution
+		  				finalRot = seseme.rotation.y * (180/Math.PI)
+		  				if(finalRot < 0){
+		  					seseme.rotation.y = (360+finalRot) / (180/Math.PI)
+		  					revolutionCount +=1
+		  				}
+		  				if(Math.abs(finalRot/360) >= 1){
+		  					numRevs = Math.abs(Math.floor(finalRot/360))
+		  					actRot = finalRot - (numRevs*360)
+		  					if(finalRot < 0){
+		  						actRot = finalRot+(numRevs*360)
+		  					}
+		  					seseme.rotation.y = actRot / (180/Math.PI)
+		  					revolutionCount +=1
+		  				}
+		  			}) //end rotDecel.onComplete
+		  			highlight = [{min: 226, max:314}, {min: 136, max: 225}, {min: 46, max: 135}]
+		  			rot = (seseme.rotation.y * 180/Math.PI)
+
+		  			highlight.forEach(function(ele,i){
+		  				if(rot >= ele.min && rot <= ele.max){
+		  					//highlight outlines[i]
+		  				}
+		  			})
+		  			}
+	  		})
+		
 	}
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 	  // setTimeout(function(){updateValues()

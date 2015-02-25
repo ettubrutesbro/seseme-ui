@@ -149,8 +149,8 @@ function viewFunc(open){ //function runs when opening view
 	Velocity(big, "finish")
 	if(open){
 		Velocity(hide, {opacity: 0}, {duration: 300})
-		Velocity(big, {rotateX: '+=90deg', opacity: 0}, {duration: 500, easing: "easeOutQuad"})
-		//Velocity(big, {scale: 1.4}, {duration: 500, delay: 300, easing: "easeOutQuad"})
+		//Velocity(big, {rotateX: '+=90deg', opacity: 0}, {duration: 500, easing: "easeOutQuad"})
+		Velocity(big, {scale: 1.4}, {duration: 500, delay: 300, easing: "easeOutQuad"})
 	}else{
 		Velocity(hide, "transition.slideLeftIn", {delay: 150})
 		Velocity(big, {scale: 1}, {duration: 500})

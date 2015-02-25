@@ -16,8 +16,8 @@ app.get('/', function (req, res) {
 });
 
 // Some other index loader in a sub-folder
-/*
-app.get('/otherPage', function (req, res) {
-  res.sendFile(__dirname + '/web/otherPage/index.html');
+
+app.get('/old', function (req, res) {
+  res.sendFile(__dirname + '/web/index_old.html');
 });
-*/
+
