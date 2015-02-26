@@ -6,6 +6,7 @@ var scene = new THREE.Scene(), camera, renderer, //basic 3d display
 seseme = new THREE.Group(), //model organization
 raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 //rotations
+pillars = ['plr1','plr2','plr3','plr4'],
 sesemeRot = {rx: 0, ry: 0, rz: 0}, tgtRot = {rx: 0, ry: 0, rz: 0},
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],

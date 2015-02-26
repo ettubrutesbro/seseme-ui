@@ -3,9 +3,30 @@ function clickedSeseme(){
 	raycast.setFromCamera(mousePos, camera)
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
 	var clicked = intersects[0].object.name
-	if(clicked != 'ground' && clicked != 'orb'){
-		highlight(1)
-		highlight(0)
+	if(clicked != 'ground' && clicked != 'orb' && mode ==0){ //pillar or pedestal
+		console.log(selectedObj + " > " + clicked)
+		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
+
+		if(clicked == selectedObj){ //already selected
+
+		}else{ //new selection
+			highlight(index)
+			if(index > 0){ // pillar clicked
+				//autorotate
+				whichPillar = pillars.indexOf(clicked)
+				for(var i = 0; i < whichPillar; i++){
+
+					pillars.push(pillars.shift())
+
+				}
+				console.log(pillars)
+
+			}
+			selectedObj = clicked
+		}
+		
+
+		
 	}
 }
 function clickedNav(tgt, index){
@@ -33,7 +54,9 @@ function shift(tgtPosZoom){
 	shiftTween.easing(TWEEN.Easing.Cubic.Out)
 	shiftTween.start()
 }
+function autoRotate(deg){
 
+}
 function highlight(outlineNumber){
 	outlines[outlineNumber].opacity = 1
 }
