@@ -181,7 +181,10 @@ function setup(){
 	  			})
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
-	  			rotDecel.onComplete(realRotation) //onComplete
+	  			rotDecel.onComplete(function(){
+	  				realRotation()
+	  				highlightCheck()
+	  			}) //onComplete
 	  		}//horizontal pan finish
   		})//pan finish
 

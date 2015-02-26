@@ -10,7 +10,7 @@ function clickedSeseme(){
 		if(clicked == selectedObj){ //already selected
 
 		}else{ //new selection
-			highlight(index) 
+			//highlight(index) 
 			if(index > 0){ //pillar
 				distance = pillars.indexOf(clicked)
 				console.log(distance)
@@ -69,6 +69,7 @@ function shift(tgtPosZoom){
 	shiftTween.start()
 }
 function autoRotate(deg){
+	
 	current = {rotation: seseme.rotation.y}
 	//for tgt: s.r.y should be nearest
 	tgt = {rotation: seseme.rotation.y + (deg * (Math.PI/180))}
@@ -81,6 +82,7 @@ function autoRotate(deg){
 	rotate.start()
 	rotate.onComplete(function(){
 		realRotation()
+		highlightCheck()
 	})
 }
 
@@ -101,6 +103,18 @@ function realRotation(){
 }
 function highlight(outlineNumber){
 	outlines[outlineNumber].opacity = 1
+}
+
+function highlightCheck(){
+	sRot = seseme.rotation.y * (180/Math.PI)
+	console.log(sRot)
+	highlightRanges = [{min: 315, max: 45},{min:228,max:314},{min:137,max:227},{min:46,max:136}]
+	highlightRanges.forEach(function(ele,i){
+		if(ele.max >= sRot && ele.min <= sRot){
+			highlight([i+1])
+		}
+	})
+
 }
 
 // ----------navigation mode---------------
