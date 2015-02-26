@@ -8,7 +8,7 @@ function clickedSeseme(){
 		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
 
 		if(clicked == selectedObj){ //already selected
-
+			//zoom/mode/navfunc
 		}else{ //new selection
 			//highlight(index) 
 			if(index > 0){ //pillar
@@ -23,24 +23,17 @@ function clickedSeseme(){
 						autoRotate(rotDir * 180)
 					break
 					case 3:
-						//get your difference from the nearest 90
-						// and subtract it from 90
 						autoRotate(90)
 						rotDir = 1
 					break
 				}
-
 				for(var i = 0; i < distance; i++){
 					pillars.push(pillars.shift())
-				}
-
+				}//belt loop reorders rotations
 			}
-			userActions.push(clicked)
+			userActions.push('clicked ' + clicked)
 			selectedObj = clicked
 		}
-		
-
-		
 	}
 }
 function clickedNav(tgt, index){
@@ -51,7 +44,7 @@ function clickedNav(tgt, index){
 		navFuncs[index](false)
 		mode=0
 	}
-	userActions.push(tgt)	
+	userActions.push('clicked ' + tgt)	
 }
 // ----------3d operations-----------------
 function shift(tgtPosZoom){
@@ -69,15 +62,14 @@ function shift(tgtPosZoom){
 	shiftTween.start()
 }
 function autoRotate(deg){
-	
-	current = {rotation: seseme.rotation.y}
+	current = {rotationY: seseme.rotation.y}
 	//for tgt: s.r.y should be nearest
-	tgt = {rotation: seseme.rotation.y + (deg * (Math.PI/180))}
-	spd = Math.abs(tgt.rotation - current.rotation)*200
+	tgt = {rotationY: seseme.rotation.y + (deg * (Math.PI/180))}
+	spd = Math.abs(tgt.rotationY - current.rotationY)*200
 	rotate = new TWEEN.Tween(current)
 	rotate.to(tgt,spd)
 	rotate.onUpdate(function(){
-		seseme.rotation.y = current.rotation
+		seseme.rotation.y = current.rotationY
 	})
 	rotate.start()
 	rotate.onComplete(function(){
@@ -85,12 +77,12 @@ function autoRotate(deg){
 		highlightCheck()
 	})
 }
-
 function realRotation(){ 
 	finalRot = seseme.rotation.y * (180/Math.PI)
 		if(finalRot < 0){
 			seseme.rotation.y = (360+finalRot) / (180/Math.PI)
 			revolutionCount +=1
+			userActions.push('# revs: ' + revolutionCount)
 		}
 		if(Math.abs(finalRot/360) >= 1){
 			numRevs = Math.abs(Math.floor(finalRot/360))
@@ -98,6 +90,7 @@ function realRotation(){
 			if(finalRot < 0){actRot = finalRot+(numRevs*360)}
 			seseme.rotation.y = actRot / (180/Math.PI)
 			revolutionCount +=1
+			userActions.push('# revs: ' + revolutionCount)
 		}
 	console.log(seseme.rotation.y * (180/Math.PI))
 }
@@ -107,7 +100,6 @@ function highlight(outlineNumber){
 
 function highlightCheck(){
 	sRot = seseme.rotation.y * (180/Math.PI)
-	console.log(sRot)
 	highlightRanges = [{min: 315, max: 45},{min:228,max:314},{min:137,max:227},{min:46,max:136}]
 	highlightRanges.forEach(function(ele,i){
 		if(ele.max >= sRot && ele.min <= sRot){

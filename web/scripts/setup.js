@@ -182,6 +182,7 @@ function setup(){
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
 	  			rotDecel.onComplete(function(){
+	  				userActions.push('rot > ' + Math.round(seseme.rotation.y * (180/Math.PI)))
 	  				realRotation()
 	  				highlightCheck()
 	  			}) //onComplete
