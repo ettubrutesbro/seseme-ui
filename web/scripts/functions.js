@@ -10,18 +10,32 @@ function clickedSeseme(){
 		if(clicked == selectedObj){ //already selected
 
 		}else{ //new selection
-			highlight(index)
-			if(index > 0){ // pillar clicked
-				//autorotate
-				whichPillar = pillars.indexOf(clicked)
-				for(var i = 0; i < whichPillar; i++){
-
-					pillars.push(pillars.shift())
-
+			highlight(index) 
+			if(index > 0){ //pillar
+				distance = pillars.indexOf(clicked)
+				console.log(distance)
+				switch(distance){
+					case 1:
+						autoRotate(-90)
+						rotDir = -1	
+					break
+					case 2:
+						autoRotate(rotDir * 180)
+					break
+					case 3:
+						//get your difference from the nearest 90
+						// and subtract it from 90
+						autoRotate(90)
+						rotDir = 1
+					break
 				}
-				console.log(pillars)
+
+				for(var i = 0; i < distance; i++){
+					pillars.push(pillars.shift())
+				}
 
 			}
+			userActions.push(clicked)
 			selectedObj = clicked
 		}
 		
@@ -37,7 +51,7 @@ function clickedNav(tgt, index){
 		navFuncs[index](false)
 		mode=0
 	}
-	
+	userActions.push(tgt)	
 }
 // ----------3d operations-----------------
 function shift(tgtPosZoom){
@@ -55,7 +69,35 @@ function shift(tgtPosZoom){
 	shiftTween.start()
 }
 function autoRotate(deg){
+	current = {rotation: seseme.rotation.y}
+	//for tgt: s.r.y should be nearest
+	tgt = {rotation: seseme.rotation.y + (deg * (Math.PI/180))}
+	spd = Math.abs(tgt.rotation - current.rotation)*200
+	rotate = new TWEEN.Tween(current)
+	rotate.to(tgt,spd)
+	rotate.onUpdate(function(){
+		seseme.rotation.y = current.rotation
+	})
+	rotate.start()
+	rotate.onComplete(function(){
+		realRotation()
+	})
+}
 
+function realRotation(){ 
+	finalRot = seseme.rotation.y * (180/Math.PI)
+		if(finalRot < 0){
+			seseme.rotation.y = (360+finalRot) / (180/Math.PI)
+			revolutionCount +=1
+		}
+		if(Math.abs(finalRot/360) >= 1){
+			numRevs = Math.abs(Math.floor(finalRot/360))
+			actRot = finalRot - (numRevs*360)
+			if(finalRot < 0){actRot = finalRot+(numRevs*360)}
+			seseme.rotation.y = actRot / (180/Math.PI)
+			revolutionCount +=1
+		}
+	console.log(seseme.rotation.y * (180/Math.PI))
 }
 function highlight(outlineNumber){
 	outlines[outlineNumber].opacity = 1

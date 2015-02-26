@@ -6,8 +6,7 @@ var scene = new THREE.Scene(), camera, renderer, //basic 3d display
 seseme = new THREE.Group(), //model organization
 raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 //rotations
-pillars = ['plr1','plr2','plr3','plr4'],
-sesemeRot = {rx: 0, ry: 0, rz: 0}, tgtRot = {rx: 0, ry: 0, rz: 0},
+pillars = ['plr1','plr2','plr3','plr4'], rotDir =1,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 defaultPosZoom, selectedObj,  mode = 0, outlines = [],
@@ -182,30 +181,7 @@ function setup(){
 	  			})
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
-	  			rotDecel.onComplete(function(){//"real rotation" solution
-	  				finalRot = seseme.rotation.y * (180/Math.PI)
-	  				if(finalRot < 0){
-	  					seseme.rotation.y = (360+finalRot) / (180/Math.PI)
-	  					revolutionCount +=1
-	  				}
-	  				if(Math.abs(finalRot/360) >= 1){
-	  					numRevs = Math.abs(Math.floor(finalRot/360))
-	  					actRot = finalRot - (numRevs*360)
-	  					if(finalRot < 0){
-	  						actRot = finalRot+(numRevs*360)
-	  					}
-	  					seseme.rotation.y = actRot / (180/Math.PI)
-	  					revolutionCount +=1
-	  				}
-  					highlight = [{min: 226, max:314}, {min: 136, max: 225}, {min: 46, max: 135}]
-		  			rot = (seseme.rotation.y * 180/Math.PI)
-
-		  			highlight.forEach(function(ele,i){
-		  				if(rot >= ele.min && rot <= ele.max){
-		  					//highlight outlines[i]
-		  				}
-		  			})
-	  			}) //onComplete
+	  			rotDecel.onComplete(realRotation) //onComplete
 	  		}//horizontal pan finish
   		})//pan finish
 
