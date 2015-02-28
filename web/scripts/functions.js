@@ -6,10 +6,10 @@ function clickedSeseme(){
 	if(clicked != 'ground' && clicked != 'orb' && mode ==0){ //pillar or pedestal
 		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
 		userActions.push('clicked ' + clicked)
-		console.log('clicked ' + clicked)
 
 		if(clicked == selectedObj){ //already selected
 			//zoom/mode/navfunc
+			console.log('clicked same one, zoom')
 		}else{ //new selection
 			if(index > 0){ //pillar
 				distance = pillars.indexOf(clicked)
@@ -22,24 +22,27 @@ function clickedSeseme(){
 					autoRotate(90)
 					rotDir = 1
 				}
+				selectedObj = clicked
 			}else{
 				highlight(0)
+				selectedObj = clicked
 			}
 		}
 	}else{ //clicked the ground or the orb
+		selectedObj = ''
 		// clearHighlight()
 	}
 }
 function clickedNav(index){
 	userActions.push('clicked ' + navs[index].id)	
-	if(mode==0 || index != mode){ 
+	if(mode==0 || index+1 != mode){ 
+		console.log('open nav')
 		navFuncs[index](true)
-		mode=index
+		mode=index+1
 	}else{
 		navFuncs[index](false)
 		mode=0
 	}
-	
 }
 // ----------3d operations-----------------
 function shift(tgtPosZoom){
@@ -59,11 +62,15 @@ function shift(tgtPosZoom){
 function autoRotate(deg){
 	current = {rotationY: seseme.rotation.y}
 	tgt = {rotationY: (nearest90*(Math.PI/180)) + (deg * (Math.PI/180))}
-	spd = Math.abs(tgt.rotationY - current.rotationY)*200
+	spd = Math.abs(tgt.rotationY - current.rotationY)*200 + 350
 	rotate = new TWEEN.Tween(current)
 	rotate.to(tgt,spd)
+	rotate.easing(TWEEN.Easing.Quadratic.Out)
 	rotate.onUpdate(function(){
 		seseme.rotation.y = current.rotationY
+		realRotation()
+		findNearest90()
+		highlightCheck()
 	})
 	rotate.start()
 	rotate.onComplete(function(){
@@ -85,7 +92,6 @@ function findNearest90(){
 		}
 	}
 }
-
 function realRotation(){ 
 	sRotY = seseme.rotation.y * (180/Math.PI)
 		if(sRotY < 0){
@@ -121,18 +127,17 @@ function highlight(outlineNumber){
 }
 
 function highlightCheck(){
-	if(pedestalSelected){
+	if(selectedObj == "pedestal"){
 
 	}else{
 		highlightRanges =[{min: 0, max: 45,p:1},{min:315,max: 360,p:1},{min:228,max:314,p:2},{min:137,max:227,p:3},{min:46,max:136,p:4}]
 		highlightRanges.forEach(function(ele,i){
 			if(ele.max >= sRotY && ele.min <= sRotY){
 				highlight(ele.p)
+				selectedObj = "plr" + ele.p
 			}
 		})
 	}
-	
-
 }
 
 // ----------navigation mode---------------

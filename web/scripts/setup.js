@@ -19,7 +19,7 @@ navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
 //array of functions called when buttons are pressed
 
 //experimental usage metrics
-userActions = [], futiles, useTime = 0 , revolutionCount = 0 
+userActions = [], useTime = 0 , revolutionCount = 0 
 
 function setup(){
 	cameraSetup()
@@ -178,9 +178,9 @@ function setup(){
   		hammerSESEME.on('panend',function(evt){ //rotation deceleration
   			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
   				start = {speed: evt.velocityX}
-	  			diff = (Math.abs(0-evt.velocityX)) * 90
+	  			diff = (Math.abs(0-evt.velocityX)) * 85
 	  			rotDecel = new TWEEN.Tween(start)
-	  			rotDecel.to({speed:0},diff+300)
+	  			rotDecel.to({speed:0},diff+400)
 	  			rotDecel.onUpdate(function(){
 	  				seseme.rotation.y-=(start.speed * (Math.PI/90))
 	  				realRotation()
