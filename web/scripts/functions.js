@@ -4,39 +4,34 @@ function clickedSeseme(){
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
 	var clicked = intersects[0].object.name
 	if(clicked != 'ground' && clicked != 'orb' && mode ==0){ //pillar or pedestal
-		console.log(selectedObj + " > " + clicked)
 		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
+		userActions.push('clicked ' + clicked)
+		console.log('clicked ' + clicked)
 
 		if(clicked == selectedObj){ //already selected
 			//zoom/mode/navfunc
 		}else{ //new selection
-			//highlight(index) 
 			if(index > 0){ //pillar
 				distance = pillars.indexOf(clicked)
-				console.log(distance)
-				switch(distance){
-					case 1:
-						autoRotate(-90)
-						rotDir = -1	
-					break
-					case 2:
-						autoRotate(rotDir * 180)
-					break
-					case 3:
-						autoRotate(90)
-						rotDir = 1
-					break
+				if(distance==1){
+					autoRotate(-90)
+					rotDir = -1
+				}else if(distance==2){
+					autoRotate(rotDir * 180)
+				}else if(distance==3){
+					autoRotate(90)
+					rotDir = 1
 				}
-				for(var i = 0; i < distance; i++){
-					pillars.push(pillars.shift())
-				}//belt loop reorders rotations
+			}else{
+				highlight(0)
 			}
-			userActions.push('clicked ' + clicked)
-			selectedObj = clicked
 		}
+	}else{ //clicked the ground or the orb
+		// clearHighlight()
 	}
 }
-function clickedNav(tgt, index){
+function clickedNav(index){
+	userActions.push('clicked ' + navs[index].id)	
 	if(mode==0 || index != mode){ 
 		navFuncs[index](true)
 		mode=index
@@ -44,7 +39,7 @@ function clickedNav(tgt, index){
 		navFuncs[index](false)
 		mode=0
 	}
-	userActions.push('clicked ' + tgt)	
+	
 }
 // ----------3d operations-----------------
 function shift(tgtPosZoom){
@@ -63,8 +58,7 @@ function shift(tgtPosZoom){
 }
 function autoRotate(deg){
 	current = {rotationY: seseme.rotation.y}
-	//for tgt: s.r.y should be nearest
-	tgt = {rotationY: seseme.rotation.y + (deg * (Math.PI/180))}
+	tgt = {rotationY: (nearest90*(Math.PI/180)) + (deg * (Math.PI/180))}
 	spd = Math.abs(tgt.rotationY - current.rotationY)*200
 	rotate = new TWEEN.Tween(current)
 	rotate.to(tgt,spd)
@@ -74,38 +68,70 @@ function autoRotate(deg){
 	rotate.start()
 	rotate.onComplete(function(){
 		realRotation()
+		findNearest90()
 		highlightCheck()
+		
 	})
 }
+
+// ------- math processes to make things make sense / work -------------
+
+function findNearest90(){
+	for(var i = 0; i < 5 ;i++){
+		if(Math.abs(sRotY-(i*90)) <= 45){
+			nearest90 = i*90
+			if(i==4){nearest90 = 0}
+			pillarOrder(all90s.indexOf(nearest90))
+		}
+	}
+}
+
 function realRotation(){ 
-	finalRot = seseme.rotation.y * (180/Math.PI)
-		if(finalRot < 0){
-			seseme.rotation.y = (360+finalRot) / (180/Math.PI)
+	sRotY = seseme.rotation.y * (180/Math.PI)
+		if(sRotY < 0){
+			seseme.rotation.y = (360+sRotY) / (180/Math.PI)
 			revolutionCount +=1
 			userActions.push('# revs: ' + revolutionCount)
 		}
-		if(Math.abs(finalRot/360) >= 1){
-			numRevs = Math.abs(Math.floor(finalRot/360))
-			actRot = finalRot - (numRevs*360)
-			if(finalRot < 0){actRot = finalRot+(numRevs*360)}
+		if(Math.abs(sRotY/360) >= 1){
+			numRevs = Math.abs(Math.floor(sRotY/360))
+			actRot = sRotY - (numRevs*360)
+			if(sRotY < 0){actRot = sRotY+(numRevs*360)}
 			seseme.rotation.y = actRot / (180/Math.PI)
 			revolutionCount +=1
 			userActions.push('# revs: ' + revolutionCount)
 		}
-	console.log(seseme.rotation.y * (180/Math.PI))
+	sRotY = seseme.rotation.y * (180/Math.PI)
 }
+function pillarOrder(distance){
+	//reorders the pillar array by taking everything b4 new selection and putting it at the end
+	//'distance' being how deep in the array you clicked
+	for(var i = 0; i < distance; i++){
+		pillars.push(pillars.shift())
+		all90s.push(all90s.shift())
+	}
+}
+
+
 function highlight(outlineNumber){
+	outlines.forEach(function(ele){
+		ele.opacity = 0
+	})
 	outlines[outlineNumber].opacity = 1
 }
 
 function highlightCheck(){
-	sRot = seseme.rotation.y * (180/Math.PI)
-	highlightRanges = [{min: 315, max: 45},{min:228,max:314},{min:137,max:227},{min:46,max:136}]
-	highlightRanges.forEach(function(ele,i){
-		if(ele.max >= sRot && ele.min <= sRot){
-			highlight([i+1])
-		}
-	})
+	if(pedestalSelected){
+
+	}else{
+		highlightRanges =[{min: 0, max: 45,p:1},{min:315,max: 360,p:1},{min:228,max:314,p:2},{min:137,max:227,p:3},{min:46,max:136,p:4}]
+		highlightRanges.forEach(function(ele,i){
+			if(ele.max >= sRotY && ele.min <= sRotY){
+				highlight(ele.p)
+			}
+		})
+	}
+	
 
 }
 

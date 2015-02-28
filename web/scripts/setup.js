@@ -6,15 +6,16 @@ var scene = new THREE.Scene(), camera, renderer, //basic 3d display
 seseme = new THREE.Group(), //model organization
 raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 //rotations
-pillars = ['plr1','plr2','plr3','plr4'], rotDir =1,
+pillars = ['plr1','plr2','plr3','plr4'], rotDir =1, nearest90 = 0, sRotY,
+all90s = [0,270,180,90],
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 defaultPosZoom, selectedObj,  mode = 0, outlines = [],
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
-explore, viewFunc, talkFunc, dataFunc, helpFunc, 
-navFuncs = [explore, viewFunc, talkFunc, dataFunc, helpFunc],
+viewFunc, talkFunc, dataFunc, helpFunc, 
+navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
 //array of functions called when buttons are pressed
 
 //experimental usage metrics
@@ -167,7 +168,11 @@ function setup(){
 		})
   		hammerSESEME.on('pan',function(evt){
   			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
+  				rotDir = evt.velocityX < 0 ? 1: evt.velocityX > 0 ? -1: 1
   				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
+  				realRotation()
+  				findNearest90()
+  				highlightCheck()
   			}
   		})
   		hammerSESEME.on('panend',function(evt){ //rotation deceleration
@@ -178,21 +183,22 @@ function setup(){
 	  			rotDecel.to({speed:0},diff+300)
 	  			rotDecel.onUpdate(function(){
 	  				seseme.rotation.y-=(start.speed * (Math.PI/90))
+	  				realRotation()
+	  				findNearest90()
+	  				highlightCheck()
 	  			})
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
 	  			rotDecel.onComplete(function(){
-	  				userActions.push('rot > ' + Math.round(seseme.rotation.y * (180/Math.PI)))
-	  				realRotation()
-	  				highlightCheck()
-	  			}) //onComplete
-	  		}//horizontal pan finish
+	  				userActions.push('panned to ' + Math.round(sRotY))
+	  			})
+	  		}//horizontal
   		})//pan finish
 
 		navs.forEach(function(ele, i){
 			hammerNav = new Hammer(ele)
 			hammerNav.on('tap',function(){
-				clickedNav(ele.id, i+1)	
+				clickedNav(i)	
 			})
 		})		
 	}//end function eventListeners
