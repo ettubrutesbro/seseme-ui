@@ -1,7 +1,11 @@
 // 1. get data  2. load external 3d   3. add event listeners (native, then custom)
 // semantic, consistent naming structure (there will be no pillar #0)
 
-var displayedDataSet //currently displayed dataset 
+var currentDataSet = data.ucd_bldg, //currently displayed dataset
+currentResource = 'power',
+selectedObj = 'plr1' 
+
+
 var scene = new THREE.Scene(), camera, renderer, //basic 3d display
 seseme = new THREE.Group(), //model organization
 raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
@@ -9,8 +13,8 @@ raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 pillars = ['plr1','plr2','plr3','plr4'], rotDir =1, nearest90 = 0, sRotY,
 all90s = [0,270,180,90],
 //pillar up and down movement
-plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
-defaultPosZoom, selectedObj,  mode = 0, outlines = [],
+plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
+defaultPosZoom, mode = 0, outlines = [],
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
@@ -155,7 +159,7 @@ function setup(){
 		  scene.add(seseme)
 	}
 	function eventListeners(){ //raycast and interaction
-		mousePos = { x:0, y:0, z:1 }
+		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
 
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
@@ -173,6 +177,7 @@ function setup(){
   				realRotation()
   				findNearest90()
   				highlightCheck()
+  				uiShift()
   			}
   		})
   		hammerSESEME.on('panend',function(evt){ //rotation deceleration
@@ -186,6 +191,7 @@ function setup(){
 	  				realRotation()
 	  				findNearest90()
 	  				highlightCheck()
+	  				uiShift()
 	  			})
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
@@ -203,6 +209,11 @@ function setup(){
 		})		
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
+		uiShift()
+		dataToHts()
+		setTimeout(function(){
+			updatePillars()
+		},500)
 	  // setTimeout(function(){updateValues()
 	  // },800) //no idea why, but this only
 	  // // works with a setTimeout that waits (even 10ms is enough) to fire it

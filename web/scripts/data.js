@@ -16,7 +16,7 @@ var data = {
 			spd: 610
 		},
 		 {
-			name: 'Shields Library',
+			name: 'The ARC',
 			power: {elec: 130, heat: 100, cool: 40},
 			water: { galm: 5, galh: 80},
 			spd: 210

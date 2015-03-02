@@ -1,9 +1,52 @@
+// data driven -------------
+
+function dataToHts(){ // translates data vals 
+	var allValues = []
+	currentDataSet.forEach(function(ele,i,arr){
+		var total = 0
+		var keyList = Object.keys(ele[currentResource])
+		for(var i = 0; i < keyList.length; i++){
+			total += (ele[currentResource][keyList[i]])
+		}
+		allValues.push(total)
+	})
+	console.log(allValues)
+	var highestValue = allValues.indexOf(Math.max.apply( Math, allValues ))
+	allValues.forEach(function(ele,i,arr){
+		tgtHts[i].y = (ele / arr[highestValue]) * 12
+	})
+}
+function updatePillars(){
+	[seseme.children[3],seseme.children[4],seseme.children[5],seseme.children[6]].forEach(function(ele,i){
+		spd = Math.abs((ele.position.y - tgtHts[i].y) * 100) + 400
+		plrTween = new TWEEN.Tween(plrHts[i])
+		plrTween.to(tgtHts[i],spd)
+		plrTween.easing(TWEEN.Easing.Cubic.InOut)
+		plrTween.onUpdate(function(){
+			ele.position.y = plrHts[i].y
+		})
+		plrTween.start()
+
+	})
+
+}
+function dataToUI(){ //data to textual / UI elems
+	console.log(data[currentResource])
+}
+function uiShift(which){ //click or touch rotate: call 
+	//get header
+	var name = document.querySelector('#header .pillar .name')
+	var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
+	name.textContent = currentDataSet[index].name
+}
+//interaction prompts ---------------
+
 
 function clickedSeseme(){
 	raycast.setFromCamera(mousePos, camera)
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
 	var clicked = intersects[0].object.name
-	if(clicked != 'ground' && clicked != 'orb' && mode ==0){ //pillar or pedestal
+	if(clicked != 'ground' && clicked != 'orb'){ //pillar or pedestal
 		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
 		userActions.push('clicked ' + clicked)
 
@@ -71,6 +114,7 @@ function autoRotate(deg){
 		realRotation()
 		findNearest90()
 		highlightCheck()
+		uiShift()
 	})
 	rotate.start()
 	rotate.onComplete(function(){
