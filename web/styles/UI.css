@@ -143,6 +143,10 @@ h3,h4,h5,h6 {
 		padding: .1rem .2rem 0 .2rem;
 		background-color: #ededed;
 		transform-origin: top left;
+		/*flex-grow: 3;
+		-webkit-flex-grow: 3;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;*/
 	}
 
 	#header .hideMe {

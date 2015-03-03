@@ -2,7 +2,7 @@
 
 function dataToHts(){ // translates data vals 
 	var allValues = []
-	currentDataSet.forEach(function(ele,i,arr){
+	data[currentDataSet].forEach(function(ele,i,arr){
 		var total = 0
 		var keyList = Object.keys(ele[currentResource])
 		for(var i = 0; i < keyList.length; i++){
@@ -17,7 +17,11 @@ function dataToHts(){ // translates data vals
 	})
 }
 function updatePillars(){
-	[seseme.children[3],seseme.children[4],seseme.children[5],seseme.children[6]].forEach(function(ele,i){
+	[ seseme.getObjectByName('plr1'),
+	seseme.getObjectByName('plr2'),
+	seseme.getObjectByName('plr3'),
+	seseme.getObjectByName('plr4')	
+	].forEach(function(ele,i){
 		spd = Math.abs((ele.position.y - tgtHts[i].y) * 100) + 400
 		plrTween = new TWEEN.Tween(plrHts[i])
 		plrTween.to(tgtHts[i],spd)
@@ -34,10 +38,15 @@ function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(which){ //click or touch rotate: call 
-	//how can i specify to only do it when it's different from before? 
 	var name = document.querySelector('#header .name')
-	var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
-	name.textContent = currentDataSet[index].name
+	if(selectedObj == 'pedestal' ){
+		name.textContent = currentResource + " @ " + currentDataSet 
+	}else{
+		var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
+		name.textContent = data[currentDataSet][index].name
+	}
+	//how can i specify to only do it when it's different from before? 
+	
 }
 //interaction prompts ---------------
 
@@ -201,7 +210,7 @@ viewFunc = function(open){
 		breakdown()
 	}else{
 		shift(defaultPosZoom)
-		// removeBreakdown()
+		removeBreakdown()
 	}
 }
 dataFunc = function(open){
@@ -231,42 +240,66 @@ helpFunc = function(open){
 
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
 var tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]] //pillars' XZ translation differences
-
 pillars.forEach(function(ele,it,arr){
 	var total = 0, breakdownHts = [], index = pillars[it].replace('plr','') - 1,
-	ht = tgtHts[index].y+1.25, detailStat = [], keyList = Object.keys(currentDataSet[index][currentResource])
+	ht = tgtHts[index].y+1.25, detailStat = [], keyList = Object.keys(data[currentDataSet][index][currentResource])
 
 	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
-		total += currentDataSet[index][currentResource][keyList[i]]
+		total += data[currentDataSet][index][currentResource][keyList[i]]
 	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
 	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
-		proportion = (currentDataSet[index][currentResource][keyList[i]]) / total
+		proportion = (data[currentDataSet][index][currentResource][keyList[i]]) / total
 		breakdownHts[i] = proportion * ht
 		geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
 		breakdownMtls[currentResource][i].opacity = 0
 		detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
-		console.log(detailStat[i])
 		detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[index][0],-breakdownHts[i]/2+0.25,tMtxs[index][1]))
 		detailStat[i].scale.set(0.9,1,0.9)
+		detailStat[i].name = "p" + (it+1) + "bkd" + i
 		if(breakdownHts[i-1]!=undefined){
 			for (var m = 0; m<i; m++){
 				detailStat[i].position.y -= breakdownHts[m]
 		}}
-		seseme.children[3+index].add(detailStat[i])
+		var parent = scene.getObjectByName('plr' + (index+1))
+		parent.add(detailStat[i])
 	}
-
-	detailStat.forEach(function(ele,ii,arr){
-		current = {opacity: 0, x: 0.7, z: 0.7}
-		scaleTween = new TWEEN.Tween(current).delay(ii*100)
-		scaleTween.to({opacity: 1, x: 1.06, z: 1.06},800)
-		scaleTween.easing(TWEEN.Easing.Cubic.Out)
-		scaleTween.onUpdate(function(){
-			ele.scale.x = current.x
-			ele.scale.z = current.z
-			ele.material.opacity = current.opacity
+	detailStat.forEach(function(e,ii,arr){
+		current = {opacity: 0, x: 0.6, z: 0.6}
+		e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
+		e.scaleTween.to({opacity: 1, x: 1.04, z: 1.04},800)
+		e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
+		e.scaleTween.onUpdate(function(){
+			e.scale.x = current.x
+			e.scale.z = current.z
+			e.material.opacity = current.opacity
 		})
-		scaleTween.start()
+		e.scaleTween.start()
 	})
 
 }) //end pillars.forEach
-}
+}//end breakdown
+
+function removeBreakdown(){
+	var bkd = []
+	for(var i = 1; i < 5; i++){
+		bkd.push(seseme.getObjectByName('plr' + i).children)
+	}
+	bkd.forEach(function(ele,i){
+		ele.forEach(function(e,it,arr){
+			if(it>0){ //avoud removing outline e[0]
+				current = {opacity: 1, x: 1, z: 1}
+				e.removeTween = new TWEEN.Tween(current)
+				e.removeTween.to({opacity: 0, x: 0.6, z: 0.6}, 500)
+				e.removeTween.start()
+				e.removeTween.onUpdate(function(){
+					e.material.opacity = current.opacity
+					e.scale.x = current.x
+					e.scale.z = current.z
+				})
+				e.removeTween.onComplete(function(){
+					arr.splice(1,(arr.length-1))
+				})
+			}
+		})
+	})
+} // end removeBreakdown

@@ -1,8 +1,8 @@
 // 1. get data  2. load external 3d   3. add event listeners (native, then custom)
 // semantic, consistent naming structure (there will be no pillar #0)
 
-var currentDataSet = data.ucd_bldg, //currently displayed dataset
-currentResource = 'power',
+var currentDataSet = 'UC Davis', //currently displayed dataset
+currentResource = 'Energy Use',
 selectedObj = 'plr1' 
 
 
@@ -114,6 +114,8 @@ function setup(){
 		      outlines[4] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      var plr1o = new THREE.Mesh(g, outlines[1])
 		      var plr4o = new THREE.Mesh(g, outlines[4])
+		      plr1o.name = "outline1"
+		      plr4o.name = "outline4"
 		      plr1.add(plr1o)
 		      setTimeout(function(){
 		        plr4.add(plr4o)
@@ -138,6 +140,8 @@ function setup(){
 		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      var plr2o = new THREE.Mesh(g, outlines[2])
 		      var plr3o = new THREE.Mesh(g, outlines[3])
+		      plr2o.name = "outline2"
+		      plr3o.name = "outline3"
 		      plr2.add(plr2o)
 		      plr3.add(plr3o)
 		    })
@@ -155,7 +159,6 @@ function setup(){
 		  ground.rotation.x = -90*(Math.PI/180)
 		  ground.receiveShadow = true
 		  ground.name = 'ground'
-
 		  seseme.add(ground)
 		  scene.add(seseme)
 	}
