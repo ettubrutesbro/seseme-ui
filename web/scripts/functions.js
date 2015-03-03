@@ -34,8 +34,8 @@ function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(which){ //click or touch rotate: call 
-	//get header
-	var name = document.querySelector('#header .pillar .name')
+	//how can i specify to only do it when it's different from before? 
+	var name = document.querySelector('#header .name')
 	var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
 	name.textContent = currentDataSet[index].name
 }
@@ -73,16 +73,27 @@ function clickedSeseme(){
 		}
 	}else{ //clicked the ground or the orb
 		selectedObj = ''
+		userActions.push('clicked ground')
 		// clearHighlight()
 	}
 }
 function clickedNav(index){
 	userActions.push('clicked ' + navs[index].id)	
+	sections = [].slice.call(document.getElementById('sectionContainer').children)
+	console.log(sections[index])
 	if(mode==0 || index+1 != mode){ 
+		if(mode!=0){
+			//close open nav
+			Velocity(sections[mode-1],{height: "0"})
+		}
+		sectionHeights = ["3.75rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
+		sections[index].style["display"] = "block"
+		Velocity(sections[index],{height: sectionHeights[index]})
 	}else{
+		Velocity(sections[index],{height: 0})
 		navFuncs[index](false)
 		mode=0
 	}
@@ -121,7 +132,6 @@ function autoRotate(deg){
 		realRotation()
 		findNearest90()
 		highlightCheck()
-		
 	})
 }
 
@@ -188,13 +198,15 @@ function highlightCheck(){
 viewFunc = function(open){
 	if(open){
 		shift({x: -19.75, y: 17, zoom: 1.5})
+		breakdown()
 	}else{
 		shift(defaultPosZoom)
+		// removeBreakdown()
 	}
 }
 dataFunc = function(open){
 	if(open){
-		shift({x: -19.75, y: 17, zoom: 1.5})
+		shift({x: -19.75, y: 17, zoom: 0.5})
 	}else{
 		shift(defaultPosZoom)
 	}	
@@ -215,3 +227,46 @@ helpFunc = function(open){
 }
 
 
+// view specific functions
+
+function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
+var tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]] //pillars' XZ translation differences
+
+pillars.forEach(function(ele,it,arr){
+	var total = 0, breakdownHts = [], index = pillars[it].replace('plr','') - 1,
+	ht = tgtHts[index].y+1.25, detailStat = [], keyList = Object.keys(currentDataSet[index][currentResource])
+
+	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
+		total += currentDataSet[index][currentResource][keyList[i]]
+	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
+	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
+		proportion = (currentDataSet[index][currentResource][keyList[i]]) / total
+		breakdownHts[i] = proportion * ht
+		geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
+		breakdownMtls[currentResource][i].opacity = 0
+		detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
+		console.log(detailStat[i])
+		detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[index][0],-breakdownHts[i]/2+0.25,tMtxs[index][1]))
+		detailStat[i].scale.set(0.9,1,0.9)
+		if(breakdownHts[i-1]!=undefined){
+			for (var m = 0; m<i; m++){
+				detailStat[i].position.y -= breakdownHts[m]
+		}}
+		seseme.children[3+index].add(detailStat[i])
+	}
+
+	detailStat.forEach(function(ele,ii,arr){
+		current = {opacity: 0, x: 0.7, z: 0.7}
+		scaleTween = new TWEEN.Tween(current).delay(ii*100)
+		scaleTween.to({opacity: 1, x: 1.06, z: 1.06},800)
+		scaleTween.easing(TWEEN.Easing.Cubic.Out)
+		scaleTween.onUpdate(function(){
+			ele.scale.x = current.x
+			ele.scale.z = current.z
+			ele.material.opacity = current.opacity
+		})
+		scaleTween.start()
+	})
+
+}) //end pillars.forEach
+}

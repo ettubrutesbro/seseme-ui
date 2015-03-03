@@ -163,7 +163,7 @@ h3,h4,h5,h6 {
 		background-image: url(../assets/dot.svg);
 	 	background-position: center;
 		background-size: 10px 10px;
-		background-repeat: repeat-x;
+		background-repeat: space no-repeat;
 	}
 	#header .littledata{
 		padding: .1rem .2rem 0 .2rem;

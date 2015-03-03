@@ -18,8 +18,9 @@ defaultPosZoom, mode = 0, outlines = [],
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
+openNav, 
 viewFunc, talkFunc, dataFunc, helpFunc, 
-navFuncs = [viewFunc, talkFunc, dataFunc, helpFunc],
+navFuncs = [viewFunc, dataFunc, talkFunc, helpFunc],
 //array of functions called when buttons are pressed
 
 //experimental usage metrics
