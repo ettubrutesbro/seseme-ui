@@ -143,9 +143,7 @@ function autoRotate(deg){
 		highlightCheck()
 	})
 }
-
 // ------- math processes to make things make sense / work -------------
-
 function findNearest90(){
 	for(var i = 0; i < 5 ;i++){
 		if(Math.abs(sRotY-(i*90)) <= 45){
@@ -180,15 +178,12 @@ function pillarOrder(distance){
 		all90s.push(all90s.shift())
 	}
 }
-
-
 function highlight(outlineNumber){
 	outlines.forEach(function(ele){
 		ele.opacity = 0
 	})
 	outlines[outlineNumber].opacity = 1
 }
-
 function highlightCheck(){
 	if(selectedObj == "pedestal"){
 
@@ -202,15 +197,19 @@ function highlightCheck(){
 		})
 	}
 }
-
 // ----------navigation mode---------------
 viewFunc = function(open){
 	if(open){
 		// shift({x: -19.75, y: 17, zoom: 1.75})
 		// make a deeper zoom, with a cam height partially contingent on pillar height!
-		shift({x: -19.75, y: 17, zoom: 1.5})
+		// console.log(seseme.getObjectByName(selectedObj))
+		index = selectedObj
+		index = index.replace('plr','')
+		index -= 1
+		console.log(tgtHts[index].y)
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.75), zoom: 1.75})
 		// breakdown()
-	}else{
+	}else{	
 		shift(defaultPosZoom)
 		// removeBreakdown()
 	}
@@ -236,10 +235,7 @@ helpFunc = function(open){
 		shift(defaultPosZoom)
 	}
 }
-
-
 // view specific functions
-
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
 var tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]] //pillars' XZ translation differences
 pillars.forEach(function(ele,it,arr){
@@ -277,7 +273,6 @@ pillars.forEach(function(ele,it,arr){
 		})
 		e.scaleTween.start()
 	})
-
 }) //end pillars.forEach
 }//end breakdown
 
