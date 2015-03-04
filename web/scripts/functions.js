@@ -206,11 +206,13 @@ function highlightCheck(){
 // ----------navigation mode---------------
 viewFunc = function(open){
 	if(open){
+		// shift({x: -19.75, y: 17, zoom: 1.75})
+		// make a deeper zoom, with a cam height partially contingent on pillar height!
 		shift({x: -19.75, y: 17, zoom: 1.5})
-		breakdown()
+		// breakdown()
 	}else{
 		shift(defaultPosZoom)
-		removeBreakdown()
+		// removeBreakdown()
 	}
 }
 dataFunc = function(open){
@@ -222,7 +224,7 @@ dataFunc = function(open){
 }
 talkFunc = function(open){
 	if(open){
-		shift({x: -19.75, y: 17, zoom: 1.5})
+		shift({x: -19.75, y: 17, zoom: 1.7})
 	}else{
 		shift(defaultPosZoom)
 	}

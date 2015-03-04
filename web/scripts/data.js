@@ -9,8 +9,8 @@ var data = {
 			spd: 42
 		},
 		 {
-			name: 'Ghausi Hall',
-			'Energy Use': {elec: 69, cool: 11, heat: 84},
+			name: 'Chemistry Annex',
+			'Energy Use': {elec: 214, cool: 11, heat: 113},
 			water: { galm: 13, galh: 800},
 			spd: 610
 		},
