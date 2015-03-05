@@ -199,18 +199,22 @@ function highlightCheck(){
 }
 // ----------navigation mode---------------
 viewFunc = function(open){
+	var name = document.querySelector('#header .name')
+	var hide = document.querySelectorAll('.hideMe div')
 	if(open){
-		// shift({x: -19.75, y: 17, zoom: 1.75})
-		// make a deeper zoom, with a cam height partially contingent on pillar height!
-		// console.log(seseme.getObjectByName(selectedObj))
-		index = selectedObj
-		index = index.replace('plr','')
+		//3d shift 
+		var index = selectedObj.replace('plr','')
 		index -= 1
 		console.log(tgtHts[index].y)
-		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.75), zoom: 1.75})
+		shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+		//dom manipulation
+		Velocity(name, {scale: 1.4, backgroundColorAlpha: 1})
+		Velocity(hide, {opacity: 0})
 		// breakdown()
 	}else{	
 		shift(defaultPosZoom)
+		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
+		Velocity(hide, 'transition.slideLeftIn')
 		// removeBreakdown()
 	}
 }
