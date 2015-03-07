@@ -95,7 +95,7 @@ function clickedNav(index){
 			//close open nav
 			Velocity(sections[mode-1],{height: "0"})
 		}
-		sectionHeights = ["3.75rem","9rem","",""]
+		sectionHeights = ["3.5rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
@@ -209,7 +209,7 @@ viewFunc = function(open){
 		//3d shift 
 		var index = selectedObj.replace('plr','')
 		index -= 1
-		shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
 		Velocity(icon, {scale: 1.5})
@@ -239,16 +239,16 @@ viewFunc = function(open){
 		Velocity(bkdown, 'finish')
 		if(bkdown.style['height'] == 0 || bkdown.style['height'] == '0px'){
 			breakdown()
-			shift({x: -19.75, y: 19, zoom: 1.2})
+			shift({x: -19.75, y: 16, zoom: 1.2})
 			Velocity(semantic, {height: "1.75rem"})
 			Velocity(grade, {width: "0", opacity: 0.3},{delay: 200, duration: 500})
 			Velocity(aggData, {width: "100%"},{delay: 400, duration: 500})
-			Velocity(bkdown, {height: "1.5rem", opacity: 1})
+			Velocity(bkdown, {height: "1.1rem", opacity: 1})
 		}else{
 			removeBreakdown()
 			var index = selectedObj.replace('plr','')
 			index -= 1
-			shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 			Velocity(semantic, {height: "2.75rem"})
 			Velocity(grade, {width: "75%", opacity: 1}, {delay: 200, duration: 500})
 			Velocity(aggData, {width: "25%"}, {delay: 200, duration: 500})
@@ -284,8 +284,20 @@ var tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]] //pillars' XZ translation 
 pillars.forEach(function(ele,it,arr){
 	var total = 0, breakdownHts = [], index = pillars[it].replace('plr','') - 1,
 	ht = tgtHts[index].y+1.25, detailStat = [], keyList = Object.keys(data[currentDataSet][index][currentResource])
+	var bkdDom = document.getElementById('breakdown')
 
+	bkdDom.innerHTML = ''
 	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
+		var element = document.createElement('div')
+		element.class = 'breakdownStat'
+		element.style['width'] = (Math.floor(100 / keyList.length - 1) + "%")
+		element.style['text-align'] = 'right'
+		element.style['padding'] = '0.1rem 0.2rem'
+		element.style['backgroundColor'] = ("rgb(" + breakdownMtls[currentResource][i].color.r*255 + "," + 
+			breakdownMtls[currentResource][i].color.g*255 + "," + 
+			breakdownMtls[currentResource][i].color.b*255 + ")")
+		element.textContent = data[currentDataSet][index][currentResource][keyList[i]]
+		bkdDom.appendChild(element)
 		total += data[currentDataSet][index][currentResource][keyList[i]]
 	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
 	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
