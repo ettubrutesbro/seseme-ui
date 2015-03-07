@@ -209,7 +209,6 @@ viewFunc = function(open){
 		//3d shift 
 		var index = selectedObj.replace('plr','')
 		index -= 1
-		console.log(tgtHts[index].y)
 		shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
@@ -229,13 +228,32 @@ viewFunc = function(open){
 	}
 }
 
-	function viewMode(sb){ //true =breakdown false=semantic
+	function viewMode(){ //true =breakdown false=semantic
 		var semantic = document.querySelector('#semantic')
+		var grade = document.querySelector('#grade')
+		var aggData = document.querySelector('#aggData')
 		var bkdown = document.querySelector('#breakdown')
-		breakdown()
-		shift({x: -19.75, y: 17, zoom: 1.2})
-		Velocity(semantic, {height: "1.5rem"})
-		Velocity(bkdown, {height: "1.5rem"})
+		Velocity(semantic, 'finish')
+		Velocity(grade, 'finish')
+		Velocity(aggData, 'finish')
+		Velocity(bkdown, 'finish')
+		if(bkdown.style['height'] == 0 || bkdown.style['height'] == '0px'){
+			breakdown()
+			shift({x: -19.75, y: 19, zoom: 1.2})
+			Velocity(semantic, {height: "1.75rem"})
+			Velocity(grade, {width: "0"},{delay: 150, duration: 800})
+			Velocity(aggData, {width: "100%"},{delay: 150, duration: 800})
+			Velocity(bkdown, {height: "1.5rem"})
+		}else{
+			removeBreakdown()
+			var index = selectedObj.replace('plr','')
+			index -= 1
+			shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+			Velocity(semantic, {height: "2.75rem"})
+			
+			Velocity(bkdown, {height: 0})
+		}
+		
 		//shrink semantic, height+ breakdown
 	}
 dataFunc = function(open){

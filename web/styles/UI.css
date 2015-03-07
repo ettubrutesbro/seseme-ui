@@ -204,14 +204,28 @@ section{
 		}
 			#grade {
 				width: 75%;
+				overflow: hidden;
 				display: flex;
 				display: -webkit-flex;
 				justify-content: space-between;
 			}
 				#gradePic {
-					width: 60%;
+					width: 90px;
 				}
 				#gradeText{
+					font-family: 'Fira Sans', sans-serif;
+					letter-spacing: 0.07rem;
+					font-size: 0.6rem;
+					padding: 0rem 0.25rem;
+					flex-grow: 1;
+					flex-shrink: 0;
+					flex-basis: 120px;
+				}
+				.gradeWords {
+					display: block; margin: 0.2rem 0; padding: 0.1rem;
+					background-color: rgba(255,255,255,0.8);
+					width: min-content;
+					width: -webkit-min-content;
 				}
 			#aggData {
 				width: 25%;
