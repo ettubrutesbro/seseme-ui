@@ -242,7 +242,7 @@ viewFunc = function(open){
 			shift({x: -19.75, y: 16, zoom: 1.2})
 			Velocity(semantic, {height: "1.75rem"})
 			Velocity(grade, {width: "0", opacity: 0.3},{delay: 200, duration: 500})
-			Velocity(aggData, {width: "100%"},{delay: 400, duration: 500})
+			Velocity(aggData, {width: "40%"},{delay: 400, duration: 500})
 			Velocity(bkdown, {height: "1.1rem", opacity: 1})
 		}else{
 			removeBreakdown()

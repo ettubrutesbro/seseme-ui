@@ -133,7 +133,6 @@ h3,h4,h5,h6 {
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.02rem;
 	color: black;
-	border: 1px blue solid;
 }
 #bodyTitle {
 	display: flex;
@@ -170,7 +169,6 @@ h3,h4,h5,h6 {
 	}
 	#titleGrade{
 		padding: 0 0.3rem;
-		border: 1px white solid;
 		transform-origin: bottom right;
 	}
 
@@ -179,20 +177,18 @@ section{
 	display: none;
 	overflow: hidden;
 	height: 0;
+	font-family: 'Fira Sans', sans-serif;
 }
 
 	section#view {
-		border: 1px green solid;
 	}
 		.viewRow {
 			width: 100%;
-			border: 1px red solid;
 			display: flex;
 			display: -webkit-flex;
 			justify-content: space-between;
 		}
 			.viewRow div {
-				border: 1px white solid;
 			}
 		#view #breakdown {
 			height: 0;
@@ -214,7 +210,6 @@ section{
 					width: 90px;
 				}
 				#gradeText{
-					font-family: 'Fira Sans', sans-serif;
 					letter-spacing: 0.07rem;
 					font-size: 0.6rem;
 					padding: 0rem 0.25rem;
@@ -230,4 +225,13 @@ section{
 				}
 			#aggData {
 				width: 25%;
+				color: white;
 			}
+				#dataNum {
+					font-family: 'Source Serif Pro', serif;
+					font-size: 1.2rem;
+				}
+				#dataUnit{
+					font-size: 0.5rem;
+					text-align: right;
+				}
