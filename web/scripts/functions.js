@@ -38,7 +38,7 @@ function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(which){ //click or touch rotate: call 
-	var name = document.querySelector('#bodyTitle .name')
+	var name = document.querySelector('#name')
 	if(selectedObj == 'pedestal' ){
 		name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
@@ -100,9 +100,12 @@ function clickedNav(index){
 		navFuncs[index](true)
 		mode=index+1
 		sections[index].style["display"] = "block"
-		Velocity(sections[index],{height: sectionHeights[index]})
+		Velocity(sections[index],{height: sectionHeights[index], opacity: 1})
 	}else{
-		Velocity(sections[index],{height: 0})
+		Velocity(sections[index],{height: 0, opacity: 0.25},{complete: function(){
+			sections[index].style["display"] = "none"
+		}})
+
 		navFuncs[index](false)
 		mode=0
 	}
@@ -199,8 +202,9 @@ function highlightCheck(){
 }
 // ----------navigation mode---------------
 viewFunc = function(open){
-	var name = document.querySelector('#bodyTitle .name')
-	var hide = document.querySelectorAll('#titleHide div')
+	var name = document.querySelector('#name')
+	var icon = document.querySelector('#titleGrade')
+	var hide = document.querySelector('#titleRule')
 	if(open){
 		//3d shift 
 		var index = selectedObj.replace('plr','')
@@ -208,16 +212,32 @@ viewFunc = function(open){
 		console.log(tgtHts[index].y)
 		shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 		//dom manipulation
-		Velocity(name, {scale: 1.4, backgroundColorAlpha: 1})
+		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
+		Velocity(icon, {scale: 1.5})
 		Velocity(hide, {opacity: 0})
 		// breakdown()
+		//add viewMode event listener
+		icon.addEventListener('click',viewMode)
 	}else{	
 		shift(defaultPosZoom)
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
+		Velocity(icon, {scale: 1.0})
 		Velocity(hide, 'transition.slideLeftIn')
+		icon.removeEventListener('click',viewMode)
 		// removeBreakdown()
+		//remove viewMode event listener
 	}
 }
+
+	function viewMode(sb){ //true =breakdown false=semantic
+		var semantic = document.querySelector('#semantic')
+		var bkdown = document.querySelector('#breakdown')
+		breakdown()
+		shift({x: -19.75, y: 17, zoom: 1.2})
+		Velocity(semantic, {height: "1.5rem"})
+		Velocity(bkdown, {height: "1.5rem"})
+		//shrink semantic, height+ breakdown
+	}
 dataFunc = function(open){
 	if(open){
 		shift({x: -19.75, y: 17, zoom: 0.5})

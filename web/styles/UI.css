@@ -143,9 +143,9 @@ h3,h4,h5,h6 {
 	font-weight: 600;
 	/*text-align: center;*/
 }
-	#bodyTitle .name {
+	#name {
 		background-color: rgba(255,255,255,0);
-		transform-origin: top left;
+		transform-origin: bottom left;
 		padding: 0 0.3rem;
 	}
 
@@ -168,9 +168,10 @@ h3,h4,h5,h6 {
 		background-size: 10px 10px;
 		background-repeat: space no-repeat;
 	}
-	#titleData{
+	#titleGrade{
 		padding: 0 0.3rem;
-	
+		border: 1px white solid;
+		transform-origin: bottom right;
 	}
 
 
@@ -178,10 +179,10 @@ section{
 	display: none;
 	overflow: hidden;
 	height: 0;
-	padding: 0.5rem 0.5rem;
 }
 
 	section#view {
+		border: 1px green solid;
 	}
 		.viewRow {
 			width: 100%;
@@ -199,6 +200,7 @@ section{
 		}
 		#view #semantic {
 			height: 2.75rem;
+			overflow: hidden;
 		}
 			#grade {
 				width: 75%;
