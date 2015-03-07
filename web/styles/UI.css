@@ -197,6 +197,7 @@ section{
 		#view #breakdown {
 			height: 0;
 			overflow: hidden;
+			opacity: 0;
 		}
 		#view #semantic {
 			height: 2.75rem;

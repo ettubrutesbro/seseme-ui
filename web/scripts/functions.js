@@ -241,17 +241,18 @@ viewFunc = function(open){
 			breakdown()
 			shift({x: -19.75, y: 19, zoom: 1.2})
 			Velocity(semantic, {height: "1.75rem"})
-			Velocity(grade, {width: "0"},{delay: 150, duration: 800})
-			Velocity(aggData, {width: "100%"},{delay: 150, duration: 800})
-			Velocity(bkdown, {height: "1.5rem"})
+			Velocity(grade, {width: "0", opacity: 0.3},{delay: 200, duration: 500})
+			Velocity(aggData, {width: "100%"},{delay: 400, duration: 500})
+			Velocity(bkdown, {height: "1.5rem", opacity: 1})
 		}else{
 			removeBreakdown()
 			var index = selectedObj.replace('plr','')
 			index -= 1
 			shift({x: -19.75, y: 16+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 			Velocity(semantic, {height: "2.75rem"})
-			
-			Velocity(bkdown, {height: 0})
+			Velocity(grade, {width: "75%", opacity: 1}, {delay: 200, duration: 500})
+			Velocity(aggData, {width: "25%"}, {delay: 200, duration: 500})
+			Velocity(bkdown, {height: 0, opacity: 0.3})
 		}
 		
 		//shrink semantic, height+ breakdown
