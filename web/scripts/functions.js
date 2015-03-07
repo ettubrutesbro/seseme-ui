@@ -38,7 +38,7 @@ function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(which){ //click or touch rotate: call 
-	var name = document.querySelector('#header .name')
+	var name = document.querySelector('#bodyTitle .name')
 	if(selectedObj == 'pedestal' ){
 		name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
@@ -199,8 +199,8 @@ function highlightCheck(){
 }
 // ----------navigation mode---------------
 viewFunc = function(open){
-	var name = document.querySelector('#header .name')
-	var hide = document.querySelectorAll('.hideMe div')
+	var name = document.querySelector('#bodyTitle .name')
+	var hide = document.querySelectorAll('#titleHide div')
 	if(open){
 		//3d shift 
 		var index = selectedObj.replace('plr','')

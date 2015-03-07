@@ -31,14 +31,14 @@ navigates to core functions  -->
         <div id = "uiBody">
 
 <!-- header contains info preview in explore mode, titles for nav modes -->
-        <div id = "header">
+        <div id = "bodyTitle">
             <div class = "name">
             The ARC
             </div>
 
-          <div class = "hideMe">
-            <div class = "headerRule"></div>
-            <div class = "littledata">50 EUI</div>
+          <div id = "titleHide">
+            <div id = "titleRule"></div>
+            <div id = "titleData">50 EUI</div>
           </div>
         </div> <!-- end header div -->
 
@@ -46,9 +46,22 @@ navigates to core functions  -->
         <div id = "sectionContainer">
 
           <section id = "view"> <!-- detailed view -->
-              <div class = "breakdown"></div>
-              <div class = "breakdown"></div>
-              <div class = "breakdown"></div>
+              <div id = "breakdown" class = "viewRow">
+                <div class = "breakdownStat">e</div>
+                <div class = "breakdownStat">c</div>
+                <div class = "breakdownStat">h</div>
+              </div>
+              <div id = "semantic" class = "viewRow">
+                <div id = "grade">
+                  <div id = "gradePic">A</div>
+                  <div id = "gradeText">
+                    PRETTY EFFICIENT
+                  </div>
+                </div>
+                <div id = "aggData">
+                  over 9000
+                </div>
+              </div>
           </section>
 
           <section id = "data"> <!-- conversation & vote -->
