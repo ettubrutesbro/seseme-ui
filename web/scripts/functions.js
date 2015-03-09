@@ -214,8 +214,6 @@ viewFunc = function(open){
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
 		Velocity(icon, {scale: 1.5})
 		Velocity(hide, {opacity: 0})
-		// breakdown()
-		//add viewMode event listener
 		icon.addEventListener('click',viewMode)
 	}else{	
 		shift(defaultPosZoom)
@@ -223,8 +221,6 @@ viewFunc = function(open){
 		Velocity(icon, {scale: 1.0})
 		Velocity(hide, 'transition.slideLeftIn')
 		icon.removeEventListener('click',viewMode)
-		// removeBreakdown()
-		//remove viewMode event listener
 	}
 }
 
@@ -280,14 +276,11 @@ helpFunc = function(open){
 }
 // view specific functions
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
-var tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]] //pillars' XZ translation differences
-pillars.forEach(function(ele,it,arr){
-	var total = 0, breakdownHts = [], index = pillars[it].replace('plr','') - 1,
-	ht = tgtHts[index].y+1.25, detailStat = [], keyList = Object.keys(data[currentDataSet][index][currentResource])
-	var bkdDom = document.getElementById('breakdown')
-
+ //pillars' XZ translation differences
+var bkdDom = document.getElementById('breakdown'), index = pillars[0].replace('plr','') - 1,
+keyList = Object.keys(data[currentDataSet][index][currentResource])
 	bkdDom.innerHTML = ''
-	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
+	for(var i = 0; i<keyList.length; i++){
 		var element = document.createElement('div')
 		element.class = 'breakdownStat'
 		element.style['width'] = (Math.floor(100 / keyList.length - 1) + "%")
@@ -298,6 +291,12 @@ pillars.forEach(function(ele,it,arr){
 			breakdownMtls[currentResource][i].color.b*255 + ")")
 		element.textContent = data[currentDataSet][index][currentResource][keyList[i]]
 		bkdDom.appendChild(element)
+	}
+pillars.forEach(function(ele,it,arr){
+	var total = 0, breakdownHts = [], 
+	ht = tgtHts[index].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
+	
+	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
 		total += data[currentDataSet][index][currentResource][keyList[i]]
 	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
 	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
