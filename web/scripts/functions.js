@@ -116,9 +116,12 @@ function clickedNav(index){
 	}
 }
 // ----------3d operations-----------------
-function shift(tgtPosZoom){
+function shift(tgtPosZoom, addspeed){
 	var currentPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom}
 	var shiftSpeed = (Math.abs(camera.zoom - tgtPosZoom.zoom)) * 600 + 300
+		if(addspeed != undefined){
+			shiftSpeed += addspeed	
+		}
 	var shiftTween = new TWEEN.Tween(currentPosZoom)
 	shiftTween.to(tgtPosZoom, shiftSpeed)
 	shiftTween.onUpdate(function(){
@@ -145,10 +148,11 @@ function autoRotate(deg){
 		uiShift()
 	})
 	rotate.start()
+	rotate.onStart(function(){
+		zoomHeightCheck()
+	})
 	rotate.onComplete(function(){
-		realRotation()
-		findNearest90()
-		highlightCheck()
+		// zoomHeightCheck()
 	})
 }
 // ------- math processes to make things make sense / work -------------
@@ -205,6 +209,13 @@ function highlightCheck(){
 		})
 	}
 }
+function zoomHeightCheck(){
+	if(mode==1 && !breakdownOn){
+		var index = selectedObj.replace('plr','')
+		index -= 1
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2},400)
+	}
+}
 // ----------navigation mode---------------
 viewFunc = function(open){
 	var name = document.querySelector('#name')
@@ -258,9 +269,7 @@ viewFunc = function(open){
 			Velocity(aggData, {width: "25%"}, {delay: 200, duration: 500})
 			Velocity(bkdown, {height: 0, opacity: 0.3})
 		}
-		
-		//shrink semantic, height+ breakdown
-	}
+	} // end function viewMode
 dataFunc = function(open){
 	if(open){
 		shift({x: -19.75, y: 17, zoom: 0.5})
@@ -315,7 +324,7 @@ pillars.forEach(function(ele,it,arr){
 	detailStat.forEach(function(e,ii,arr){
 		current = {opacity: 0, x: 0.6, z: 0.6}
 		e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
-		e.scaleTween.to({opacity: 1, x: 1.04, z: 1.04},800)
+		e.scaleTween.to({opacity: 0.85, x: 1.04, z: 1.04},800)
 		e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
 		e.scaleTween.onUpdate(function(){
 			e.scale.x = current.x
@@ -354,7 +363,6 @@ function removeBreakdown(){
 } // end removeBreakdown
 
 function breakdownShift(indexnumber){
-	console.log('breakdown shift runs ' + pillars)
 	var bkdDom = document.getElementById('breakdown') 
 	bkdDom.innerHTML = ''
 	for(var i = 0; i<keyList.length; i++){
@@ -367,7 +375,6 @@ function breakdownShift(indexnumber){
 			breakdownMtls[currentResource][i].color.g*255 + "," + 
 			breakdownMtls[currentResource][i].color.b*255 + ")")
 		element.textContent = data[currentDataSet][indexnumber][currentResource][keyList[i]]
-		console.log(data[currentDataSet][indexnumber][currentResource][keyList[i]])
 		bkdDom.appendChild(element)
 	}
 }

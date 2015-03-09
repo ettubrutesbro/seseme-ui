@@ -200,6 +200,7 @@ function setup(){
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
 	  			rotDecel.onComplete(function(){
+	  				zoomHeightCheck()
 	  				userActions.push('panned to ' + Math.round(sRotY))
 	  			})
 	  		}//horizontal

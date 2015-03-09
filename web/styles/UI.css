@@ -228,13 +228,16 @@ section{
 					width: -webkit-min-content;
 				}
 			#aggData {
+				margin: 0.2em 0;
 				width: 25%;
-				padding: 0.2rem;
+				padding: 0.6rem 0.2rem;
 				background-color: rgba(255,255,255,0.8);
 			}
 				#dataNum {
 					font-family: 'Source Serif Pro', serif;
+					font-weight: 600;
 					font-size: 1.2rem;
+					line-height: 0.5rem;
 				}
 				#dataUnit{
 					font-size: 0.5rem;
