@@ -300,19 +300,19 @@ pillars.forEach(function(ele,it,arr){
 		total += data[currentDataSet][index][currentResource][keyList[i]]
 	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
 	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
-		proportion = (data[currentDataSet][index][currentResource][keyList[i]]) / total
+		proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
 		breakdownHts[i] = proportion * ht
 		geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
 		breakdownMtls[currentResource][i].opacity = 0
 		detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
-		detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[index][0],-breakdownHts[i]/2+0.25,tMtxs[index][1]))
+		detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[it][0],-breakdownHts[i]/2+0.25,tMtxs[it][1]))
 		detailStat[i].scale.set(0.9,1,0.9)
 		detailStat[i].name = "p" + (it+1) + "bkd" + i
 		if(breakdownHts[i-1]!=undefined){
 			for (var m = 0; m<i; m++){
 				detailStat[i].position.y -= breakdownHts[m]
 		}}
-		var parent = scene.getObjectByName('plr' + (index+1))
+		var parent = scene.getObjectByName('plr' + (it+1))
 		parent.add(detailStat[i])
 	}
 	detailStat.forEach(function(e,ii,arr){

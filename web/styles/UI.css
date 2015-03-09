@@ -225,7 +225,7 @@ section{
 				}
 			#aggData {
 				width: 25%;
-				color: white;
+				background-color: white;
 			}
 				#dataNum {
 					font-family: 'Source Serif Pro', serif;
