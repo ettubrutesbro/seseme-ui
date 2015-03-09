@@ -40,7 +40,7 @@ function dataToUI(){ //data to textual / UI elems
 function uiShift(){ //click or touch rotate: call 
 	var name = document.querySelector('#name')
 	if(selectedObj == 'pedestal' ){
-		name.textContent = currentResource + " @ " + currentDataSet 
+		// name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
 		var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
 		name.textContent = data[currentDataSet][index].name
@@ -137,6 +137,7 @@ function autoRotate(deg){
 	current = {rotationY: seseme.rotation.y}
 	tgt = {rotationY: (nearest90*(Math.PI/180)) + (deg * (Math.PI/180))}
 	spd = Math.abs(tgt.rotationY - current.rotationY)*200 + 350
+	console.log(current.rotationY + " " + tgt.rotationY)
 	rotate = new TWEEN.Tween(current)
 	rotate.to(tgt,spd)
 	rotate.easing(TWEEN.Easing.Quadratic.Out)
@@ -152,7 +153,9 @@ function autoRotate(deg){
 		zoomHeightCheck()
 	})
 	rotate.onComplete(function(){
-		// zoomHeightCheck()
+		realRotation()
+		findNearest90()
+		highlightCheck()
 	})
 }
 // ------- math processes to make things make sense / work -------------
@@ -221,6 +224,11 @@ viewFunc = function(open){
 	var name = document.querySelector('#name')
 	var icon = document.querySelector('#titleGrade')
 	var hide = document.querySelector('#titleRule')
+	if(selectedObj == 'pedestal'){
+		selectedObj = ''
+		sRotY = seseme.rotation.y * (180/Math.PI)
+		highlightCheck()
+	}
 	Velocity(name, "finish")
 	Velocity(icon, "finish")
 	Velocity(hide, "finish")
@@ -233,21 +241,28 @@ viewFunc = function(open){
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
 		Velocity(icon, {scale: 2})
 		Velocity(hide, {opacity: 0})
-		icon.addEventListener('click',viewMode)
+		hammerIcon = new Hammer(icon)
+		hammerIcon.on('tap',viewMode)
 	}else{	
 		shift(defaultPosZoom)
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
 		Velocity(icon, {scale: 1.0})
 		Velocity(hide, 'transition.slideLeftIn')
-		icon.removeEventListener('click',viewMode)
+		hammerIcon.off('tap',viewMode)
 	}
 }
 
 	function viewMode(){ //true =breakdown false=semantic
+		if(selectedObj == 'pedestal'){
+			selectedObj = ''
+			sRotY = seseme.rotation.y * (180/Math.PI)
+			highlightCheck()
+		}
 		var semantic = document.querySelector('#semantic')
 		var grade = document.querySelector('#grade')
 		var aggData = document.querySelector('#aggData')
 		var bkdown = document.querySelector('#breakdown')
+
 		Velocity(semantic, 'finish')
 		Velocity(grade, 'finish')
 		Velocity(aggData, 'finish')

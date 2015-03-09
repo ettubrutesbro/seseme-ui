@@ -170,6 +170,7 @@ function setup(){
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
+			
 			mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
 			mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
 			clickedSeseme()
