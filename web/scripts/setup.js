@@ -14,7 +14,7 @@ pillars = ['plr1','plr2','plr3','plr4'], rotDir =1, nearest90 = 0, sRotY,
 all90s = [0,270,180,90],
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
-defaultPosZoom, mode = 0, outlines = [],
+defaultPosZoom, mode = 0, outlines = [], breakdownOn = false,
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections

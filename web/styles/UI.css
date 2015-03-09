@@ -170,9 +170,11 @@ h3,h4,h5,h6 {
 	#titleGrade{
 		padding: 0 0.3rem;
 		transform-origin: bottom right;
+		background-color: white;
 	}
 
-
+#sectionContainer {
+}
 section{
 	display: none;
 	overflow: hidden;
@@ -191,11 +193,13 @@ section{
 			.viewRow div {
 			}
 		#view #breakdown {
+			margin-top: 0.2rem;
 			height: 0;
 			overflow: hidden;
 			opacity: 0;
 		}
 		#view #semantic {
+			margin-top: 0.2rem;
 			height: 2.75rem;
 			overflow: hidden;
 		}
@@ -225,7 +229,8 @@ section{
 				}
 			#aggData {
 				width: 25%;
-				background-color: white;
+				padding: 0.2rem;
+				background-color: rgba(255,255,255,0.8);
 			}
 				#dataNum {
 					font-family: 'Source Serif Pro', serif;

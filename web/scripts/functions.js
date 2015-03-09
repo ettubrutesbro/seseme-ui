@@ -37,13 +37,18 @@ function updatePillars(){
 function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
-function uiShift(which){ //click or touch rotate: call 
+function uiShift(){ //click or touch rotate: call 
 	var name = document.querySelector('#name')
 	if(selectedObj == 'pedestal' ){
 		name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
 		var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
 		name.textContent = data[currentDataSet][index].name
+		if(breakdownOn){
+			// console.log(index)
+			keyList = Object.keys(data[currentDataSet][index][currentResource])
+			breakdownShift((pillars[0].replace('plr','') - 1))
+		}
 	}
 	//how can i specify to only do it when it's different from before? 
 	
@@ -205,14 +210,17 @@ viewFunc = function(open){
 	var name = document.querySelector('#name')
 	var icon = document.querySelector('#titleGrade')
 	var hide = document.querySelector('#titleRule')
+	Velocity(name, "finish")
+	Velocity(icon, "finish")
+	Velocity(hide, "finish")
 	if(open){
 		//3d shift 
 		var index = selectedObj.replace('plr','')
 		index -= 1
-		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
-		Velocity(icon, {scale: 1.5})
+		Velocity(icon, {scale: 2})
 		Velocity(hide, {opacity: 0})
 		icon.addEventListener('click',viewMode)
 	}else{	
@@ -237,14 +245,14 @@ viewFunc = function(open){
 			breakdown()
 			shift({x: -19.75, y: 16, zoom: 1.2})
 			Velocity(semantic, {height: "1.75rem"})
-			Velocity(grade, {width: "0", opacity: 0.3},{delay: 200, duration: 500})
+			Velocity(grade, {width: "0", opacity: -0.5},{delay: 200, duration: 500})
 			Velocity(aggData, {width: "40%"},{delay: 400, duration: 500})
 			Velocity(bkdown, {height: "1.1rem", opacity: 1})
 		}else{
 			removeBreakdown()
 			var index = selectedObj.replace('plr','')
 			index -= 1
-			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
 			Velocity(semantic, {height: "2.75rem"})
 			Velocity(grade, {width: "75%", opacity: 1}, {delay: 200, duration: 500})
 			Velocity(aggData, {width: "25%"}, {delay: 200, duration: 500})
@@ -277,21 +285,10 @@ helpFunc = function(open){
 // view specific functions
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
  //pillars' XZ translation differences
-var bkdDom = document.getElementById('breakdown'), index = pillars[0].replace('plr','') - 1,
+ breakdownOn = true
+index = pillars[0].replace('plr','') - 1,
 keyList = Object.keys(data[currentDataSet][index][currentResource])
-	bkdDom.innerHTML = ''
-	for(var i = 0; i<keyList.length; i++){
-		var element = document.createElement('div')
-		element.class = 'breakdownStat'
-		element.style['width'] = (Math.floor(100 / keyList.length - 1) + "%")
-		element.style['text-align'] = 'right'
-		element.style['padding'] = '0.1rem 0.2rem'
-		element.style['backgroundColor'] = ("rgb(" + breakdownMtls[currentResource][i].color.r*255 + "," + 
-			breakdownMtls[currentResource][i].color.g*255 + "," + 
-			breakdownMtls[currentResource][i].color.b*255 + ")")
-		element.textContent = data[currentDataSet][index][currentResource][keyList[i]]
-		bkdDom.appendChild(element)
-	}
+breakdownShift(index)
 pillars.forEach(function(ele,it,arr){
 	var total = 0, breakdownHts = [], 
 	ht = tgtHts[index].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
@@ -331,6 +328,7 @@ pillars.forEach(function(ele,it,arr){
 }//end breakdown
 
 function removeBreakdown(){
+	breakdownOn = false
 	var bkd = []
 	for(var i = 1; i < 5; i++){
 		bkd.push(seseme.getObjectByName('plr' + i).children)
@@ -354,3 +352,22 @@ function removeBreakdown(){
 		})
 	})
 } // end removeBreakdown
+
+function breakdownShift(indexnumber){
+	console.log('breakdown shift runs ' + pillars)
+	var bkdDom = document.getElementById('breakdown') 
+	bkdDom.innerHTML = ''
+	for(var i = 0; i<keyList.length; i++){
+		var element = document.createElement('div')
+		element.class = 'breakdownStat'
+		element.style['width'] = (Math.floor(100 / keyList.length - 1) + "%")
+		element.style['text-align'] = 'right'
+		element.style['padding'] = '0.1rem 0.2rem'
+		element.style['backgroundColor'] = ("rgb(" + breakdownMtls[currentResource][i].color.r*255 + "," + 
+			breakdownMtls[currentResource][i].color.g*255 + "," + 
+			breakdownMtls[currentResource][i].color.b*255 + ")")
+		element.textContent = data[currentDataSet][indexnumber][currentResource][keyList[i]]
+		console.log(data[currentDataSet][indexnumber][currentResource][keyList[i]])
+		bkdDom.appendChild(element)
+	}
+}
