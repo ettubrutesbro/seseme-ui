@@ -90,6 +90,7 @@ h3,h4,h5,h6 {
 	margin: 0 auto;
 	left: 0;
 	right: 0;
+	/*background-color: rgba(0,0,0,0.5)*/
 }
 	.navbutt {
 		cursor: pointer;
@@ -143,7 +144,7 @@ h3,h4,h5,h6 {
 	/*text-align: center;*/
 }
 	#name {
-		background-color: rgba(255,255,255,0);
+		background-color: rgba(237,237,237,0);
 		transform-origin: bottom left;
 		padding: 0 0.3rem;
 	}
@@ -170,7 +171,6 @@ h3,h4,h5,h6 {
 	#titleGrade{
 		padding: 0 0.3rem;
 		transform-origin: bottom right;
-		background-color: white;
 	}
 
 #sectionContainer {
@@ -183,6 +183,7 @@ section{
 }
 
 	section#view {
+		padding: 0 0.3rem;
 	}
 		.viewRow {
 			width: 100%;
@@ -198,48 +199,76 @@ section{
 			overflow: hidden;
 			opacity: 0;
 		}
+		#view #viewRule {
+			opacity: 0; width: 0;
+			margin-top: 0.4rem;
+			border: 1px white solid;
+		}
 		#view #semantic {
 			margin-top: 0.2rem;
 			height: 2.75rem;
 			overflow: hidden;
 		}
 			#grade {
-				width: 75%;
+				width: 70%;
 				overflow: hidden;
 				display: flex;
 				display: -webkit-flex;
 				justify-content: space-between;
 			}
 				#gradePic {
-					width: 90px;
+					width: 80px;
 				}
 				#gradeText{
 					letter-spacing: 0.07rem;
 					font-size: 0.6rem;
-					padding: 0rem 0.25rem;
 					flex-grow: 1;
 					flex-shrink: 0;
 					flex-basis: 120px;
+					margin-top: 0.2rem;
+					margin-left: 0.1rem;
 				}
 				.gradeWords {
-					display: block; margin: 0.2rem 0; padding: 0.1rem;
+					display: block; margin: 0.2rem 0; padding: 0.05rem 0.1rem;
 					background-color: rgba(255,255,255,0.8);
 					width: min-content;
 					width: -webkit-min-content;
 				}
+			#spelledUnit {
+				margin: 0.25rem 0; opacity: 0;
+				padding: 0.2rem;
+				width: 0;
+				height: 1rem;
+				overflow: hidden;
+				font-size: 0.55rem;
+				white-space: nowrap;
+				background-color: #ededed;
+				text-transform: uppercase;
+			}
 			#aggData {
-				margin: 0.2em 0;
-				width: 25%;
-				padding: 0.6rem 0.2rem;
-				background-color: rgba(255,255,255,0.8);
+				width: 30%;
+				padding: 0.25rem 0.2rem;
+				color: #ededed;
+				background-color: rgba(237,237,237,0);
 			}
 				#dataNum {
+					float: right;
 					font-family: 'Source Serif Pro', serif;
 					font-weight: 600;
-					font-size: 1.2rem;
-					line-height: 0.5rem;
+					padding-right: 0.1rem;
+					font-size: 1.5rem;
+					line-height: 1.2rem;
 				}
 				#dataUnit{
-					font-size: 0.5rem;
+					padding: 0.2rem 0.2rem;
+					float: right;
+					font-size: 0.6rem;
 					text-align: right;
 				}
+
+.icon {
+	background-image: url(../assets/efficient.svg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 90%;
+}

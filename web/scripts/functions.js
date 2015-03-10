@@ -1,7 +1,6 @@
 // data driven -------------
 
 function dataToHts(){ // translates data vals 
-	var allValues = []
 	data[currentDataSet].forEach(function(ele,i,arr){
 		var total = 0
 		var keyList = Object.keys(ele[currentResource])
@@ -32,18 +31,22 @@ function updatePillars(){
 		plrTween.start()
 
 	})
-
 }
 function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(){ //click or touch rotate: call 
 	var name = document.querySelector('#name')
+	var viewNum = document.querySelector('#dataNum')
+	var abbr = document.querySelector('#dataUnit')
 	if(selectedObj == 'pedestal' ){
 		// name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
 		var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
 		name.textContent = data[currentDataSet][index].name
+		viewNum.textContent = allValues[index]
+		abbr.textContent = currentAbbr
+		console.log(allValues[index])
 		if(breakdownOn){
 			// console.log(index)
 			keyList = Object.keys(data[currentDataSet][index][currentResource])
@@ -51,7 +54,12 @@ function uiShift(){ //click or touch rotate: call
 		}
 	}
 	//how can i specify to only do it when it's different from before? 
-	
+
+function colorAssess(){
+
+}
+
+
 }
 //interaction prompts ---------------
 
@@ -59,7 +67,12 @@ function uiShift(){ //click or touch rotate: call
 function clickedSeseme(){
 	raycast.setFromCamera(mousePos, camera)
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
-	var clicked = intersects[0].object.name
+	if(intersects == ''){
+		var clicked = 'ground'
+	}else{
+		var clicked = intersects[0].object.name
+	}
+	
 	if(clicked != 'ground' && clicked != 'orb'){ //pillar or pedestal
 		index = ['pedestal','plr1','plr2','plr3','plr4'].indexOf(clicked)
 		userActions.push('clicked ' + clicked)
@@ -86,8 +99,11 @@ function clickedSeseme(){
 			}
 		}
 	}else{ //clicked the ground or the orb
+		highlight()
 		selectedObj = ''
-		userActions.push('clicked ground')
+		clickedNav(mode-1)
+		mode = 0
+		userActions.push('clicked ground, mode:' + mode)
 		// clearHighlight()
 	}
 }
@@ -99,8 +115,9 @@ function clickedNav(index){
 		if(mode!=0){
 			//close open nav
 			Velocity(sections[mode-1],{height: "0"})
+			navFuncs[index](false)
 		}
-		sectionHeights = ["3.5rem","9rem","",""]
+		sectionHeights = ["3.7rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
@@ -110,7 +127,6 @@ function clickedNav(index){
 		Velocity(sections[index],{height: 0, opacity: 0.25},{complete: function(){
 			sections[index].style["display"] = "none"
 		}})
-
 		navFuncs[index](false)
 		mode=0
 	}
@@ -197,7 +213,9 @@ function highlight(outlineNumber){
 	outlines.forEach(function(ele){
 		ele.opacity = 0
 	})
-	outlines[outlineNumber].opacity = 1
+	if(outlineNumber!=undefined){
+		outlines[outlineNumber].opacity = 1
+	}
 }
 function highlightCheck(){
 	if(selectedObj == "pedestal"){
@@ -212,11 +230,12 @@ function highlightCheck(){
 		})
 	}
 }
+
 function zoomHeightCheck(){
 	if(mode==1 && !breakdownOn){
 		var index = selectedObj.replace('plr','')
 		index -= 1
-		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2},400)
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2},400)
 	}
 }
 // ----------navigation mode---------------
@@ -224,67 +243,38 @@ viewFunc = function(open){
 	var name = document.querySelector('#name')
 	var icon = document.querySelector('#titleGrade')
 	var hide = document.querySelector('#titleRule')
-	if(selectedObj == 'pedestal'){
-		selectedObj = ''
-		sRotY = seseme.rotation.y * (180/Math.PI)
-		highlightCheck()
-	}
-	Velocity(name, "finish")
+	
+	// Velocity(name, "finish")
 	Velocity(icon, "finish")
 	Velocity(hide, "finish")
 	if(open){
-		//3d shift 
-		var index = selectedObj.replace('plr','')
-		index -= 1
-		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
-		//dom manipulation
-		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
-		Velocity(icon, {scale: 2})
-		Velocity(hide, {opacity: 0})
-		hammerIcon = new Hammer(icon)
-		hammerIcon.on('tap',viewMode)
-	}else{	
-		shift(defaultPosZoom)
-		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
-		Velocity(icon, {scale: 1.0})
-		Velocity(hide, 'transition.slideLeftIn')
-		hammerIcon.off('tap',viewMode)
-	}
-}
-
-	function viewMode(){ //true =breakdown false=semantic
-		if(selectedObj == 'pedestal'){
+			if(selectedObj == 'pedestal' || selectedObj == ''){
 			selectedObj = ''
 			sRotY = seseme.rotation.y * (180/Math.PI)
 			highlightCheck()
 		}
-		var semantic = document.querySelector('#semantic')
-		var grade = document.querySelector('#grade')
-		var aggData = document.querySelector('#aggData')
-		var bkdown = document.querySelector('#breakdown')
-
-		Velocity(semantic, 'finish')
-		Velocity(grade, 'finish')
-		Velocity(aggData, 'finish')
-		Velocity(bkdown, 'finish')
-		if(bkdown.style['height'] == 0 || bkdown.style['height'] == '0px'){
+		//3d shift 
+		var index = selectedObj.replace('plr','')
+		index -= 1
+		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
+		//dom manipulation
+		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
+		Velocity(icon, {opacity: 0})
+		Velocity(hide, {opacity: 0})
+		hammerIcon = new Hammer(icon)
+		hammerIcon.on('tap',breakdown)
+	}else{
+		shift(defaultPosZoom)
+		if(breakdownOn){
 			breakdown()
-			shift({x: -19.75, y: 16, zoom: 1.2})
-			Velocity(semantic, {height: "1.75rem"})
-			Velocity(grade, {width: "0", opacity: -0.5},{delay: 200, duration: 500})
-			Velocity(aggData, {width: "40%"},{delay: 400, duration: 500})
-			Velocity(bkdown, {height: "1.1rem", opacity: 1})
-		}else{
-			removeBreakdown()
-			var index = selectedObj.replace('plr','')
-			index -= 1
-			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
-			Velocity(semantic, {height: "2.75rem"})
-			Velocity(grade, {width: "75%", opacity: 1}, {delay: 200, duration: 500})
-			Velocity(aggData, {width: "25%"}, {delay: 200, duration: 500})
-			Velocity(bkdown, {height: 0, opacity: 0.3})
 		}
-	} // end function viewMode
+		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
+		Velocity(icon, {scale: 1.0})
+		Velocity(hide, 'transition.slideLeftIn')
+		hammerIcon.off('tap',breakdown)
+	}
+}
+
 dataFunc = function(open){
 	if(open){
 		shift({x: -19.75, y: 17, zoom: 0.5})
@@ -308,74 +298,123 @@ helpFunc = function(open){
 }
 // view specific functions
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
- //pillars' XZ translation differences
- breakdownOn = true
-index = pillars[0].replace('plr','') - 1,
-keyList = Object.keys(data[currentDataSet][index][currentResource])
-breakdownShift(index)
-pillars.forEach(function(ele,it,arr){
-	var total = 0, breakdownHts = [], 
-	ht = tgtHts[index].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
-	
-	for(var i = 0; i<keyList.length; i++){ //get the pillar's total
-		total += data[currentDataSet][index][currentResource][keyList[i]]
-	} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
-	for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
-		proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
-		breakdownHts[i] = proportion * ht
-		geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
-		breakdownMtls[currentResource][i].opacity = 0
-		detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
-		detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[it][0],-breakdownHts[i]/2+0.25,tMtxs[it][1]))
-		detailStat[i].scale.set(0.9,1,0.9)
-		detailStat[i].name = "p" + (it+1) + "bkd" + i
-		if(breakdownHts[i-1]!=undefined){
-			for (var m = 0; m<i; m++){
-				detailStat[i].position.y -= breakdownHts[m]
-		}}
-		var parent = scene.getObjectByName('plr' + (it+1))
-		parent.add(detailStat[i])
-	}
-	detailStat.forEach(function(e,ii,arr){
-		current = {opacity: 0, x: 0.6, z: 0.6}
-		e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
-		e.scaleTween.to({opacity: 0.85, x: 1.04, z: 1.04},800)
-		e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
-		e.scaleTween.onUpdate(function(){
-			e.scale.x = current.x
-			e.scale.z = current.z
-			e.material.opacity = current.opacity
-		})
-		e.scaleTween.start()
-	})
-}) //end pillars.forEach
-}//end breakdown
+	var semantic = document.querySelector('#semantic'), grade = document.querySelector('#grade'), 
+	aggData = document.querySelector('#aggData'), bkdown = document.querySelector('#breakdown'), 
+	spelled = document.querySelector('#spelledUnit'), rule = document.querySelector('#viewRule')
 
-function removeBreakdown(){
-	breakdownOn = false
-	var bkd = []
-	for(var i = 1; i < 5; i++){
-		bkd.push(seseme.getObjectByName('plr' + i).children)
+	Velocity(semantic, 'finish')
+	Velocity(grade, 'finish')
+	Velocity(aggData, 'finish')
+	Velocity(bkdown, 'finish')
+	Velocity(spelled, 'finish')
+	Velocity(rule, 'finish')
+
+	if(selectedObj == 'pedestal'){
+		selectedObj = ''
+		sRotY = seseme.rotation.y * (180/Math.PI)
+		highlightCheck()
 	}
-	bkd.forEach(function(ele,i){
-		ele.forEach(function(e,it,arr){
-			if(it>0){ //avoud removing outline e[0]
-				current = {opacity: 1, x: 1, z: 1}
-				e.removeTween = new TWEEN.Tween(current)
-				e.removeTween.to({opacity: 0, x: 0.6, z: 0.6}, 500)
-				e.removeTween.start()
-				e.removeTween.onUpdate(function(){
-					e.material.opacity = current.opacity
-					e.scale.x = current.x
-					e.scale.z = current.z
+	 if(!breakdownOn){ //turn on breakdown
+	 	shift({x: -19.75, y: 16.5, zoom: 1.3})
+	 	breakdown3d()
+	 	breakdownDOM()
+	 	breakdownOn = true
+	 	function breakdownDOM(){
+	 		spelled.textContent = currentResource
+			Velocity(semantic, {height: "1.75rem"})
+			Velocity(grade, {width: 0, opacity: -1},{duration: 500, easing: 'easeInQuad'})
+			Velocity(spelled, {width: "70%", opacity: 1},{delay: 850, duration: 700, easing: 'easeOutQuad'})
+			Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
+			Velocity(bkdown, {height: "1.1rem", opacity: 1})
+			Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})
+	 	}
+	 	function breakdown3d(){
+	 		index = pillars[0].replace('plr','') - 1,
+			keyList = Object.keys(data[currentDataSet][index][currentResource])
+			breakdownShift(index)
+			pillars.forEach(function(ele,it,arr){
+				var total = 0, breakdownHts = [], 
+				ht = tgtHts[index].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
+				
+				for(var i = 0; i<keyList.length; i++){ //get the pillar's total
+					total += data[currentDataSet][index][currentResource][keyList[i]]
+				} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
+				for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
+					proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
+					breakdownHts[i] = proportion * ht
+					geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
+					breakdownMtls[currentResource][i].opacity = 0
+					detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
+					detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[it][0],-breakdownHts[i]/2+0.25,tMtxs[it][1]))
+					detailStat[i].scale.set(0.9,1,0.9)
+					detailStat[i].name = "p" + (it+1) + "bkd" + i
+					if(breakdownHts[i-1]!=undefined){
+						for (var m = 0; m<i; m++){
+							detailStat[i].position.y -= breakdownHts[m]
+					}}
+					var parent = scene.getObjectByName('plr' + (it+1))
+					parent.add(detailStat[i])
+				}
+				detailStat.forEach(function(e,ii,arr){
+					current = {opacity: 0, x: 0.6, z: 0.6}
+					e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
+					e.scaleTween.to({opacity: 0.9, x: 1.04, z: 1.04},800)
+					e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
+					e.scaleTween.onUpdate(function(){
+						e.scale.x = current.x
+						e.scale.z = current.z
+						e.material.opacity = current.opacity
+					})
+					e.scaleTween.start()
 				})
-				e.removeTween.onComplete(function(){
-					arr.splice(1,(arr.length-1))
-				})
+			}) //end pillars.forEach
+	 	} //end breakdown3d
+	 	
+	 } else { // if breakdown is already on
+	 	console.log(selectedObj)
+	 	var index = selectedObj.replace('plr','')
+		index -= 1
+		if(selectedObj != ''){
+			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
+		}
+	 	
+	 	remove3d()
+	 	revertDOM()
+	 	breakdownOn = false
+	 	function remove3d(){
+			var bkd = []
+			for(var i = 1; i < 5; i++){
+				bkd.push(seseme.getObjectByName('plr' + i).children)
 			}
-		})
-	})
-} // end removeBreakdown
+			bkd.forEach(function(ele,i){
+				ele.forEach(function(e,it,arr){
+					if(it>0){ //avoud removing outline e[0]
+						current = {opacity: 0.9, x: 1, z: 1}
+						e.removeTween = new TWEEN.Tween(current)
+						e.removeTween.to({opacity: 0, x: 0.6, z: 0.6}, 500)
+						e.removeTween.start()
+						e.removeTween.onUpdate(function(){
+							e.material.opacity = current.opacity
+							e.scale.x = current.x
+							e.scale.z = current.z
+						})
+						e.removeTween.onComplete(function(){
+							arr.splice(1,(arr.length-1))
+						})
+					}
+				})
+			})
+	 	}
+	 	function revertDOM(){
+			Velocity(semantic, {height: "2.75rem"})
+			Velocity(spelled, {width: 0, opacity: 0})
+			Velocity(grade, {width: "70%", opacity: 1}, {delay: 200, duration: 700, easing: 'easeOutCubic'})
+			Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
+			Velocity(bkdown, {height: 0, opacity: 0.3})
+			Velocity(rule, {width: '0%', opacity: 0}, {duration: 600})
+	 	}
+	 }  
+}//end breakdown
 
 function breakdownShift(indexnumber){
 	var bkdDom = document.getElementById('breakdown') 

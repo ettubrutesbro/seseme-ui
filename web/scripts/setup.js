@@ -2,7 +2,8 @@
 // semantic, consistent naming structure (there will be no pillar #0)
 
 var currentDataSet = 'UC Davis', //currently displayed dataset
-currentResource = 'Energy Use',
+currentResource = 'Energy Use Intensity', currentAbbr = 'EUI',
+allValues = []
 selectedObj = 'plr1' 
 
 
@@ -18,10 +19,10 @@ defaultPosZoom, mode = 0, outlines = [], breakdownOn = false,
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
-openNav, 
 viewFunc, talkFunc, dataFunc, helpFunc, 
 navFuncs = [viewFunc, dataFunc, talkFunc, helpFunc],
 //array of functions called when buttons are pressed
+allowAnim = true, //bool false during animation, true when finished
 
 //experimental usage metrics
 userActions = [], useTime = 0 , revolutionCount = 0 
@@ -59,10 +60,10 @@ function setup(){
 	  //LIGHTING
 	  backlight = new THREE.SpotLight(0xeaddb9, 1.2)
 	  backlight.position.set(-15,75,-10)
-	  backlight.castShadow = true
-	  backlight.shadowDarkness = 0.2
-	  backlight.shadowMapWidth = 768 
-	  backlight.shadowMapHeight = 768 
+	  // backlight.castShadow = true
+	  // backlight.shadowDarkness = 0.2
+	  // backlight.shadowMapWidth = 768 
+	  // backlight.shadowMapHeight = 768 
 
 	  amblight = new THREE.AmbientLight( 0x232330 )
 	  camlight = new THREE.SpotLight(0xffffff, .35)
@@ -76,6 +77,7 @@ function setup(){
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
+		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.png')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
 
 		  var plr1, plr2, plr3, plr4
@@ -84,7 +86,7 @@ function setup(){
 		  loader.load("assets/pedestal.js", function(geometry,evt){
 		    pedestal = new THREE.Mesh(geometry, sesememtl)
 		    pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
-		    pedestal.castShadow = true
+		    // pedestal.castShadow = true
 		    pedestal.name = "pedestal"
 		    seseme.add(pedestal)
 		    loader.load("assets/pedestal_outline.js", function(g){
@@ -99,13 +101,13 @@ function setup(){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
 		    plr1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr1.name = "plr1"
-		    plr1.castShadow = true
+		    // plr1.castShadow = true
 		    seseme.add(plr1)
 		    plr4 = new THREE.Mesh(geometry, sesememtl)
 		    plr4.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
 		    plr4.rotation.y = -90 * Math.PI / 180
 		    plr4.name = "plr4"
-		    plr4.castShadow = true
+		    // plr4.castShadow = true
 		    setTimeout(function(){
 		      seseme.add(plr4)
 		    },10) //this is awful and should not be
@@ -126,13 +128,13 @@ function setup(){
 		    plr2 = new THREE.Mesh(geometry, sesememtl)
 		    plr2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr2.name = "plr2"
-		    plr2.castShadow = true
+		    // plr2.castShadow = true
 		    seseme.add(plr2)
 
 		    plr3 = new THREE.Mesh(geometry, sesememtl)
 		    plr3.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr3.rotation.y = 90 * Math.PI / 180
-		    plr3.castShadow = true
+		    // plr3.castShadow = true
 		    plr3.name = "plr3"
 		    seseme.add(plr3)
 		    loader.load("assets/pillarB_outline.js", function(g){
@@ -153,12 +155,17 @@ function setup(){
 		  orb.position.set(0,-3.75,0) //it's down but visible
 		  seseme.add(orb)  
 		  //groundplane
-		  var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 70, 70, 70 ), 
+		  var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 70, 70 ), 
 		    groundmtl)
 		  ground.position.set(0,-17.7,0)
 		  ground.rotation.x = -90*(Math.PI/180)
-		  ground.receiveShadow = true
+		  // ground.receiveShadow = true
 		  ground.name = 'ground'
+		  //fake shadow
+		  var shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(14.5,14.5), shadowmtl)
+		  shadow.position.set(0,-17.5,0)
+		  shadow.rotation.x -= 90 * (Math.PI/180)
+		  seseme.add(shadow)
 		  seseme.add(ground)
 		  scene.add(seseme)
 	}
@@ -215,14 +222,11 @@ function setup(){
 		})		
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
-		uiShift()
 		dataToHts()
+		uiShift()
 		setTimeout(function(){
 			updatePillars()
 		},500)
-	  // setTimeout(function(){updateValues()
-	  // },800) //no idea why, but this only
-	  // // works with a setTimeout that waits (even 10ms is enough) to fire it
 	}
 } //end setup
 
