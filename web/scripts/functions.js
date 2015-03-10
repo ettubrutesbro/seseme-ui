@@ -46,10 +46,7 @@ function uiShift(){ //click or touch rotate: call
 		name.textContent = data[currentDataSet][index].name
 		viewNum.textContent = allValues[index]
 		abbr.textContent = currentAbbr
-		console.log(allValues[index])
 		if(breakdownOn){
-			// console.log(index)
-			keyList = Object.keys(data[currentDataSet][index][currentResource])
 			breakdownShift((pillars[0].replace('plr','') - 1))
 		}
 	}
@@ -117,7 +114,7 @@ function clickedNav(index){
 			Velocity(sections[mode-1],{height: "0"})
 			navFuncs[index](false)
 		}
-		sectionHeights = ["3.7rem","9rem","",""]
+		sectionHeights = ["3.2rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
@@ -127,6 +124,7 @@ function clickedNav(index){
 		Velocity(sections[index],{height: 0, opacity: 0.25},{complete: function(){
 			sections[index].style["display"] = "none"
 		}})
+		selectedObj = ''
 		navFuncs[index](false)
 		mode=0
 	}
@@ -255,6 +253,7 @@ viewFunc = function(open){
 		}
 		//3d shift 
 		var index = selectedObj.replace('plr','')
+		highlight(index)
 		index -= 1
 		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 		//dom manipulation
@@ -315,7 +314,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		highlightCheck()
 	}
 	 if(!breakdownOn){ //turn on breakdown
-	 	shift({x: -19.75, y: 16.5, zoom: 1.3})
+	 	shift({x: -19.75, y: 17.75, zoom: 1.2})
 	 	breakdown3d()
 	 	breakdownDOM()
 	 	breakdownOn = true
@@ -323,21 +322,23 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 	 		spelled.textContent = currentResource
 			Velocity(semantic, {height: "1.75rem"})
 			Velocity(grade, {width: 0, opacity: -1},{duration: 500, easing: 'easeInQuad'})
-			Velocity(spelled, {width: "70%", opacity: 1},{delay: 850, duration: 700, easing: 'easeOutQuad'})
+			Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{duration: 700, easing: 'easeOutQuad'})
 			Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
 			Velocity(bkdown, {height: "1.1rem", opacity: 1})
 			Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})
 	 	}
 	 	function breakdown3d(){
 	 		index = pillars[0].replace('plr','') - 1,
+	 		console.log('breakdown starts w/ pillar ' + index)
 			keyList = Object.keys(data[currentDataSet][index][currentResource])
 			breakdownShift(index)
-			pillars.forEach(function(ele,it,arr){
+			
+			for(var it = 0; it<4; it++){
 				var total = 0, breakdownHts = [], 
-				ht = tgtHts[index].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
-				
+				ht = tgtHts[it].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
+				console.log(ht)
 				for(var i = 0; i<keyList.length; i++){ //get the pillar's total
-					total += data[currentDataSet][index][currentResource][keyList[i]]
+					total += data[currentDataSet][it][currentResource][keyList[i]]
 				} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
 				for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
 					proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
@@ -367,7 +368,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 					})
 					e.scaleTween.start()
 				})
-			}) //end pillars.forEach
+			} //end pillars.forEach
 	 	} //end breakdown3d
 	 	
 	 } else { // if breakdown is already on
@@ -407,7 +408,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 	 	}
 	 	function revertDOM(){
 			Velocity(semantic, {height: "2.75rem"})
-			Velocity(spelled, {width: 0, opacity: 0})
+			Velocity(spelled, {width: 0, opacity: 0, padding: 0})
 			Velocity(grade, {width: "70%", opacity: 1}, {delay: 200, duration: 700, easing: 'easeOutCubic'})
 			Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
 			Velocity(bkdown, {height: 0, opacity: 0.3})

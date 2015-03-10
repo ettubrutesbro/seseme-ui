@@ -61,16 +61,17 @@ h3,h4,h5,h6 {
 
 #topInfo{ /* small summary info at top */
 	font-family: 'Fira Sans', sans-serif;
-	letter-spacing: 0.13rem;
-	color: black;	
+	font-size: 0.5rem;
+	letter-spacing: 0.1rem;	
 	position: absolute;
-	top: 6%;
+	top: 0;
 	text-align: center;
 	width: 325px;
 	left: 0; right: 0;
 	margin: 0 auto;
-
-	display: none;
+	background-color: rgba(0,0,0,0.8);
+	color: white;
+	height: 44px;
 }
 	#topInfo span{
 		font-weight: 300;
@@ -103,7 +104,7 @@ h3,h4,h5,h6 {
 		box-sizing: border-box;
 		border: 3px rgba(0,0,0,0.65) solid;
 		background-size: cover;
-		background-color: rgba(239,239,239,0.75);
+		background-color: rgba(239,239,239,0.85);
 
 	}
 		
@@ -120,7 +121,27 @@ h3,h4,h5,h6 {
 
 		}
 
-
+#uiOptions {
+	padding: 0 0.8rem;
+	width: 325px;
+	border: 1px white solid;
+	height: 60px;
+	padding-bottom: 0.5rem;
+}
+	#option1{
+		float: left;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		border: 1px white solid;
+	}
+	#option2{
+		float: right;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		border: 1px white solid;
+	}
 /*	BODY SECTIONS	*/
 
 #uiBody { /*holds dynamic UI data/content */
@@ -210,7 +231,7 @@ section{
 			overflow: hidden;
 		}
 			#grade {
-				width: 70%;
+				width: 75%;
 				overflow: hidden;
 				display: flex;
 				display: -webkit-flex;
@@ -220,13 +241,13 @@ section{
 					width: 80px;
 				}
 				#gradeText{
-					letter-spacing: 0.07rem;
-					font-size: 0.6rem;
+					letter-spacing: 0.06rem;
+					font-size: 0.55rem;
 					flex-grow: 1;
 					flex-shrink: 0;
 					flex-basis: 120px;
 					margin-top: 0.2rem;
-					margin-left: 0.1rem;
+					margin-left: 0rem;
 				}
 				.gradeWords {
 					display: block; margin: 0.2rem 0; padding: 0.05rem 0.1rem;
@@ -236,7 +257,7 @@ section{
 				}
 			#spelledUnit {
 				margin: 0.25rem 0; opacity: 0;
-				padding: 0.2rem;
+				padding: 0;
 				width: 0;
 				height: 1rem;
 				overflow: hidden;
@@ -256,7 +277,7 @@ section{
 					font-family: 'Source Serif Pro', serif;
 					font-weight: 600;
 					padding-right: 0.1rem;
-					font-size: 1.5rem;
+					font-size: 1.3rem;
 					line-height: 1.2rem;
 				}
 				#dataUnit{

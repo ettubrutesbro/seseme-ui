@@ -15,7 +15,7 @@ var gradeWords = {
 		good: ['pretty efficient','kinda good','mostly acceptable','probably sustainable'],
 		ok: ['mostly alright','kinda mediocre','probably fine','sorta average','barely okay'],
 		bad: ['kinda sucks','kinda harmful', 'not efficient','needs improvement','pretty bad','mostly awful','not good', 'approaching awful', 'moderately gross', 'sad animals'],
-		terrible: ['the worst','actually shit','totally pernicious','actively pernicious','enviro suicide','weeping planet','kinda sickening','dead puppies', 'earth wrecker', 'wasteland imminent']
+		terrible: ['the worst','actually shit','totally pernicious','actively pernicious','enviro suicide','weeping planet','kinda sickening','dead puppies', 'earth wrecker', 'wasteland imminent', 'actively harmful']
 	},
 	'Gallons Per Minute': [
 
