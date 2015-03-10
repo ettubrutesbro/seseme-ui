@@ -77,7 +77,7 @@ function setup(){
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
-		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.png')})
+		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
 
 		  var plr1, plr2, plr3, plr4
@@ -162,8 +162,8 @@ function setup(){
 		  // ground.receiveShadow = true
 		  ground.name = 'ground'
 		  //fake shadow
-		  var shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(14.5,14.5), shadowmtl)
-		  shadow.position.set(0,-17.5,0)
+		  var shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(16,16), shadowmtl)
+		  shadow.position.set(-0.1,-17.65,0.1)
 		  shadow.rotation.x -= 90 * (Math.PI/180)
 		  seseme.add(shadow)
 		  seseme.add(ground)
