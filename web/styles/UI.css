@@ -122,26 +122,22 @@ h3,h4,h5,h6 {
 		}
 
 #uiOptions {
-	padding: 0 0.8rem;
+	padding: 0 0.8rem 2rem 0.8rem;
 	width: 325px;
-	border: 1px white solid;
 	height: 60px;
-	padding-bottom: 0.5rem;
 }
 	#option1{
 		float: left;
-		width: 44px;
-		height: 44px;
+		width: 55px;
+		height: 55px;
 		border-radius: 50%;
-		border: 1px white solid;
+		background-color: rgba(0,0,0,0.7);
+		box-sizing: border-box;
+		/*border: 2px white solid;*/
+		background-position: center;
+		background-image: url(../assets/eui_breakdown.svg);
 	}
-	#option2{
-		float: right;
-		width: 44px;
-		height: 44px;
-		border-radius: 50%;
-		border: 1px white solid;
-	}
+
 /*	BODY SECTIONS	*/
 
 #uiBody { /*holds dynamic UI data/content */
