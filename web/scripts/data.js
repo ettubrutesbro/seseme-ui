@@ -3,7 +3,7 @@ var data = {
 	'UC Davis': 
 	[
 		{
-			name: 'Student Community Ctr.',
+			name: 'The SCC',
 			'Energy Use Intensity': { elec: 35, cool: 11, heat: 69},
 			'Gallons Per Minute': { galm: 3, galh: 100 }
 		},

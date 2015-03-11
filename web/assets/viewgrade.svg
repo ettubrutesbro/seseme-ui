@@ -3,20 +3,20 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="50px" height="50px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
-<path display="none" fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M98.8,49.8c2.1-2.5,0.9-7.3-2.4-8.4"
-	/>
-<path display="none" fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M99.3,25.3c-7.3,7.2-0.8,14,7,16.1"
-	/>
+<path display="none" fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M98.8,49.8
+	c2.101-2.5,0.9-7.3-2.399-8.399"/>
+<path display="none" fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" d="M99.3,25.3c-7.3,7.2-0.8,14,7,16.101
+	"/>
 <g>
-	<path fill="#FFFFFF" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" d="M16.3,38.1"/>
-	<path fill="#FFFFFF" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" d="M22.3,42.2h7.4c1.2,0,5.1-3.4,7-3.4
-		c1.8,0,4.4,0,4.4,0V23.2h-5.3c0,0-0.8,0-1.5-0.5c0,0-5.6-4.8-6-5.5c-0.9-1.7-2.9-9.4-2.9-9.4C25,6.3,24,5.5,21.9,5.5
-		c-2.7,0-3.3,0.8-3.3,2.3c0,2.3,2.4,10.6,2.4,10.6c0.4,1.4-0.5,1.6-1.6,1.6s-8.7,0-8.7,0c-2.4,0-2.4,7.9,0,7.9h8.9h-7.6
-		c-2.4,0-2.1,7.6,0.1,7.6h9.1H14c-2.4,0-2.1,6.7-0.1,6.7L22.3,42.2c0.4,0.1,0.8-0.2,0.8-0.8s0-3.2-2.5-3.2"/>
-	<path fill="none" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" d="M21.3,35.5c0.8,0,0.8-0.6,0.8-0.6
-		c0-3.6-0.4-4.7-2.7-4.7"/>
-	<path fill="none" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" d="M19.3,27.8c0.8,0,0.7-0.8,0.7-1.5
-		s-0.5-3.7-3.7-3.7"/>
-	<path fill="none" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" d="M21.1,19.1c-1.3,2.8,1.8,8.5,7,8.5"/>
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="1.75" stroke-miterlimit="10" d="M15.067,38.1"/>
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="1.75" stroke-miterlimit="10" d="M21.067,42.2H29.7c1.2,0,5.1-3.4,7-3.4
+		c1.8,0,4.399,0,4.399,0V23.2h-5.3c0,0-0.8,0-1.5-0.5c0,0-5.6-4.8-6-5.5c-0.899-1.7-2.9-9.4-2.9-9.4C25,6.3,24,5.5,21.9,5.5
+		c-2.7,0-3.3,0.8-3.3,2.3c0,2.3,2.333,9.767,2.333,9.767c0.4,1.4-0.5,1.6-1.6,1.6S9.467,19.25,9.467,19.25c-2.4,0-2.4,8.65,0,8.65
+		h8.9h-7.6c-2.4,0-2.1,7.6,0.1,7.6h9.1h-7.2c-2.4,0-2.1,6.7-0.1,6.7H21.067c0.4,0.1,0.8-0.2,0.8-0.8c0-0.601,0-3.2-2.5-3.2"/>
+	<path fill="none" stroke="#000000" stroke-width="1.75" stroke-miterlimit="10" d="M19.967,35.5c0.8,0,0.9-0.75,0.9-0.75
+		c0.039-3.094-0.817-4.313-3.117-4.313"/>
+	<path fill="none" stroke="#000000" stroke-width="1.75" stroke-miterlimit="10" d="M18.067,27.938c0.8,0,0.7-0.938,0.7-1.638
+		s-0.9-3.7-4.1-3.7"/>
+	<path fill="none" stroke="#000000" stroke-width="1.75" stroke-miterlimit="10" d="M20.918,18.583c-1.3,2.8,1.8,8.5,6.999,8.5"/>
 </g>
 </svg>
