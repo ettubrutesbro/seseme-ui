@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="50px" height="50px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
@@ -7,8 +6,10 @@
 	<polyline fill="#E04C0A" points="35,30.9 35,39.2 24.9,44.9 15,39.2 15,30.9 	"/>
 	<polygon fill="#E04C0A" points="35,30.9 24.9,36.7 15,30.9 24.9,25.1 	"/>
 	<polygon fill="#F4731C" points="24.9,36.7 24.9,44.9 35,39.2 35,30.9 	"/>
+
+	<animateMotion id = "a1" type = "translate" from = "0,0" to = "0,3.5" begin = "0s;a2.end" dur = "1s"/>
+	<animateMotion id = "a2" type = "translate" from = "0,3.5" to = "0,0" begin = "a1.end" dur = "1s"/>
 </g>
-<path fill="none" stroke="#231F20" stroke-miterlimit="10" d="M24.9,40.5"/>
 <g>
 	<polygon fill="#2E7282" points="35,23.6 24.9,29.4 15,23.6 24.9,17.8 	"/>
 	<polygon fill="#28B3DD" points="35,27.9 24.9,33.6 15,27.9 15,23.6 24.9,29.4 35,23.6 	"/>
