@@ -182,12 +182,11 @@ h3,h4,h5,h6 {
 		padding: 0 0.3rem;
 		transform-origin: bottom right;
 	}
-#titleOptions{
-	width: 50px;
-
-}
-	#optionsButton{
-		transform: translateY(-0.5rem);
+#optionsButton{
+		display: none;
+		opacity: 0;
+		transform: translate(1.5rem, -0.75rem);
+		-webkit-transform: translateY(1.5rem, -0.75rem);
 		position: absolute;
 		z-index: 5;
 		right: 0.6rem;
@@ -202,10 +201,18 @@ h3,h4,h5,h6 {
 		background-size: 100%;
 		box-sizing: border-box;
 		-webkit-box-sizing: border-box;
+		transition: ease 0.5s;
+		-webkit-transition: ease 0.5s;
 	}
-	#optionsButton:hover{
+	#optionsButton:hover{ 
+		/*change to clicked & only if class is applied?*/
 		/*border: 28px #ededed solid;*/
 		/*background-size: 150%;*/
+		/*background-position: -60px 0, center;
+		transition: ease 0.5s;
+		-webkit-transition: ease 0.5s;*/
+	}
+	#optionsButton.grade{
 		background-position: -60px 0, center;
 		transition: ease 0.5s;
 		-webkit-transition: ease 0.5s;

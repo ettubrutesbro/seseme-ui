@@ -12,7 +12,7 @@ seseme = new THREE.Group(), //model organization
 raycast, mousePos = new THREE.Vector2(),//interaction w/ 3d
 //rotations
 pillars = ['plr1','plr2','plr3','plr4'], rotDir =1, nearest90 = 0, sRotY,
-all90s = [0,270,180,90],
+all90s = [0,270,180,90], isRotating = false,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 defaultPosZoom, mode = 0, outlines = [], breakdownOn = false,
@@ -207,8 +207,12 @@ function setup(){
 	  			})
 	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 	  			rotDecel.start()
+	  			rotDecel.onStart(function(){
+	  				isRotating = true
+	  			})
 	  			rotDecel.onComplete(function(){
 	  				zoomHeightCheck()
+	  				isRotating = false
 	  				userActions.push('panned to ' + Math.round(sRotY))
 	  			})
 	  		}//horizontal

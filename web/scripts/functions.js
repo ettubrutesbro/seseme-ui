@@ -167,11 +167,13 @@ function autoRotate(deg){
 	rotate.start()
 	rotate.onStart(function(){
 		zoomHeightCheck()
+		isRotating = true
 	})
 	rotate.onComplete(function(){
 		realRotation()
 		findNearest90()
 		highlightCheck()
+		isRotating = false
 	})
 }
 // ------- math processes to make things make sense / work -------------
@@ -241,11 +243,11 @@ function zoomHeightCheck(){
 // ----------navigation mode---------------
 viewFunc = function(open){
 	var name = document.querySelector('#name')
-	var hide = document.querySelector('#titleHide')
+	var hide = document.querySelector('#titleRule')
 	var options = document.querySelector('#optionsButton')
 	
 	// Velocity(name, "finish")
-	Velocity(hide, "finish")
+	// Velocity(hide, "finish")
 	if(open){
 			if(selectedObj == 'pedestal' || selectedObj == ''){
 			selectedObj = ''
@@ -260,6 +262,8 @@ viewFunc = function(open){
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
 		Velocity(hide, {opacity: 0})
+		options.style['display'] = 'block'
+		Velocity(options, {opacity: 1, translateY: ['-0.75rem','-0.75rem'], translateX: ['0rem','1.5rem']})
 		hammerIcon = new Hammer(options)
 		hammerIcon.on('tap',breakdown)
 	}else{
@@ -269,6 +273,9 @@ viewFunc = function(open){
 		}
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
 		Velocity(hide, 'transition.slideLeftIn')
+		Velocity(options, 'reverse', {complete: function(){
+			options.style['display'] = 'none'
+		}})
 		hammerIcon.off('tap',breakdown)
 	}
 }
@@ -296,123 +303,129 @@ helpFunc = function(open){
 }
 // view specific functions
 function breakdown(){ // additive breakdown by #resource inputs (elec, heat, cool for PWR)
-	var semantic = document.querySelector('#semantic'), grade = document.querySelector('#grade'), 
-	aggData = document.querySelector('#aggData'), bkdown = document.querySelector('#breakdown'), 
-	spelled = document.querySelector('#spelledUnit'), rule = document.querySelector('#viewRule')
-
-	Velocity(semantic, 'finish')
-	Velocity(grade, 'finish')
-	Velocity(aggData, 'finish')
-	Velocity(bkdown, 'finish')
-	Velocity(spelled, 'finish')
-	Velocity(rule, 'finish')
-
-	if(selectedObj == 'pedestal'){
-		selectedObj = ''
-		sRotY = seseme.rotation.y * (180/Math.PI)
-		highlightCheck()
-	}
-	 if(!breakdownOn){ //turn on breakdown
-	 	shift({x: -19.75, y: 15, zoom: 1.2})
-	 	breakdown3d()
-	 	breakdownDOM()
-	 	breakdownOn = true
-	 	function breakdownDOM(){
-	 		spelled.textContent = currentResource
-			Velocity(semantic, {height: "1.75rem"})
-			Velocity(grade, {width: 0, opacity: -1},{duration: 500, easing: 'easeInQuad'})
-			Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{duration: 700, easing: 'easeOutQuad'})
-			Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
-			Velocity(bkdown, {height: "1.1rem", opacity: 1})
-			Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})
-	 	}
-	 	function breakdown3d(){
-	 		index = pillars[0].replace('plr','') - 1,
-	 		console.log('breakdown starts w/ pillar ' + index)
-			keyList = Object.keys(data[currentDataSet][index][currentResource])
-			breakdownShift(index)
-			
-			for(var it = 0; it<4; it++){
-				var total = 0, breakdownHts = [], 
-				ht = tgtHts[it].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
-				console.log(ht)
-				for(var i = 0; i<keyList.length; i++){ //get the pillar's total
-					total += data[currentDataSet][it][currentResource][keyList[i]]
-				} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
-				for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
-					proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
-					breakdownHts[i] = proportion * ht
-					geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
-					breakdownMtls[currentResource][i].opacity = 0
-					detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
-					detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[it][0],-breakdownHts[i]/2+0.25,tMtxs[it][1]))
-					detailStat[i].scale.set(0.9,1,0.9)
-					detailStat[i].name = "p" + (it+1) + "bkd" + i
-					if(breakdownHts[i-1]!=undefined){
-						for (var m = 0; m<i; m++){
-							detailStat[i].position.y -= breakdownHts[m]
-					}}
-					var parent = scene.getObjectByName('plr' + (it+1))
-					parent.add(detailStat[i])
-				}
-				detailStat.forEach(function(e,ii,arr){
-					current = {opacity: 0, x: 0.6, z: 0.6}
-					e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
-					e.scaleTween.to({opacity: 0.9, x: 1.04, z: 1.04},800)
-					e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
-					e.scaleTween.onUpdate(function(){
-						e.scale.x = current.x
-						e.scale.z = current.z
-						e.material.opacity = current.opacity
-					})
-					e.scaleTween.start()
-				})
-			} //end pillars.forEach
-	 	} //end breakdown3d
-	 	
-	 } else { // if breakdown is already on
-	 	console.log(selectedObj)
-	 	var index = selectedObj.replace('plr','')
-		index -= 1
-		if(selectedObj != ''){
-			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
+	if(!isRotating){
+		var semantic = document.querySelector('#semantic'), grade = document.querySelector('#grade'), 
+		aggData = document.querySelector('#aggData'), bkdown = document.querySelector('#breakdown'), 
+		spelled = document.querySelector('#spelledUnit'), rule = document.querySelector('#viewRule'),
+		options = document.querySelector('#optionsButton')
+	
+		Velocity(semantic, 'finish')
+		Velocity(grade, 'finish')
+		Velocity(aggData, 'finish')
+		Velocity(bkdown, 'finish')
+		Velocity(spelled, 'finish')
+		Velocity(rule, 'finish')
+		Velocity(options, 'finish')
+	
+		if(selectedObj == 'pedestal'){
+			selectedObj = ''
+			sRotY = seseme.rotation.y * (180/Math.PI)
+			highlightCheck()
 		}
-	 	remove3d()
-	 	revertDOM()
-	 	breakdownOn = false
-	 	function remove3d(){
-			var bkd = []
-			for(var i = 1; i < 5; i++){
-				bkd.push(seseme.getObjectByName('plr' + i).children)
-			}
-			bkd.forEach(function(ele,i){
-				ele.forEach(function(e,it,arr){
-					if(it>0){ //avoud removing outline e[0]
-						current = {opacity: 0.9, x: 1, z: 1}
-						e.removeTween = new TWEEN.Tween(current)
-						e.removeTween.to({opacity: 0, x: 0.6, z: 0.6}, 500)
-						e.removeTween.start()
-						e.removeTween.onUpdate(function(){
-							e.material.opacity = current.opacity
+		 if(!breakdownOn){ //turn on breakdown
+		 	shift({x: -19.75, y: 15, zoom: 1.2})
+		 	breakdown3d()
+		 	breakdownDOM()
+		 	breakdownOn = true
+		 	function breakdownDOM(){
+		 		spelled.textContent = currentResource
+		 		options.className = 'grade'
+				Velocity(semantic, {height: "1.75rem"})
+				Velocity(grade, {width: 0, opacity: -1},{duration: 500, easing: 'easeInQuad'})
+				Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{duration: 700, easing: 'easeOutQuad'})
+				Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
+				Velocity(bkdown, {height: "1.1rem", opacity: 1})
+				Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})
+				
+		 	}
+		 	function breakdown3d(){
+		 		index = pillars[0].replace('plr','') - 1,
+		 		console.log('breakdown starts w/ pillar ' + index)
+				keyList = Object.keys(data[currentDataSet][index][currentResource])
+				breakdownShift(index)
+				
+				for(var it = 0; it<4; it++){
+					var total = 0, breakdownHts = [], 
+					ht = tgtHts[it].y+1.25, detailStat = [], tMtxs = [[2.7,7.3],[7.3,7.3],[7.3,7.3],[2.7,7.3]]
+					console.log(ht)
+					for(var i = 0; i<keyList.length; i++){ //get the pillar's total
+						total += data[currentDataSet][it][currentResource][keyList[i]]
+					} //should rewrite this with dataToHts to make global, easily referenced data vals / totals
+					for(var i = 0; i<keyList.length; i++){ //math to turn proportions into proper bkdown hts
+						proportion = (data[currentDataSet][it][currentResource][keyList[i]]) / total
+						breakdownHts[i] = proportion * ht
+						geometry = new THREE.BoxGeometry(4,breakdownHts[i],4)
+						breakdownMtls[currentResource][i].opacity = 0
+						detailStat[i] = new THREE.Mesh(geometry, breakdownMtls[currentResource][i])
+						detailStat[i].applyMatrix(new THREE.Matrix4().makeTranslation(tMtxs[it][0],-breakdownHts[i]/2+0.25,tMtxs[it][1]))
+						detailStat[i].scale.set(0.9,1,0.9)
+						detailStat[i].name = "p" + (it+1) + "bkd" + i
+						if(breakdownHts[i-1]!=undefined){
+							for (var m = 0; m<i; m++){
+								detailStat[i].position.y -= breakdownHts[m]
+						}}
+						var parent = scene.getObjectByName('plr' + (it+1))
+						parent.add(detailStat[i])
+					}
+					detailStat.forEach(function(e,ii,arr){
+						current = {opacity: 0, x: 0.6, z: 0.6}
+						e.scaleTween = new TWEEN.Tween(current).delay(ii*100)
+						e.scaleTween.to({opacity: 0.9, x: 1.04, z: 1.04},800)
+						e.scaleTween.easing(TWEEN.Easing.Cubic.Out)
+						e.scaleTween.onUpdate(function(){
 							e.scale.x = current.x
 							e.scale.z = current.z
+							e.material.opacity = current.opacity
 						})
-						e.removeTween.onComplete(function(){
-							arr.splice(1,(arr.length-1))
-						})
-					}
+						e.scaleTween.start()
+					})
+				} //end pillars.forEach
+		 	} //end breakdown3d
+		 	
+		 } else { // if breakdown is already on
+		 	console.log(selectedObj)
+		 	var index = selectedObj.replace('plr','')
+			index -= 1
+			if(selectedObj != ''){
+				shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
+			}
+		 	remove3d()
+		 	revertDOM()
+		 	breakdownOn = false
+		 	function remove3d(){
+				var bkd = []
+				for(var i = 1; i < 5; i++){
+					bkd.push(seseme.getObjectByName('plr' + i).children)
+				}
+				bkd.forEach(function(ele,i){
+					ele.forEach(function(e,it,arr){
+						if(it>0){ //avoud removing outline e[0]
+							current = {opacity: 0.9, x: 1, z: 1}
+							e.removeTween = new TWEEN.Tween(current)
+							e.removeTween.to({opacity: 0, x: 0.6, z: 0.6}, 500)
+							e.removeTween.start()
+							e.removeTween.onUpdate(function(){
+								e.material.opacity = current.opacity
+								e.scale.x = current.x
+								e.scale.z = current.z
+							})
+							e.removeTween.onComplete(function(){
+								arr.splice(1,(arr.length-1))
+							})
+						}
+					})
 				})
-			})
-	 	}
-	 	function revertDOM(){
-			Velocity(semantic, {height: "2.75rem"})
-			Velocity(spelled, {width: 0, opacity: 0, padding: 0})
-			Velocity(grade, {width: "70%", opacity: 1}, {delay: 200, duration: 700, easing: 'easeOutCubic'})
-			Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
-			Velocity(bkdown, {height: 0, opacity: 0.3})
-			Velocity(rule, {width: '0%', opacity: 0}, {duration: 600})
-	 	}
-	 }  
+		 	}
+		 	function revertDOM(){
+		 		options.className = ''
+				Velocity(semantic, {height: "2.75rem"})
+				Velocity(spelled, {width: 0, opacity: 0, padding: 0})
+				Velocity(grade, {width: "70%", opacity: 1}, {delay: 200, duration: 700, easing: 'easeOutCubic'})
+				Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
+				Velocity(bkdown, {height: 0, opacity: 0.3})
+				Velocity(rule, {width: '0%', opacity: 0}, {duration: 600})
+		 	}
+		 }  }
 }//end breakdown
 
 function breakdownShift(indexnumber){
