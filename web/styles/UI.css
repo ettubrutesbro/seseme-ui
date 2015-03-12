@@ -73,13 +73,6 @@ h3,h4,h5,h6 {
 	color: white;
 	height: 44px;
 }
-	#topInfo span{
-		font-weight: 300;
-	}
-	#debug {
-		display: block;
-		text-align: center;
-	}
 
 /* NAVIGATION BUTTONS */
 
@@ -121,7 +114,7 @@ h3,h4,h5,h6 {
 
 		}
 
-#uiOptions {
+/*#uiOptions {
 	padding: 0 0.8rem 2rem 0.8rem;
 	width: 325px;
 	height: 60px;
@@ -131,13 +124,12 @@ h3,h4,h5,h6 {
 		width: 55px;
 		height: 55px;
 		border-radius: 50%;
-		background-color: rgba(0,0,0,0.7);
+		background-color: rgba(0,0,0,0.75);
 		box-sizing: border-box;
-		/*border: 2px white solid;*/
+		border: 2px white solid;
 		background-position: center;
 		background-image: url(../assets/eui_breakdown.svg);
-	}
-
+	}*/ 
 /*	BODY SECTIONS	*/
 
 #uiBody { /*holds dynamic UI data/content */
@@ -157,7 +149,7 @@ h3,h4,h5,h6 {
 	display: -webkit-flex;
 	padding: 0.1rem 0.3rem;
 	letter-spacing: 0;
-	font-weight: 600;
+	font-weight: 600;	
 	/*text-align: center;*/
 }
 	#name {
@@ -186,8 +178,23 @@ h3,h4,h5,h6 {
 		background-repeat: space no-repeat;
 	}
 	#titleGrade{
+		width: 50px;
 		padding: 0 0.3rem;
 		transform-origin: bottom right;
+	}
+#titleOptions{
+	width: 50px;
+
+}
+	#optionsButton{
+		transform: translateY(-0.5rem);
+		position: absolute;
+		z-index: 5;
+		right: 0.6rem;
+		width: 55px;
+		height: 55px;
+		border-radius: 50%;
+		background-color: rgba(0,0,0,0.75);
 	}
 
 #sectionContainer {

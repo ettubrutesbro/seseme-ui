@@ -98,10 +98,12 @@ function clickedSeseme(){
 	}else{ //clicked the ground or the orb
 		highlight()
 		selectedObj = ''
-		clickedNav(mode-1)
-		mode = 0
-		userActions.push('clicked ground, mode:' + mode)
-		// clearHighlight()
+		//do this only if we know a nav is selected
+		if(mode>0){
+			clickedNav(mode-1)
+			mode = 0
+		}
+		userActions.push('clicked ground')
 	}
 }
 function clickedNav(index){
@@ -239,11 +241,10 @@ function zoomHeightCheck(){
 // ----------navigation mode---------------
 viewFunc = function(open){
 	var name = document.querySelector('#name')
-	var icon = document.querySelector('#titleGrade')
-	var hide = document.querySelector('#titleRule')
+	var hide = document.querySelector('#titleHide')
+	var options = document.querySelector('#optionsButton')
 	
 	// Velocity(name, "finish")
-	Velocity(icon, "finish")
 	Velocity(hide, "finish")
 	if(open){
 			if(selectedObj == 'pedestal' || selectedObj == ''){
@@ -258,9 +259,8 @@ viewFunc = function(open){
 		shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.6), zoom: 2})
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
-		Velocity(icon, {opacity: 0})
 		Velocity(hide, {opacity: 0})
-		hammerIcon = new Hammer(icon)
+		hammerIcon = new Hammer(options)
 		hammerIcon.on('tap',breakdown)
 	}else{
 		shift(defaultPosZoom)
@@ -268,7 +268,6 @@ viewFunc = function(open){
 			breakdown()
 		}
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
-		Velocity(icon, {scale: 1.0})
 		Velocity(hide, 'transition.slideLeftIn')
 		hammerIcon.off('tap',breakdown)
 	}
@@ -378,7 +377,6 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		if(selectedObj != ''){
 			shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
 		}
-	 	
 	 	remove3d()
 	 	revertDOM()
 	 	breakdownOn = false
