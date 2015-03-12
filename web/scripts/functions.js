@@ -313,7 +313,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		highlightCheck()
 	}
 	 if(!breakdownOn){ //turn on breakdown
-	 	shift({x: -19.75, y: 17.75, zoom: 1.2})
+	 	shift({x: -19.75, y: 15, zoom: 1.2})
 	 	breakdown3d()
 	 	breakdownDOM()
 	 	breakdownOn = true

@@ -191,10 +191,24 @@ h3,h4,h5,h6 {
 		position: absolute;
 		z-index: 5;
 		right: 0.6rem;
-		width: 55px;
-		height: 55px;
-		border-radius: 50%;
-		background-color: rgba(0,0,0,0.75);
+		width: 57px;
+		height: 57px;
+		border-radius: 100%;
+		border: 2px #ededed solid;
+		background-color: rgba(0,0,0,0.75); 
+		background-image: url(../assets/eui_breakdown.svg), url(../assets/viewgrade.svg);
+		background-position: center, 60px 0;
+		background-repeat: no-repeat;
+		background-size: 100%;
+		box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+	}
+	#optionsButton:hover{
+		/*border: 28px #ededed solid;*/
+		/*background-size: 150%;*/
+		background-position: -60px 0, center;
+		transition: ease 0.5s;
+		-webkit-transition: ease 0.5s;
 	}
 
 #sectionContainer {
