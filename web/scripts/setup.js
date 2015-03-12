@@ -15,7 +15,7 @@ pillars = ['plr1','plr2','plr3','plr4'], rotDir =1, nearest90 = 0, sRotY,
 all90s = [0,270,180,90], isRotating = false,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
-defaultPosZoom, mode = 0, outlines = [], breakdownOn = false,
+defaultPosZoom, mode = 0, outlines = [], highlightsOK = true, breakdownOn = false,
 //what pillar is selected?  mode=nav section(0-explore,1-view,2-data,3-talk,4-help)
 
 navs = [].slice.call(document.getElementById('uiNav').children), //persistent nav buttons go to diff. sections
@@ -174,6 +174,7 @@ function setup(){
   		raycast = new THREE.Raycaster()
 
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
+		document.querySelector('#gradeIcon').addEventListener('load',svgIconFixer)
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
@@ -183,39 +184,43 @@ function setup(){
 			clickedSeseme()
 		})
   		hammerSESEME.on('pan',function(evt){
+	  	if(!isRotating){	
   			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
-  				rotDir = evt.velocityX < 0 ? 1: evt.velocityX > 0 ? -1: 1
+				rotDir = evt.velocityX < 0 ? 1: evt.velocityX > 0 ? -1: 1
   				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
   				realRotation()
   				findNearest90()
   				highlightCheck()
   				uiShift()
-  			}
+  		  	}
+	  	}
   		})
   		hammerSESEME.on('panend',function(evt){ //rotation deceleration
-  			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
-  				start = {speed: evt.velocityX}
-	  			diff = (Math.abs(0-evt.velocityX)) * 85
-	  			rotDecel = new TWEEN.Tween(start)
-	  			rotDecel.to({speed:0},diff+400)
-	  			rotDecel.onUpdate(function(){
-	  				seseme.rotation.y-=(start.speed * (Math.PI/90))
-	  				realRotation()
-	  				findNearest90()
-	  				highlightCheck()
-	  				uiShift()
-	  			})
-	  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
-	  			rotDecel.start()
-	  			rotDecel.onStart(function(){
-	  				isRotating = true
-	  			})
-	  			rotDecel.onComplete(function(){
-	  				zoomHeightCheck()
-	  				isRotating = false
-	  				userActions.push('panned to ' + Math.round(sRotY))
-	  			})
-	  		}//horizontal
+  			if(!isRotating){ 
+  				if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
+	  				start = {speed: evt.velocityX}
+		  			diff = (Math.abs(0-evt.velocityX)) * 85
+		  			rotDecel = new TWEEN.Tween(start)
+		  			rotDecel.to({speed:0},diff+400)
+		  			rotDecel.onUpdate(function(){
+		  				seseme.rotation.y-=(start.speed * (Math.PI/90))
+		  				realRotation()
+		  				findNearest90()
+		  				highlightCheck()
+		  				uiShift()
+		  			})
+		  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
+		  			rotDecel.start()
+		  			rotDecel.onStart(function(){
+		  				isRotating = true
+		  			})
+		  			rotDecel.onComplete(function(){
+		  				zoomHeightCheck()
+		  				isRotating = false
+		  				userActions.push('panned to ' + Math.round(sRotY))
+		  			})
+		  		}
+			}
   		})//pan finish
 
 		navs.forEach(function(ele, i){
@@ -230,8 +235,9 @@ function setup(){
 		uiShift()
 		setTimeout(function(){
 			updatePillars()
-		},500)
+		},1000)
 	}
+
 } //end setup
 
 function animate(){ 

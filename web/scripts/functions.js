@@ -39,6 +39,7 @@ function uiShift(){ //click or touch rotate: call
 	var name = document.querySelector('#name')
 	var viewNum = document.querySelector('#dataNum')
 	var abbr = document.querySelector('#dataUnit')
+	// var icon = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
 	if(selectedObj == 'pedestal' ){
 		// name.textContent = currentResource + " @ " + currentDataSet 
 	}else{
@@ -46,6 +47,8 @@ function uiShift(){ //click or touch rotate: call
 		name.textContent = data[currentDataSet][index].name
 		viewNum.textContent = allValues[index]
 		abbr.textContent = currentAbbr
+		// icon.style['background-color'] = ''
+		//icon src replacement...?
 		if(breakdownOn){
 			breakdownShift((pillars[0].replace('plr','') - 1))
 		}
@@ -212,27 +215,34 @@ function pillarOrder(distance){
 	}
 }
 function highlight(outlineNumber){
+	if(highlightsOK){	
 	outlines.forEach(function(ele){
 		ele.opacity = 0
 	})
 	if(outlineNumber!=undefined){
 		outlines[outlineNumber].opacity = 1
-	}
+	}}
 }
 function highlightCheck(){
-	if(selectedObj == "pedestal"){
-
-	}else{
-		highlightRanges =[{min: 0, max: 45,p:1},{min:315,max: 360,p:1},{min:228,max:314,p:2},{min:137,max:227,p:3},{min:46,max:136,p:4}]
-		highlightRanges.forEach(function(ele,i){
-			if(ele.max >= sRotY && ele.min <= sRotY){
-				highlight(ele.p)
-				selectedObj = "plr" + ele.p
-			}
-		})
+	if(highlightsOK){
+		if(selectedObj == "pedestal"){
+		}else{
+			highlightRanges =[{min: 0, max: 45,p:1},{min:315,max: 360,p:1},{min:228,max:314,p:2},{min:137,max:227,p:3},{min:46,max:136,p:4}]
+			highlightRanges.forEach(function(ele,i){
+				if(ele.max >= sRotY && ele.min <= sRotY){
+					highlight(ele.p)
+					selectedObj = "plr" + ele.p
+				}
+			})
+		}
 	}
 }
-
+function disableHighlights(){
+	highlightsOK = false
+	outlines.forEach(function(ele){
+		ele.opacity = 0
+	})
+}
 function zoomHeightCheck(){
 	if(mode==1 && !breakdownOn){
 		var index = selectedObj.replace('plr','')
@@ -247,7 +257,8 @@ viewFunc = function(open){
 	var options = document.querySelector('#optionsButton')
 	
 	// Velocity(name, "finish")
-	// Velocity(hide, "finish")
+	Velocity(hide, "finish")
+	Velocity(options,"finish")
 	if(open){
 			if(selectedObj == 'pedestal' || selectedObj == ''){
 			selectedObj = ''
@@ -262,7 +273,6 @@ viewFunc = function(open){
 		//dom manipulation
 		Velocity(name, {scale: 1.25, backgroundColorAlpha: 1})
 		Velocity(hide, {opacity: 0})
-		options.style['display'] = 'block'
 		Velocity(options, {opacity: 1, translateY: ['-0.75rem','-0.75rem'], translateX: ['0rem','1.5rem']})
 		hammerIcon = new Hammer(options)
 		hammerIcon.on('tap',breakdown)
@@ -271,11 +281,9 @@ viewFunc = function(open){
 		if(breakdownOn){
 			breakdown()
 		}
+		Velocity(options, {opacity: -1,translateX:['1.5rem','0rem']})
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
 		Velocity(hide, 'transition.slideLeftIn')
-		Velocity(options, 'reverse', {complete: function(){
-			options.style['display'] = 'none'
-		}})
 		hammerIcon.off('tap',breakdown)
 	}
 }
@@ -323,6 +331,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 			highlightCheck()
 		}
 		 if(!breakdownOn){ //turn on breakdown
+		 	disableHighlights() //no red highlights in bkdown
 		 	shift({x: -19.75, y: 15, zoom: 1.2})
 		 	breakdown3d()
 		 	breakdownDOM()
@@ -383,6 +392,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		 	} //end breakdown3d
 		 	
 		 } else { // if breakdown is already on
+		 	highlightsOK = true
 		 	console.log(selectedObj)
 		 	var index = selectedObj.replace('plr','')
 			index -= 1
@@ -427,7 +437,6 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		 	}
 		 }  }
 }//end breakdown
-
 function breakdownShift(indexnumber){
 	var bkdDom = document.getElementById('breakdown') 
 	bkdDom.innerHTML = ''
@@ -444,3 +453,9 @@ function breakdownShift(indexnumber){
 		bkdDom.appendChild(element)
 	}
 }
+//misc. utilities and ugly fixes
+function svgIconFixer(){
+	var shit = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
+	shit.style['background-color'] = ''
+}
+	

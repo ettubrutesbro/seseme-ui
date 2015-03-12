@@ -183,7 +183,6 @@ h3,h4,h5,h6 {
 		transform-origin: bottom right;
 	}
 #optionsButton{
-		display: none;
 		opacity: 0;
 		transform: translate(1.5rem, -0.75rem);
 		-webkit-transform: translateY(1.5rem, -0.75rem);
@@ -203,14 +202,6 @@ h3,h4,h5,h6 {
 		-webkit-box-sizing: border-box;
 		transition: ease 0.5s;
 		-webkit-transition: ease 0.5s;
-	}
-	#optionsButton:hover{ 
-		/*change to clicked & only if class is applied?*/
-		/*border: 28px #ededed solid;*/
-		/*background-size: 150%;*/
-		/*background-position: -60px 0, center;
-		transition: ease 0.5s;
-		-webkit-transition: ease 0.5s;*/
 	}
 	#optionsButton.grade{
 		background-position: -60px 0, center;
@@ -310,10 +301,15 @@ section{
 					font-size: 0.6rem;
 					text-align: right;
 				}
-
-.icon {
-	background-image: url(../assets/efficient.svg);
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 90%;
+.icon object{
+	width: 95%;
 }
+
+object svg {
+	background-color: none !important;
+}
+
+#Layer_1 {
+	background-color: red !important;
+}
+

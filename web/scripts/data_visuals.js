@@ -15,7 +15,7 @@ var gradeWords = {
 		good: ['pretty efficient','kinda good','mostly acceptable','probably sustainable', 'almost there!', 'doing better', 'getting there!', 'not bad','cool building','almost... ..there..','not wasteful'],
 		ok: ['mostly alright','kinda mediocre','probably fine','sorta average','barely okay', 'almost garbage', 'nearly acceptable', 'pretty meh','what ever','mediocre building','okay building','rating: ¯\\_(ツ)_/¯','needs effort','try harder','do better','.... ..ok','basic building','totally average'],
 		bad: ['abyss gazing', 'kinda sucks','kinda harmful', 'not efficient','needs improvement','pretty bad','mostly awful','not good','approaching awful', 'moderately gross', 'sad animals', 'straight garbage', 'nature cries','nature abuse','just no'],
-		terrible: ['literal chamberpot','frightful prospects','wasteful horror',"nature's nemesis",'the worst','actually shit','totally pernicious','actively pernicious','enviro suicide','weeping planet','kinda sickening','please no','dead puppies','earth wrecker','wasteland imminent','actively harmful','post apocalyptic','doves cry','wholly garbage','entirely shameful','earth killer','waste incarnate','see image']
+		terrible: ['campus chamberpot','frightful prospects','wasteful horror',"nature's nemesis",'the worst','actually shit','totally pernicious','actively pernicious','enviro suicide','weeping planet','kinda sickening','please no','dead puppies','earth wrecker','wasteland imminent','actively harmful','post apocalyptic','doves cry','wholly garbage','entirely shameful','earth killer','waste incarnate','see image']
 	},
 	'Gallons Per Minute': [
 
