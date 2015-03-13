@@ -173,9 +173,10 @@ h3,h4,h5,h6 {
 		-webkit-flex-grow: 3;
 		-webkit-flex-shrink: 0;
 		background-image: url(../assets/dot.svg);
+		background-repeat: space no-repeat;
 	 	background-position: center;
 		background-size: 10px 10px;
-		background-repeat: space no-repeat;
+		
 	}
 	#titleGrade{
 		width: 50px;
@@ -305,11 +306,5 @@ section{
 	width: 95%;
 }
 
-object svg {
-	background-color: none !important;
-}
 
-#Layer_1 {
-	background-color: red !important;
-}
 

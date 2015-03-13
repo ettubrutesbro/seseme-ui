@@ -224,7 +224,6 @@ function highlight(outlineNumber){
 	}}
 }
 function highlightCheck(){
-	if(highlightsOK){
 		if(selectedObj == "pedestal"){
 		}else{
 			highlightRanges =[{min: 0, max: 45,p:1},{min:315,max: 360,p:1},{min:228,max:314,p:2},{min:137,max:227,p:3},{min:46,max:136,p:4}]
@@ -235,7 +234,7 @@ function highlightCheck(){
 				}
 			})
 		}
-	}
+	
 }
 function disableHighlights(){
 	highlightsOK = false
@@ -331,11 +330,6 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 			highlightCheck()
 		}
 		 if(!breakdownOn){ //turn on breakdown
-		 	disableHighlights() //no red highlights in bkdown
-		 	shift({x: -19.75, y: 15, zoom: 1.2})
-		 	breakdown3d()
-		 	breakdownDOM()
-		 	breakdownOn = true
 		 	function breakdownDOM(){
 		 		spelled.textContent = currentResource
 		 		options.className = 'grade'
@@ -344,8 +338,7 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 				Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{duration: 700, easing: 'easeOutQuad'})
 				Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
 				Velocity(bkdown, {height: "1.1rem", opacity: 1})
-				Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})
-				
+				Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})	
 		 	}
 		 	function breakdown3d(){
 		 		index = pillars[0].replace('plr','') - 1,
@@ -390,18 +383,12 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 					})
 				} //end pillars.forEach
 		 	} //end breakdown3d
-		 	
+		 	disableHighlights() //no red highlights in bkdown
+		 	shift({x: -19.75, y: 15, zoom: 1.2})
+		 	breakdownOn = true
+		 	breakdown3d()
+		 	breakdownDOM()
 		 } else { // if breakdown is already on
-		 	highlightsOK = true
-		 	console.log(selectedObj)
-		 	var index = selectedObj.replace('plr','')
-			index -= 1
-			if(selectedObj != ''){
-				shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
-			}
-		 	remove3d()
-		 	revertDOM()
-		 	breakdownOn = false
 		 	function remove3d(){
 				var bkd = []
 				for(var i = 1; i < 5; i++){
@@ -435,7 +422,17 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 				Velocity(bkdown, {height: 0, opacity: 0.3})
 				Velocity(rule, {width: '0%', opacity: 0}, {duration: 600})
 		 	}
-		 }  }
+		 	highlightsOK = true
+		 	var index = selectedObj.replace('plr','')
+			index -= 1
+			if(selectedObj != ''){
+				shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
+			}
+		 	remove3d()
+		 	revertDOM()
+		 	breakdownOn = false
+		 }  
+	} //isRotating
 }//end breakdown
 function breakdownShift(indexnumber){
 	var bkdDom = document.getElementById('breakdown') 
