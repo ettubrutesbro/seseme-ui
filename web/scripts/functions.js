@@ -55,7 +55,10 @@ function uiShift(){ //click or touch rotate: call
 	}
 	//how can i specify to only do it when it's different from before? 
 
-function colorAssess(){
+function assess(index){ //static, competitive, function-dependent
+	//1. ECO: 1-55 (best), 56-100, 101-300, 301-400 (worst)
+	//2. use allValues[i], compare vs. other allValues[]
+	//3. get classes of buildings to modify 
 
 }
 
