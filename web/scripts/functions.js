@@ -1,5 +1,14 @@
 // data driven -------------
-
+function getData(reqSet, reqResource){ 
+	//add an event listener for a socket update is setup for this
+	//alternatively it can be run from the client when they request through the front end
+	currentData = reqSet
+	currentResource = reqResource
+	dataToHts()
+	autoRotate(360) //optional visual flourish?
+	uiShift()
+	assess()
+}
 function dataToHts(){ // translates data vals 
 	data[currentDataSet].forEach(function(ele,i,arr){
 		var total = 0
@@ -9,7 +18,7 @@ function dataToHts(){ // translates data vals
 		}
 		allValues.push(total)
 	})
-	console.log(allValues)
+	console.log('pillar hts: ' + allValues)
 	var highestValue = allValues.indexOf(Math.max.apply( Math, allValues ))
 	allValues.forEach(function(ele,i,arr){
 		tgtHts[i].y = (ele / arr[highestValue]) * 12
@@ -32,39 +41,176 @@ function updatePillars(){
 
 	})
 }
-function dataToUI(){ //data to textual / UI elems
-	console.log(data[currentResource])
+function assess(){ //gets values, adds weights, compares vs. criteria, assembles words
+allValues.forEach(function(ele,i){
+	var classes = data[currentDataSet][i].classes,
+	classWeights = 0
+	classes.forEach(function(e){
+		classWeights += classWeighting[currentResource][e]
+	})
+	var weightedValue = ele - classWeights, distances = [], range
+	metricMetaData[currentResource].criteria.forEach(function(el,it){
+		if(weightedValue >= el.lo && weightedValue <= el.hi){
+			grades[i] = it
+			distances.push(weightedValue - el.lo)
+			distances.push(el.hi - weightedValue)
+			range = el.hi - el.lo
+		}
+	})
+	if(distances[0]>distances[1]){
+		if(distances[1]+(range/3) >= distances[0]){ //close
+			distFromCtr.push('mid') 
+		}else{ //wv is close to high end of range
+			distFromCtr.push('high')
+		}
+	}else if(distances[0]<distances[1]){
+		if(distances[0]+(range/3) >= distances[0]){ //close
+			distFromCtr.push('mid')
+		}else { //wval is close to low end of range
+			distFromCtr.push('low')
+		}
+	}else if(distances[0]==distances[1]){ //close
+		distFromCtr.push('mid')
+	}
+
+})
+console.log('grades: ' + grades)
+} //end assess
+
+function judgment(grade,distFromCtr){
+	console.log('grade:'+grade + " dist:"+distFromCtr)
+	console.log(dice(2,1))
+	switch(grade){
+		case 0: //-----------------------GOOD---------------------------------//
+			switch(distFromCtr){
+				case 'low': //really good
+					switch(dice(2,1)){
+						case 1:
+							console.log('adj:rly good')
+							break;
+						case 2:
+							console.log('spec:rly good')
+							break;
+					}					
+					break;
+				case 'mid': //pretty good
+					switch(dice(2,1)){
+						case 1:
+							console.log('adj:med good')
+							break;
+						case 2:
+							console.log('good noun')
+							break;
+					}
+					break;
+				case 'high': //barely good
+					console.log('adj:almost good')
+					break;
+			}
+			break; 
+		case 1: //----------------OK---------------------------------//
+			switch(distFromCtr){
+				case 'low':
+					console.log('adj:rly ok')
+					break;
+				case 'mid':
+					switch(dice(4,1)){
+						case 1:
+							console.log('adj:med ok')
+							break;
+						case 2:
+							console.log('adj:neg bad')
+							break;
+						case 3:
+							console.log('spec ok')
+							break;
+						case 4:
+							console.log('ok noun')
+							break;
+					}
+					break;
+				case 'high':
+					switch(dice(2,1)){
+						case 1:
+							console.log('adj:almost ok')
+							break;
+						case 2:
+							console.log('adj:neg good')
+							break;
+					}
+					break;
+			}
+			break; 
+		case 2: //------------------------------BAD------------------------------//
+			switch(distFromCtr){
+				case 'low':
+					console.log('adj:almost bad')
+					break;
+				case 'mid':
+					console.log('adj:med bad')
+					break;
+				case 'high':
+					console.log('spec bad')
+					break;
+			}
+			break;
+		case 3: //------------------------------AWFUL ------------------------------//
+			if(distFromCtr=='low'){
+				switch(dice(2,1)){
+					case 1:
+						console.log('adj:rly bad')
+						break;
+					case 2:
+						console.log('bad noun')
+						break;
+				}
+			}else{
+				console.log('spec awful')
+			}
+		break;
+	}
+
 }
-function uiShift(){ //click or touch rotate: call 
+function uiShift(){ //selection through rotations populates UI
 	if(selectedObj != lastObj){
 		console.log('shifting UI')
 		var name = document.querySelector('#name')
-		var viewNum = document.querySelector('#dataNum')
-		var abbr = document.querySelector('#dataUnit')
-		// var icon = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
+
 		if(selectedObj == 'pedestal' ){
 			// name.textContent = currentResource + " @ " + currentDataSet 
 		}else{
-			var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
+			var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj),
+			viewNum = document.querySelector('#dataNum'),
+			abbr = document.querySelector('#dataUnit'),
+			icon = document.querySelector('#gradePic')
+			
 			name.textContent = data[currentDataSet][index].name
 			viewNum.textContent = allValues[index]
 			abbr.textContent = currentAbbr
-			console.log(assess(index))
-			// icon.style['background-color'] = ''
-			//icon src replacement...?
+
+			iconName = metricMetaData[currentResource].assess_images[grades[index]]
+			tgtIcon = icons.indexOf(document.getElementById(iconName))
+			parent = document.getElementById('gradePic')
+			
+			icons.forEach(function(ele,i){
+				Velocity(ele,'finish')
+				if(i!=tgtIcon){
+					// Velocity(ele, {display: ['none','inline'], opacity: [0,1]},{queue: false, complete: function(){
+						parent.appendChild(ele)
+					// }})
+				}
+			})
+			// Velocity(icons[whichOne], {display: ['inline','none'], opacity: [1,0]},{delay: 200})
+			// gradeWords = judgment(grade[index],distFromCtr[index])
+			//console.log(distFromCtr[index] + " " + grades[index])
+			judgment(grades[index],distFromCtr[index])
+
 			if(breakdownOn){
 				breakdownShift((pillars[0].replace('plr','') - 1))
 			}
 		}
 	}
 }//end uiShift
-function assess(index){ //gets values, adds weights, compares vs. criteria, assembles words
-	console.log(allValues[index])
-
-// return # for rating 0-good 1-ok 2-bad 3-awful
-} //end assess
-
-
 
 //interaction prompts ---------------
 
@@ -99,12 +245,13 @@ function clickedSeseme(){
 				}
 			}else{ //pedestal
 				highlight(0) //highlights pedestal
+				//modify title? do a shift?
 			}
 			lastObj = selectedObj
 			selectedObj = clicked
 		}
 	}else{ //clicked the ground or the orb
-		highlight()
+		highlight('')
 		lastObj = selectedObj
 		selectedObj = ''
 		//do this only if we know a nav is selected
@@ -130,9 +277,9 @@ function clickedNav(index){
 		navFuncs[index](true)
 		mode=index+1
 		sections[index].style["display"] = "block"
-		Velocity(sections[index],{height: sectionHeights[index], opacity: 1})
+		Velocity(sections[index],{height: sectionHeights[index], opacity: [1,-0.5]})
 	}else{
-		Velocity(sections[index],{height: 0, opacity: 0.25},{complete: function(){
+		Velocity(sections[index],{height: 0, opacity: -1.25},{complete: function(){
 			sections[index].style["display"] = "none"
 		}})
 		lastObj = selectedObj
@@ -226,7 +373,7 @@ function highlight(outlineNumber){
 	outlines.forEach(function(ele){
 		ele.opacity = 0
 	})
-	if(outlineNumber!=undefined){
+	if(outlineNumber!=''&&outlineNumber!=undefined){
 		outlines[outlineNumber].opacity = 1
 	}}
 }
@@ -431,12 +578,14 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		 	}
 		 	highlightsOK = true
 		 	var index = selectedObj.replace('plr','')
+		 	highlight(index)
 			index -= 1
 			if(selectedObj != ''){
 				shift({x: -19.75, y: 17+Math.round((tgtHts[index].y)/1.8), zoom: 2})
 			}
 		 	remove3d()
 		 	revertDOM()
+
 		 	breakdownOn = false
 		 }  
 	} //isRotating
@@ -457,9 +606,10 @@ function breakdownShift(indexnumber){
 		bkdDom.appendChild(element)
 	}
 }
-//misc. utilities and ugly fixes
-function svgIconFixer(){
-	var shit = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
-	shit.style['background-color'] = ''
+
+
+//utility
+
+function dice(possibilities,add){
+	return Math.floor((Math.random()*possibilities) + add)
 }
-	

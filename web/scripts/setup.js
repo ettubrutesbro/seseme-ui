@@ -3,7 +3,10 @@
 
 var currentDataSet = 'UC Davis', //currently displayed dataset
 currentResource = 'Energy Use Intensity', currentAbbr = 'EUI',
-allValues = []
+//eventually the currentData vars will be blank and we'll ask
+//the server on first load what they are, by that time we'll need
+//getData function as part of the setup func
+allValues = [], grades = [0,0,0,0], distFromCtr = []
 selectedObj = 'plr1', lastObj = '' 
 
 
@@ -24,6 +27,7 @@ navFuncs = [viewFunc, dataFunc, talkFunc, helpFunc],
 //array of functions called when buttons are pressed
 allowAnim = true, //bool false during animation, true when finished
 
+icons = [].slice.call(document.getElementById('gradePic').children)
 //experimental usage metrics
 userActions = [], useTime = 0 , revolutionCount = 0 
 
@@ -174,11 +178,17 @@ function setup(){
   		raycast = new THREE.Raycaster()
 
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
-		document.querySelector('#gradeIcon').addEventListener('load',svgIconFixer)
+		// document.querySelector('#gradePic object').addEventListener('load',svgIconFixer)
+		icons.forEach(function(ele){
+			ele.addEventListener('load',function(){
+				// console.log(ele.contentDocument)
+				c = ele.contentDocument.querySelector('svg')
+				c.style['background-color'] = 'rgba(0,0,0,0)'
+			})
+		})
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
-			
 			mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
 			mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
 			clickedSeseme()
@@ -232,6 +242,7 @@ function setup(){
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 		dataToHts()
+		assess()
 		uiShift()
 		setTimeout(function(){
 			updatePillars()

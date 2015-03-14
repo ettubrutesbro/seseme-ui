@@ -305,6 +305,10 @@ section{
 .icon object{
 	width: 95%;
 }
+.icon object:nth-child(n+2){
+	display: none;
+	/*margin-top: 1rem;*/
+}
 
 
 
