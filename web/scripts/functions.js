@@ -59,9 +59,9 @@ function uiShift(){ //click or touch rotate: call
 	}
 }//end uiShift
 function assess(index){ //gets values, adds weights, compares vs. criteria, assembles words
+	console.log(allValues[index])
 
-
-// return 
+// return # for rating 0-good 1-ok 2-bad 3-awful
 } //end assess
 
 
