@@ -11,8 +11,8 @@ var breakdownMtls = { //material index for breakdown view by resource/metric
 
 var grdwds = {
 adjMs: {
-	more: ['totally','entirely','awfully','wholly','absolutely','resolutely','thoroughly','decidedly','straight'],
-	mid: ['pretty','probably','kinda','rather','mostly','basically','sorta','likely','just'],
+	more: ['simply','totally','proper','entirely','awfully','wholly','absolutely','resolutely','thoroughly','decidedly','straight','really'],
+	mid: ['.....','pretty','probably','kinda','rather','mostly','basically','sorta','likely','just'],
 	less: ['nearly','almost','nearing','technically,','hardly','barely'],
 	negatory: ['not','never']
 },
@@ -21,7 +21,7 @@ adjRs: {
 	ok: ['alright','mediocre','fine','average','okay','meh','¯\\_(ツ)_/¯','basic'],
 	bad: ['pernicious','garbage','harmful','terrible','sad','bad','awful','pitiful','shameful','shite','shit','crappy','janky','abusive','gross','wasteful','sickening']
 },
-nouns: ['building','place','example'],
+nouns: ['building','place','example','job','stuff'],
 specG: ['good job','real mvp','building #lifegoals','role model','animal savior','earth friend'],
 specO: ['what ever','could improve','needs effort','basic building','basically forgettable'],
 specB: ['abyss gazer','sad animals','nature abuse',"dude c'mon",'please improve','frown inducing','eyebrow furrower','face palm','dubious building','needs intervention'],

@@ -78,18 +78,21 @@ console.log('grades: ' + grades)
 } //end assess
 
 function judgment(grade,distFromCtr){
-	console.log('grade:'+grade + " dist:"+distFromCtr)
-	console.log(dice(2,1))
+	// console.log('grade:'+grade + " dist:"+distFromCtr)
 	switch(grade){
 		case 0: //-----------------------GOOD---------------------------------//
+		var r = getOne(grdwds.adjRs.good)
 			switch(distFromCtr){
 				case 'low': //really good
 					switch(dice(2,1)){
 						case 1:
 							console.log('adj:rly good')
+							var m = getOne(grdwds.adjMs.more)
+							return m + " " + r
 							break;
 						case 2:
 							console.log('spec:rly good')
+							return getOne(grdwds.specG)
 							break;
 					}					
 					break;
@@ -204,6 +207,9 @@ function uiShift(){ //selection through rotations populates UI
 			// gradeWords = judgment(grade[index],distFromCtr[index])
 			//console.log(distFromCtr[index] + " " + grades[index])
 			judgment(grades[index],distFromCtr[index])
+
+			var gradeWords = []
+
 
 			if(breakdownOn){
 				breakdownShift((pillars[0].replace('plr','') - 1))
@@ -606,10 +612,13 @@ function breakdownShift(indexnumber){
 		bkdDom.appendChild(element)
 	}
 }
-
-
 //utility
 
 function dice(possibilities,add){
 	return Math.floor((Math.random()*possibilities) + add)
+}
+
+function getOne(array){
+	tgt = dice(array.length,0)
+	return array[tgt]
 }
