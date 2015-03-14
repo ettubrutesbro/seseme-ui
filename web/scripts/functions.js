@@ -36,34 +36,36 @@ function dataToUI(){ //data to textual / UI elems
 	console.log(data[currentResource])
 }
 function uiShift(){ //click or touch rotate: call 
-	var name = document.querySelector('#name')
-	var viewNum = document.querySelector('#dataNum')
-	var abbr = document.querySelector('#dataUnit')
-	// var icon = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
-	if(selectedObj == 'pedestal' ){
-		// name.textContent = currentResource + " @ " + currentDataSet 
-	}else{
-		var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
-		name.textContent = data[currentDataSet][index].name
-		viewNum.textContent = allValues[index]
-		abbr.textContent = currentAbbr
-		// icon.style['background-color'] = ''
-		//icon src replacement...?
-		if(breakdownOn){
-			breakdownShift((pillars[0].replace('plr','') - 1))
+	if(selectedObj != lastObj){
+		console.log('shifting UI')
+		var name = document.querySelector('#name')
+		var viewNum = document.querySelector('#dataNum')
+		var abbr = document.querySelector('#dataUnit')
+		// var icon = document.querySelector('#gradeIcon').contentDocument.querySelector('svg')
+		if(selectedObj == 'pedestal' ){
+			// name.textContent = currentResource + " @ " + currentDataSet 
+		}else{
+			var index = ['plr1','plr2','plr3','plr4'].indexOf(selectedObj)
+			name.textContent = data[currentDataSet][index].name
+			viewNum.textContent = allValues[index]
+			abbr.textContent = currentAbbr
+			console.log(assess(index))
+			// icon.style['background-color'] = ''
+			//icon src replacement...?
+			if(breakdownOn){
+				breakdownShift((pillars[0].replace('plr','') - 1))
+			}
 		}
 	}
-	//how can i specify to only do it when it's different from before? 
-
-function assess(index){ //static, competitive, function-dependent
-	//1. ECO: 1-55 (best), 56-100, 101-300, 301-400 (worst)
-	//2. use allValues[i], compare vs. other allValues[]
-	//3. get classes of buildings to modify 
-
-}
+}//end uiShift
+function assess(index){ //gets values, adds weights, compares vs. criteria, assembles words
 
 
-}
+// return 
+} //end assess
+
+
+
 //interaction prompts ---------------
 
 
@@ -95,14 +97,15 @@ function clickedSeseme(){
 					autoRotate(90)
 					rotDir = 1
 				}
-				selectedObj = clicked
-			}else{
-				highlight(0)
-				selectedObj = clicked
+			}else{ //pedestal
+				highlight(0) //highlights pedestal
 			}
+			lastObj = selectedObj
+			selectedObj = clicked
 		}
 	}else{ //clicked the ground or the orb
 		highlight()
+		lastObj = selectedObj
 		selectedObj = ''
 		//do this only if we know a nav is selected
 		if(mode>0){
@@ -132,6 +135,7 @@ function clickedNav(index){
 		Velocity(sections[index],{height: 0, opacity: 0.25},{complete: function(){
 			sections[index].style["display"] = "none"
 		}})
+		lastObj = selectedObj
 		selectedObj = ''
 		navFuncs[index](false)
 		mode=0
@@ -233,6 +237,7 @@ function highlightCheck(){
 			highlightRanges.forEach(function(ele,i){
 				if(ele.max >= sRotY && ele.min <= sRotY){
 					highlight(ele.p)
+					lastObj = selectedObj
 					selectedObj = "plr" + ele.p
 				}
 			})
@@ -263,7 +268,6 @@ viewFunc = function(open){
 	Velocity(options,"finish")
 	if(open){
 			if(selectedObj == 'pedestal' || selectedObj == ''){
-			selectedObj = ''
 			sRotY = seseme.rotation.y * (180/Math.PI)
 			highlightCheck()
 		}
@@ -285,7 +289,7 @@ viewFunc = function(open){
 		}
 		Velocity(options, {opacity: -1,translateX:['1.5rem','0rem']})
 		Velocity(name, {scale: 1.0, backgroundColorAlpha: 0})
-		Velocity(hide, 'transition.slideLeftIn')
+		Velocity(hide, {translateX:['0rem','-2rem'], opacity: 1})
 		hammerIcon.off('tap',breakdown)
 	}
 }

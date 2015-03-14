@@ -4,7 +4,7 @@
 var currentDataSet = 'UC Davis', //currently displayed dataset
 currentResource = 'Energy Use Intensity', currentAbbr = 'EUI',
 allValues = []
-selectedObj = 'plr1' 
+selectedObj = 'plr1', lastObj = '' 
 
 
 var scene = new THREE.Scene(), camera, renderer, //basic 3d display
