@@ -244,7 +244,6 @@ function setup(){
 		assess()
 		uiShift()
 	}
-
 } //end setup
 
 function animate(){ 

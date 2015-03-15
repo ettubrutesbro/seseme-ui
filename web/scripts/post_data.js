@@ -17,7 +17,7 @@ adjMs: {
 	neg: ['not','below','sub-']
 },
 adjRs: {
-	good: ['optimal','efficient','acceptable','sustainable','awesome','nice','good','great','cool'],
+	good: ['optimal','efficient','acceptable','sustainable','awesome','nice','good','cool'],
 	ok: ['alright','mediocre','fine','average','okay','meh','\\_(ツ)_/','basic'],
 	bad: ['pernicious','garbage','harmful','terrible','saddening','awful','pitiful','shameful','shite','shit','crappy','janky','abusive','gross','wasteful','sickening']
 },
@@ -40,7 +40,7 @@ var metricMetaData = {
 		],
 		//static criteria: [0]=good,[1]=ok,[2]=bad,[3]=awful
 		criteria: [{lo:30, hi:70},{lo:71, hi:180},{lo:181, hi:220},{lo:221, hi:999}],
-		assess_images: ['leaves','shrug','burnleaf','shit']		
+		assess_images: ['leaves','okleaf','burnleaf','shit']		
 	}
 }
 
