@@ -81,94 +81,102 @@ function judgment(grade,distFromCtr){
 	// console.log('grade:'+grade + " dist:"+distFromCtr)
 	switch(grade){
 		case 0: //-----------------------GOOD---------------------------------//
-		var r = getOne(grdwds.adjRs.good)
+		var r = getOne('adjRs.good')
 			switch(distFromCtr){
 				case 'low': //really good
 					switch(dice(2,1)){
 						case 1:
-							console.log('adj:rly good')
-							var m = getOne(grdwds.adjMs.more)
-							return m + " " + r
+							return getOne('adjMs.more') + " " + r
 							break;
 						case 2:
-							console.log('spec:rly good')
-							return getOne(grdwds.specG)
+							return getOne('specG')
 							break;
 					}					
 					break;
 				case 'mid': //pretty good
 					switch(dice(2,1)){
 						case 1:
-							console.log('adj:med good')
+							return getOne('adjMs.mid') + " " + r
 							break;
 						case 2:
-							console.log('good noun')
+							return r + " " + getOne('nouns')
 							break;
 					}
 					break;
 				case 'high': //barely good
-					console.log('adj:almost good')
+					return getOne('adjMs.less') + ' ' + r
 					break;
 			}
 			break; 
 		case 1: //----------------OK---------------------------------//
+			var r = getOne('adjRs.ok')
 			switch(distFromCtr){
 				case 'low':
-					console.log('adj:rly ok')
+					return getOne('adjMs.more') + " " + r
 					break;
 				case 'mid':
 					switch(dice(4,1)){
 						case 1:
-							console.log('adj:med ok')
+							return getOne('adjMs.mid') + " " + r
 							break;
 						case 2:
-							console.log('adj:neg bad')
+							return getOne('adjMs.neg') + ' ' + getOne('adjRs.bad')
 							break;
 						case 3:
-							console.log('spec ok')
+							return getOne('specO')
 							break;
 						case 4:
-							console.log('ok noun')
+							return r + ' ' + getOne('nouns')
 							break;
 					}
 					break;
 				case 'high':
 					switch(dice(2,1)){
 						case 1:
-							console.log('adj:almost ok')
+							return getOne('adjMs.less') + ' ' + r
 							break;
 						case 2:
-							console.log('adj:neg good')
+							return getOne('adjMs.neg') + ' ' + getOne('adjRs.good')
 							break;
 					}
 					break;
 			}
 			break; 
 		case 2: //------------------------------BAD------------------------------//
+			var r = getOne('adjRs.bad')
 			switch(distFromCtr){
 				case 'low':
-					console.log('adj:almost bad')
+					switch(dice(2,1)){
+						case 1:
+							return getOne('adjMs.less') + ' ' + r
+							break;
+						case 2:
+							return getOne('adjMs.neg') + ' ' + getOne('adjRs.ok')
+							break;
+					}
 					break;
 				case 'mid':
-					console.log('adj:med bad')
+					return getOne('adjMs.mid') + ' ' + r
 					break;
 				case 'high':
-					console.log('spec bad')
+					return getOne('specB')
 					break;
 			}
 			break;
 		case 3: //------------------------------AWFUL ------------------------------//
+			
 			if(distFromCtr=='low'){
+				var r = getOne(adjRs.bad)
 				switch(dice(2,1)){
 					case 1:
-						console.log('adj:rly bad')
+						return getOne('adjMs.more')+' '+r
 						break;
 					case 2:
-						console.log('bad noun')
+						return r + ' ' + getOne('nouns')
 						break;
 				}
 			}else{
-				console.log('spec awful')
+				return getOne('specA')
 			}
 		break;
 	}
@@ -206,9 +214,8 @@ function uiShift(){ //selection through rotations populates UI
 			// Velocity(icons[whichOne], {display: ['inline','none'], opacity: [1,0]},{delay: 200})
 			// gradeWords = judgment(grade[index],distFromCtr[index])
 			//console.log(distFromCtr[index] + " " + grades[index])
-			judgment(grades[index],distFromCtr[index])
-
-			var gradeWords = []
+			var gradeWords = judgment(grades[index],distFromCtr[index])
+			console.log(gradeWords)
 
 
 			if(breakdownOn){
@@ -619,6 +626,15 @@ function dice(possibilities,add){
 }
 
 function getOne(array){
-	tgt = dice(array.length,0)
-	return array[tgt]
+	array = array.split('.')
+	// console.log(array) why am i getting multiple calls?
+
+	if(array.length>1){
+		tgt = dice(grdwds[array[0]][array[1]].length,0)
+		return grdwds[array[0]][array[1]][tgt]
+		
+	}else{
+		tgt = dice(grdwds[array[0]].length,0)
+		return grdwds[array[0]][tgt]
+	}
 }

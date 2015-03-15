@@ -14,10 +14,10 @@ adjMs: {
 	more: ['simply','totally','proper','entirely','awfully','wholly','absolutely','resolutely','thoroughly','decidedly','straight','really'],
 	mid: ['.....','pretty','probably','kinda','rather','mostly','basically','sorta','likely','just'],
 	less: ['nearly','almost','nearing','technically,','hardly','barely'],
-	negatory: ['not','never']
+	neg: ['not','never','sub-']
 },
 adjRs: {
-	good: ['efficient','acceptable','sustainable','awesome','nice','good','great','cool'],
+	good: ['optimal','efficient','acceptable','sustainable','awesome','nice','good','great','cool'],
 	ok: ['alright','mediocre','fine','average','okay','meh','¯\\_(ツ)_/¯','basic'],
 	bad: ['pernicious','garbage','harmful','terrible','sad','bad','awful','pitiful','shameful','shite','shit','crappy','janky','abusive','gross','wasteful','sickening']
 },
