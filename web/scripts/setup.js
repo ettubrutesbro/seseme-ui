@@ -107,14 +107,13 @@ function setup(){
 		    plr1.name = "plr1"
 		    // plr1.castShadow = true
 		    seseme.add(plr1)
+		    updatePillars('plr1')
 		    plr4 = new THREE.Mesh(geometry, sesememtl)
 		    plr4.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
 		    plr4.rotation.y = -90 * Math.PI / 180
 		    plr4.name = "plr4"
-		    // plr4.castShadow = true
-		    setTimeout(function(){
-		      seseme.add(plr4)
-		    },10) //this is awful and should not be
+		    seseme.add(plr4)
+		    updatePillars('plr4')
 		    loader.load("assets/pillarA_outline.js", function(g){
 		      outlines[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[4] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -134,13 +133,14 @@ function setup(){
 		    plr2.name = "plr2"
 		    // plr2.castShadow = true
 		    seseme.add(plr2)
-
+		    updatePillars('plr2')
 		    plr3 = new THREE.Mesh(geometry, sesememtl)
 		    plr3.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr3.rotation.y = 90 * Math.PI / 180
 		    // plr3.castShadow = true
 		    plr3.name = "plr3"
 		    seseme.add(plr3)
+		    updatePillars('plr3')
 		    loader.load("assets/pillarB_outline.js", function(g){
 		      outlines[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -176,9 +176,8 @@ function setup(){
 	function eventListeners(){ //raycast and interaction
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
-
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
-		// document.querySelector('#gradePic object').addEventListener('load',svgIconFixer)
+		
 		icons.forEach(function(ele){
 			ele.addEventListener('load',function(){
 				// console.log(ele.contentDocument)
@@ -244,9 +243,6 @@ function setup(){
 		dataToHts()
 		assess()
 		uiShift()
-		setTimeout(function(){
-			updatePillars()
-		},1000)
 	}
 
 } //end setup

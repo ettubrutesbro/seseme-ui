@@ -270,6 +270,7 @@ section{
 					background-color: rgba(255,255,255,0.8);
 					width: min-content;
 					width: -webkit-min-content;
+					text-transform: uppercase;
 				}
 			#spelledUnit {
 				margin: 0.25rem 0; opacity: 0;

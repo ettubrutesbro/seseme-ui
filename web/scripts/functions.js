@@ -24,22 +24,17 @@ function dataToHts(){ // translates data vals
 		tgtHts[i].y = (ele / arr[highestValue]) * 12
 	})
 }
-function updatePillars(){
-	[ seseme.getObjectByName('plr1'),
-	seseme.getObjectByName('plr2'),
-	seseme.getObjectByName('plr3'),
-	seseme.getObjectByName('plr4')	
-	].forEach(function(ele,i){
-		spd = Math.abs((ele.position.y - tgtHts[i].y) * 100) + 400
-		plrTween = new TWEEN.Tween(plrHts[i])
-		plrTween.to(tgtHts[i],spd)
-		plrTween.easing(TWEEN.Easing.Cubic.InOut)
-		plrTween.onUpdate(function(){
-			ele.position.y = plrHts[i].y
-		})
-		plrTween.start()
-
+function updatePillars(plr){
+	var index = plr.replace('plr','')
+	index -=1
+	spd = Math.abs((seseme.getObjectByName(plr).position.y - tgtHts[index].y)*100) + 400
+	plrTween = new TWEEN.Tween(plrHts[index])
+	plrTween.to(tgtHts[index],spd)
+	plrTween.easing(TWEEN.Easing.Cubic.InOut)
+	plrTween.onUpdate(function(){
+		seseme.getObjectByName(plr).position.y = plrHts[index].y
 	})
+	plrTween.start()
 }
 function assess(){ //gets values, adds weights, compares vs. criteria, assembles words
 allValues.forEach(function(ele,i){
@@ -214,9 +209,12 @@ function uiShift(){ //selection through rotations populates UI
 			// Velocity(icons[whichOne], {display: ['inline','none'], opacity: [1,0]},{delay: 200})
 			// gradeWords = judgment(grade[index],distFromCtr[index])
 			//console.log(distFromCtr[index] + " " + grades[index])
-			var gradeWords = judgment(grades[index],distFromCtr[index])
-			console.log(gradeWords)
-
+			var insertGrades = judgment(grades[index],distFromCtr[index])
+			console.log(insertGrades)
+			insertGrades = insertGrades.split(' ')
+			var gradeWords = document.querySelectorAll('.gradeWords')
+			gradeWords[0].textContent = insertGrades[0]
+			gradeWords[1].textContent = insertGrades[1]
 
 			if(breakdownOn){
 				breakdownShift((pillars[0].replace('plr','') - 1))
@@ -628,11 +626,9 @@ function dice(possibilities,add){
 function getOne(array){
 	array = array.split('.')
 	// console.log(array) why am i getting multiple calls?
-
 	if(array.length>1){
 		tgt = dice(grdwds[array[0]][array[1]].length,0)
 		return grdwds[array[0]][array[1]][tgt]
-		
 	}else{
 		tgt = dice(grdwds[array[0]].length,0)
 		return grdwds[array[0]][tgt]
