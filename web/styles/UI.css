@@ -212,7 +212,9 @@ h3,h4,h5,h6 {
 	}
 
 #sectionContainer {
-	background-color: rgba(0,0,0,0.5)
+	 /*background: -webkit-linear-gradient(red, blue); /* For Safari 5.1 to 6.0 */
+	 background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.85));
+
 }
 section{
 	display: none;
@@ -259,17 +261,16 @@ section{
 					width: 80px;
 				}
 				#gradeText{
-					letter-spacing: 0.06rem;
-					font-size: 0.55rem;
 					flex-grow: 1;
 					flex-shrink: 0;
 					flex-basis: 120px;
-					margin-top: 0.2rem;
-					margin-left: 0rem;
+					margin-top: 0.3rem;
 				}
 				.gradeWords {
-					display: block; margin: 0.2rem 0; padding: 0.05rem 0.1rem;
-					background-color: rgba(255,255,255,0.8);
+					font-size: 0.6rem;
+					letter-spacing: 0.06rem;
+					display: block; margin: 0.15rem 0 0 0.3rem; 
+					color: white;
 					width: min-content;
 					width: -webkit-min-content;
 					text-transform: uppercase;
