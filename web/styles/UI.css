@@ -139,10 +139,11 @@ h3,h4,h5,h6 {
 	margin: 0 auto;
 	z-index: 2;
 	width: 325px;
-	bottom: 2.65rem;
+	bottom: 0;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.02rem;
 	color: black;
+	/*background-color: black;*/
 }
 #bodyTitle {
 	display: flex;
@@ -211,6 +212,7 @@ h3,h4,h5,h6 {
 	}
 
 #sectionContainer {
+	background-color: rgba(0,0,0,0.5)
 }
 section{
 	display: none;

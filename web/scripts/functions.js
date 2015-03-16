@@ -283,7 +283,7 @@ function clickedNav(index){
 			Velocity(sections[mode-1],{height: "0"})
 			navFuncs[index](false)
 		}
-		sectionHeights = ["3.2rem","9rem","",""]
+		sectionHeights = ["6rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
