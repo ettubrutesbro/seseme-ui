@@ -201,14 +201,9 @@ function uiShift(){ //selection through rotations populates UI
 			icons.forEach(function(ele,i){
 				Velocity(ele,'finish')
 				if(i!=tgtIcon){
-					// Velocity(ele, {display: ['none','inline'], opacity: [0,1]},{queue: false, complete: function(){
-						parent.appendChild(ele)
-					// }})
+					parent.appendChild(ele)
 				}
 			})
-			// Velocity(icons[whichOne], {display: ['inline','none'], opacity: [1,0]},{delay: 200})
-			// gradeWords = judgment(grade[index],distFromCtr[index])
-			//console.log(distFromCtr[index] + " " + grades[index])
 			var insertGrades = judgment(grades[index],distFromCtr[index])
 			console.log(insertGrades)
 			insertGrades = insertGrades.split(' ')

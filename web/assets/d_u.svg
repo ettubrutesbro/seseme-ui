@@ -3,22 +3,22 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="50px" height="50px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
-<g>
-	<g>
-		<path fill="#231F20" d="M25,17.125l4.45,2.591L25,22.364l-4.45-2.647L25,17.125 M25,15.1l-7.9,4.6l7.9,4.7l7.9-4.7L25,15.1
-			L25,15.1z"/>
-	</g>
-	<g>
-		<path fill="#231F20" d="M35.406,23.222l4.484,2.578l-4.483,2.579L30.979,25.8L35.406,23.222 M35.4,21.2l-7.9,4.6l7.9,4.601
-			l8-4.601L35.4,21.2L35.4,21.2z"/>
-	</g>
-	<g>
-		<path fill="#231F20" d="M14.605,23.222l4.484,2.578l-4.484,2.579L10.178,25.8L14.605,23.222 M14.6,21.2l-7.9,4.6l7.9,4.601
-			l8-4.601L14.6,21.2L14.6,21.2z"/>
-	</g>
-	<g>
-		<path fill="#231F20" d="M25,29.236l4.45,2.646L25,34.475l-4.45-2.591L25,29.236 M25,27.2l-7.9,4.7l7.9,4.6l7.9-4.6L25,27.2
-			L25,27.2z"/>
-	</g>
-</g>
+<polygon fill="none" stroke="#231F20" stroke-width="1.75" 
+	points="14.7,22.3 20.5,25.8 20.5,25.8 14.7,29.4 8.6,25.8 8.6,25.8">
+	<animate attributeName = "points" begin = "1s" dur = "0.5s" fill = "freeze" 
+		to = "13.9,25 17.8,25 17.8,36.6 13.9,36.6 9.8,36.6 9.8,25" />
+</polygon>
+
+<polygon fill="none" stroke="#231F20" stroke-width="1.75" stroke-miterlimit="10" points="25,28.2 30.9,31.7 30.9,31.7 25,35.4 19,31.7 19,31.7 ">
+	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "24.3,18.1 28.2,18.1 28.2,36.6 
+	24.3,36.6 20.2,36.6 20.2,18.1" />
+</polygon>
+<polygon fill="none" stroke="#231F20" stroke-width="1.75" stroke-miterlimit="10" points="25,16.1 30.9,19.6 25,23.3 19,19.6 ">
+	<animateMotion type = "translate" from = "0,0" to = "0,5.75" begin = "1s" dur = "0.5s" fill = "freeze"/>
+	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "25,21.4 30.9,21.4 25,21.4 19,21.4"/>
+	<animate attributeName = "opacity" begin="1s" dur="0.5s" fill="freeze" to = "0"/>
+</polygon>
+<polygon fill="none" stroke="#231F20" stroke-width="1.75" stroke-miterlimit="10" points="35.4,22.3 41.3,25.8 41.3,25.8 35.4,29.4 29.4,25.8 29.4,25.8">
+	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "34.7,10.7 38.6,10.7 38.6,36.6 34.7,36.6 30.6,36.6 30.6,10.7" />
+</polygon>
 </svg>

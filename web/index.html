@@ -16,9 +16,11 @@
   <body> 
     <script>
       function svgClean(which,nav){
-        which.contentDocument.querySelector('svg').style['background-color'] = ''
-        which.contentDocument.querySelector('svg').addEventListener('click', function(){
+        tgt = which.contentDocument.querySelector('svg')
+        tgt.style['background-color'] = ''
+        tgt.addEventListener('click', function(){
             clickedNav(nav)
+            // iconAnim(tgt)
         })
       }
     </script>
@@ -31,8 +33,8 @@ navigates to core functions  -->
       <div id = "bottom" class = "container">
         <div id = "uiNav">
             <div id = "viewnav" class = "navbutt"><object data = "assets/v_u.svg" type = "image/svg+xml" onload = "svgClean(this,0)"></object></div>
-            <div id = "talknav" class = "navbutt"><object data = "assets/d_u.svg" type = "image/svg+xml" onload = "svgClean(this,1)"></object></div>
-            <div id = "datanav" class = "navbutt"><object data = "assets/t_u.svg" type = "image/svg+xml" onload = "svgClean(this,2)"></object></div>
+            <div id = "datanav" class = "navbutt"><object data = "assets/d_u.svg" type = "image/svg+xml" onload = "svgClean(this,1)"></object></div>
+            <div id = "talknav" class = "navbutt"><object data = "assets/t_u.svg" type = "image/svg+xml" onload = "svgClean(this,2)"></object></div>
             <div id = "helpnav" class = "navbutt"><object data = "assets/h_u.svg" type = "image/svg+xml" onload = "svgClean(this,3)"  ></object></div>
       </div>
     </div> <!-- end button bar -->
