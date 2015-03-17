@@ -279,6 +279,7 @@ function clickedNav(index){
 			Velocity(sections[mode-1],{height: "0"})
 			navFuncs[index](false)
 		}
+		navIconAnim(index,true)
 		sectionHeights = ["6.25rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
@@ -292,6 +293,7 @@ function clickedNav(index){
 		lastObj = selectedObj
 		selectedObj = ''
 		navFuncs[index](false)
+		navIconAnim(index,false)
 		mode=0
 	}
 }
@@ -413,16 +415,22 @@ function zoomHeightCheck(){
 }
 // ----------navigation mode---------------
 
-function iconAnim(tgt){
+function navIconAnim(tgt,openclose){
 	navSvgs = [].slice.call(document.querySelectorAll('.navbutt object'))
-	navSvgs.forEach(function(ele,i){
-		ele = ele.getSVGDocument()
-		openAnims = [].slice.call(ele.querySelectorAll('.open'))
+	console.log(tgt)
+	console.log(navSvgs[tgt])
+	navSvgs = navSvgs[tgt].getSVGDocument()
+	if(openclose){
+		openAnims = [].slice.call(navSvgs.querySelectorAll('.open'))
 		openAnims.forEach(function(e){
 			e.beginElement()
 		})
-	})
-	
+	}else{
+		closeAnims = [].slice.call(navSvgs.querySelectorAll('.close'))
+		closeAnims.forEach(function(e){
+			e.beginElement()
+		})
+	}
 }
 
 viewFunc = function(open){
@@ -626,7 +634,8 @@ function breakdownShift(indexnumber){
 		bkdDom.appendChild(element)
 	}
 }
-//utility
+
+//utilities
 
 function dice(possibilities,add){
 	return Math.floor((Math.random()*possibilities) + add)
