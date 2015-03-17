@@ -177,14 +177,6 @@ function setup(){
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
-		
-		icons.forEach(function(ele){
-			ele.addEventListener('load',function(){
-				// console.log(ele.contentDocument)
-				c = ele.contentDocument.querySelector('svg')
-				c.style['background-color'] = 'rgba(0,0,0,0)'
-			})
-		})
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
@@ -232,12 +224,13 @@ function setup(){
 			}
   		})//pan finish
 
-		navs.forEach(function(ele, i){
-			hammerNav = new Hammer(ele)
-			hammerNav.on('tap',function(){
-				clickedNav(i)	
-			})
-		})		
+		// navs.forEach(function(ele, i){
+		// 	hammerNav = new Hammer(ele)
+		// 	hammerNav.on('tap',function(){
+		// 		console.log('that tickles')
+		// 		clickedNav(i)	
+		// 	})
+		// })		
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 		dataToHts()

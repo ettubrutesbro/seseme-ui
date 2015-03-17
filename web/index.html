@@ -14,7 +14,14 @@
   </head> 
     
   <body> 
-
+    <script>
+      function svgClean(which,nav){
+        which.contentDocument.querySelector('svg').style['background-color'] = ''
+        which.contentDocument.querySelector('svg').addEventListener('click', function(){
+            clickedNav(nav)
+        })
+      }
+    </script>
    <!--  <div id = "top" class = "container">
       <div id = "topInfo">learn more @ CEED</div>
     </div> -->
@@ -23,10 +30,10 @@
 navigates to core functions  -->
       <div id = "bottom" class = "container">
         <div id = "uiNav">
-            <div id = "viewnav" class = "navbutt"></div>
-            <div id = "talknav" class = "navbutt"></div>
-            <div id = "datanav" class = "navbutt"></div>
-            <div id = "helpnav" class = "navbutt"></div>
+            <div id = "viewnav" class = "navbutt"><object data = "assets/v_u.svg" type = "image/svg+xml" onload = "svgClean(this,0)"></object></div>
+            <div id = "talknav" class = "navbutt"><object data = "assets/d_u.svg" type = "image/svg+xml" onload = "svgClean(this,1)"></object></div>
+            <div id = "datanav" class = "navbutt"><object data = "assets/t_u.svg" type = "image/svg+xml" onload = "svgClean(this,2)"></object></div>
+            <div id = "helpnav" class = "navbutt"><object data = "assets/h_u.svg" type = "image/svg+xml" onload = "svgClean(this,3)"  ></object></div>
       </div>
     </div> <!-- end button bar -->
     
@@ -57,14 +64,14 @@ navigates to core functions  -->
                 <div class = "breakdownStat"></div>
                 <div class = "breakdownStat"></div>
               </div>
-              <!-- <div id = "viewRule" class = "viewRow"></div> -->
+              <div id = "viewRule" class = "viewRow"></div>
               <div id = "semantic" class = "viewRow">
                 <div id = "grade">
                   <div id = "gradePic" class = "icon">
-                    <object id = "leaves" data = "assets/leaves.svg" type = "image/svg+xml"></object> 
-                    <object id = "okleaf" data = "assets/okleaf.svg" type = "image/svg+xml"></object>
-                    <object id = "burnleaf" data = "assets/burnleaf.svg" type = "image/svg+xml"></object>
-                    <object id = "shit" data = "assets/shit.svg" type = "image/svg+xml"></object>
+                    <object id = "leaves" data = "assets/leaves.svg" type = "image/svg+xml" onload = "svgClean(this)"></object> 
+                    <object id = "okleaf" data = "assets/okleaf.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
+                    <object id = "burnleaf" data = "assets/burnleaf.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
+                    <object id = "shit" data = "assets/shit.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
                   </div>
                   <div id = "gradeText">
                       <span class = "gradeWords"></span>

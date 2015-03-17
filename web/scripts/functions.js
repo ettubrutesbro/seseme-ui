@@ -274,6 +274,7 @@ function clickedSeseme(){
 	}
 }
 function clickedNav(index){
+	console.log(index)
 	userActions.push('clicked ' + navs[index].id)	
 	sections = [].slice.call(document.getElementById('sectionContainer').children)
 	console.log(sections[index])
@@ -283,7 +284,7 @@ function clickedNav(index){
 			Velocity(sections[mode-1],{height: "0"})
 			navFuncs[index](false)
 		}
-		sectionHeights = ["6rem","9rem","",""]
+		sectionHeights = ["6.25rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
 		mode=index+1
@@ -500,10 +501,10 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 		 		options.className = 'grade'
 				Velocity(semantic, {height: "1.75rem"})
 				Velocity(grade, {width: 0, opacity: -1},{duration: 500, easing: 'easeInQuad'})
-				Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{duration: 700, easing: 'easeOutQuad'})
-				Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
-				Velocity(bkdown, {height: "1.1rem", opacity: 1})
-				Velocity(rule, {width: '100%', opacity: 1}, {delay: 200, duration: 500})	
+				Velocity(spelled, {width: "70%", opacity: 1, padding: '0.2rem'},{delay: 400, duration: 500, easing: 'easeOutQuad'})
+				// Velocity(aggData, {color: '#000', backgroundColorAlpha: 1},{duration: 500})
+				Velocity(bkdown, {height: "1.1rem", opacity: 1},{duration: 300})
+				Velocity(rule, {width:'100%', opacity: 1,translateY:['0.3rem','0.3rem']}, {delay: 200, duration: 500})	
 		 	}
 		 	function breakdown3d(){
 		 		index = pillars[0].replace('plr','') - 1,
@@ -583,9 +584,9 @@ function breakdown(){ // additive breakdown by #resource inputs (elec, heat, coo
 				Velocity(semantic, {height: "2.75rem"})
 				Velocity(spelled, {width: 0, opacity: 0, padding: 0})
 				Velocity(grade, {width: "70%", opacity: 1}, {delay: 200, duration: 700, easing: 'easeOutCubic'})
-				Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
+				// Velocity(aggData, {color: '#fff', backgroundColorAlpha: 0}, {delay: 400, duration: 500})
 				Velocity(bkdown, {height: 0, opacity: 0.3})
-				Velocity(rule, {width: '0%', opacity: 0}, {duration: 600})
+				Velocity(rule, {width: '0%',opacity: 0,translateY:['0.3rem','0.3rem']}, {duration: 500})
 		 	}
 		 	highlightsOK = true
 		 	var index = selectedObj.replace('plr','')

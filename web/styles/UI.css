@@ -100,19 +100,14 @@ h3,h4,h5,h6 {
 		background-color: rgba(239,239,239,0.85);
 
 	}
-		
-		#viewnav {background-image: url(../assets/v_u.svg);
-			/*width: 50%;*/
-		}
-		#talknav {background-image: url(../assets/d_u.svg);
 
-		}
-		#datanav {background-image: url(../assets/t_u.svg);
+	.navbutt object{
+		width: 100%;
+	}
 
-		}
-		#helpnav {background-image: url(../assets/h_u.svg);
-
-		}
+	.navbutt object svg{
+		background-color: none;
+	}
 
 /*#uiOptions {
 	padding: 0 0.8rem 2rem 0.8rem;
@@ -138,7 +133,7 @@ h3,h4,h5,h6 {
 	right: 0;
 	margin: 0 auto;
 	z-index: 2;
-	width: 325px;
+	width: 100%;
 	bottom: 0;
 	font-family: 'Source Serif Pro', serif;
 	letter-spacing: 0.02rem;
@@ -241,9 +236,11 @@ section{
 			opacity: 0;
 		}
 		#view #viewRule {
+			/*transform: translateY(0.3rem);*/
 			opacity: 0; width: 0;
-			margin-top: 0.4rem;
-			border: 1px white solid;
+			/*margin-top: 0.4rem;*/
+			background-color: white;
+			height: 0.1rem;
 		}
 		#view #semantic {
 			margin-top: 0.2rem;
@@ -267,7 +264,7 @@ section{
 					margin-top: 0.3rem;
 				}
 				.gradeWords {
-					font-size: 0.6rem;
+					font-size: 0.55rem;
 					letter-spacing: 0.06rem;
 					display: block; margin: 0.15rem 0 0 0.3rem; 
 					color: white;
@@ -283,7 +280,7 @@ section{
 				overflow: hidden;
 				font-size: 0.55rem;
 				white-space: nowrap;
-				background-color: #ededed;
+				color: white;
 				text-transform: uppercase;
 			}
 			#aggData {
