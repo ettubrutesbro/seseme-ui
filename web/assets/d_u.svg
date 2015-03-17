@@ -15,8 +15,8 @@
 </polygon>
 <polygon fill="none" stroke="#231F20" stroke-width="1.75" stroke-miterlimit="10" points="25,16.1 30.9,19.6 25,23.3 19,19.6 ">
 	<animateMotion type = "translate" from = "0,0" to = "0,5.75" begin = "1s" dur = "0.5s" fill = "freeze"/>
-	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "25,21.4 30.9,21.4 25,21.4 19,21.4"/>
-	<animate attributeName = "opacity" begin="1s" dur="0.5s" fill="freeze" to = "0"/>
+	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "24.2,2.8 27.5,2.8 24.2,8.1 21,2.8 "/>
+	
 </polygon>
 <polygon fill="none" stroke="#231F20" stroke-width="1.75" stroke-miterlimit="10" points="35.4,22.3 41.3,25.8 41.3,25.8 35.4,29.4 29.4,25.8 29.4,25.8">
 	<animate attributeName = "points" begin="1s" dur="0.5s" fill="freeze" to = "34.7,10.7 38.6,10.7 38.6,36.6 34.7,36.6 30.6,36.6 30.6,10.7" />
