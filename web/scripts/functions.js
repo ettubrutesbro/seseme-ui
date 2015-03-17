@@ -412,6 +412,19 @@ function zoomHeightCheck(){
 	}
 }
 // ----------navigation mode---------------
+
+function iconAnim(tgt){
+	navSvgs = [].slice.call(document.querySelectorAll('.navbutt object'))
+	navSvgs.forEach(function(ele,i){
+		ele = ele.getSVGDocument()
+		openAnims = [].slice.call(ele.querySelectorAll('.open'))
+		openAnims.forEach(function(e){
+			e.beginElement()
+		})
+	})
+	
+}
+
 viewFunc = function(open){
 	var name = document.querySelector('#name')
 	var hide = document.querySelector('#titleRule')
