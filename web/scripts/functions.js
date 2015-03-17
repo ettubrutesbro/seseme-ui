@@ -284,7 +284,7 @@ function clickedNav(index){
 		console.log('open nav')
 		navFuncs[index](true)
 		navIconAnim(index,true)
-		navIconInvert()
+		navIconInvert(true)
 		mode=index+1
 		sections[index].style["display"] = "block"
 		Velocity(sections[index],{height: sectionHeights[index], opacity: [1,-0.5]})
@@ -296,6 +296,7 @@ function clickedNav(index){
 		selectedObj = ''
 		navFuncs[index](false)
 		navIconAnim(index,false)
+		navIconInvert(false)
 		mode=0
 	}
 }
@@ -433,19 +434,25 @@ function navIconAnim(tgt,openclose){
 	}
 }
 
-function navIconInvert(){
+function navIconInvert(white){
 	//v,d,t-stroke, h-fill 
 	navSvgs = [].slice.call(document.querySelectorAll('.navbutt object'))
 	navSvgs.forEach(function(ele,i){
 		ele = ele.getSVGDocument()
 		g = ele.querySelector('g')
-		console.log(g.getAttribute('stroke'))
-		if(g.getAttribute('stroke')!=null){
-			Velocity(g,{stroke: "#ededed"})	
-		}else{
-			Velocity(g,{fill: "#ededed"})
+		if(white){
+			if(g.getAttribute('stroke')!=null){
+				Velocity(g,{stroke: "#ededed"})	
+			}else{
+				Velocity(g,{fill: "#ededed"})
+			}
+		}else if(!white){
+			if(g.getAttribute('stroke')!=null){
+				Velocity(g,{stroke: "#231F20"})
+			}else{
+				Velocity(g,{fill: "#231F20"})
+			}
 		}
-		
 	})
 }
 
