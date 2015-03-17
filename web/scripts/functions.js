@@ -279,10 +279,12 @@ function clickedNav(index){
 			Velocity(sections[mode-1],{height: "0"})
 			navFuncs[index](false)
 		}
-		navIconAnim(index,true)
+		
 		sectionHeights = ["6.25rem","9rem","",""]
 		console.log('open nav')
 		navFuncs[index](true)
+		navIconAnim(index,true)
+		navIconInvert()
 		mode=index+1
 		sections[index].style["display"] = "block"
 		Velocity(sections[index],{height: sectionHeights[index], opacity: [1,-0.5]})
@@ -417,8 +419,6 @@ function zoomHeightCheck(){
 
 function navIconAnim(tgt,openclose){
 	navSvgs = [].slice.call(document.querySelectorAll('.navbutt object'))
-	console.log(tgt)
-	console.log(navSvgs[tgt])
 	navSvgs = navSvgs[tgt].getSVGDocument()
 	if(openclose){
 		openAnims = [].slice.call(navSvgs.querySelectorAll('.open'))
@@ -431,6 +431,22 @@ function navIconAnim(tgt,openclose){
 			e.beginElement()
 		})
 	}
+}
+
+function navIconInvert(){
+	//v,d,t-stroke, h-fill 
+	navSvgs = [].slice.call(document.querySelectorAll('.navbutt object'))
+	navSvgs.forEach(function(ele,i){
+		ele = ele.getSVGDocument()
+		g = ele.querySelector('g')
+		console.log(g.getAttribute('stroke'))
+		if(g.getAttribute('stroke')!=null){
+			Velocity(g,{stroke: "#ededed"})	
+		}else{
+			Velocity(g,{fill: "#ededed"})
+		}
+		
+	})
 }
 
 viewFunc = function(open){

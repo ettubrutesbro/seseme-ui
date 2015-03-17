@@ -97,16 +97,9 @@ h3,h4,h5,h6 {
 		box-sizing: border-box;
 		border: 3px rgba(0,0,0,0.65) solid;
 		background-size: cover;
-		background-color: rgba(239,239,239,0.85);
-
 	}
-
 	.navbutt object{
 		width: 100%;
-	}
-
-	.navbutt object svg{
-		background-color: none;
 	}
 
 /*#uiOptions {
