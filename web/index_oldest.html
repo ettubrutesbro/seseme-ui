@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+    <title></title>
+    <!-- FONTS -->
+    <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600' rel='stylesheet' type='text/css'>
+    <!-- OUTSIDE CSS -->  
+    <!-- CUSTOM CSS -->
+    <link rel = "stylesheet" type = "text/css" href = "styles/oldest/UI.css">  
+
+  </head> 
+    
+  <body> 
+
+<!-- #bottom .container has abs-positioned four button row
+navigates to core functions  -->
+      <div id = "bottom" class = "container">
+        <div id = "uiNav">
+          <div id = "buttonBar">
+            <div id = "viewnav" class = "navbutt"></div>
+            <div id = "talknav" class = "navbutt"></div>
+            <div id = "datanav" class = "navbutt"></div>
+            <div id = "helpnav" class = "navbutt"></div>
+        </div>
+      </div>
+    </div> <!-- end button bar -->
+    
+<!-- middle container = data body -->
+      <div id = "mid" class = "container">
+        <div id = "uiBody">
+          
+          <div id = "header">
+            <div class = "pillar">
+              <div class = "name">
+              The ARC
+              </div>
+            </div>
+            <div class = "hideMe">
+              <div class = "headerRule"></div>
+              <div class = "littledata">50 EUI</div>
+            </div>
+          </div>
+
+        <div id = "sectionContainer">
+
+
+
+          <section id = "view"> <!-- detailed view -->
+              <div class = "breakdown"></div>
+              <div class = "breakdown"></div>
+              <div class = "breakdown"></div>
+          </section>
+
+
+
+
+
+
+          <section id = "talk"> <!-- conversation & vote -->
+            <div id = "conversate">
+              <div id = "inputs">
+                <div id = "talkInput" contentEditable = "true">write a thing maybe</div>
+                <div id = "talkButton">65</div>
+              </div>
+                
+              <div id ="stickerLabel">
+                <table>
+                  <thead>
+                    <tr>
+                      <td>c1</td>
+                      <td>c2</td>
+                      <td>c3</td>
+                      <td>c4</td>
+                      <td>c5</td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+
+              <div id = "stickerDrawer">
+                <table id = "stickers">
+                  <tbody>
+                    <tr>
+                      <td>A</td>
+                      <td>B</td>
+                      <td>C</td>
+                      <td>D</td>
+                    </tr>
+                    <tr>
+                      <td>E</td>
+                      <td>F</td>
+                      <td>G</td>
+                      <td>H</td>
+                    </tr>
+                </table>
+              </div> <!-- end of sticker drawer -->
+
+              <div id = "conversationEntries">
+                <table id = "convEntries">
+                  <tbody> <!-- 65 char limit -->
+                    <tr><td>entry</td><td>2m</td></tr>
+                    <tr><td>blah blah blah</td><td>5m</td></tr>
+                    <tr><td>opinions</td><td>5m</td></tr>
+                    <tr><td>six con secutive poop emojis and a winking face symbolize valentine's</td><td>20m</td></tr>
+                    <tr><td>indecipherable profanity</td><td>1h</td></tr>
+                </table>
+              </div>
+
+            </div> <!-- end div conversate -->
+
+            <div id = "voteDiv"><h3>
+              <div>WILDLIFE</div>
+              <div>TRANSPORT</div>
+              <div>POLLUTION</div>
+              <div>DIVESTMENT</div>  
+            </h3>
+            </div>
+
+<!-- these two buttons handle switch b/w talk and vote -->
+            <div id = "switchConv">
+              < conv
+            </div>
+            <div id = "switchVote">
+              VOTE TO PICK DATA >
+            </div>
+
+          </section> <!-- end talk section -->
+
+          <section id = "data"> <!-- data change screen  -->
+            <table>
+              <tbody>
+               
+                <tr>
+                  <td>COMPARE</td>
+                  <td>UCD</td>
+                  <td>CAMPUSES</td>
+                  <td>PLANET</td>
+                </tr>
+                <tr>
+                  <td>RESOURCE</td>
+                  <td>ENERGY</td>
+                  <td>WATER</td>
+                  <td>PLANET</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table>
+              <tbody>  
+                <tr>
+                  <td>Building1</td>
+                  <td>Building1Value</td>
+                  <td>Building2</td>
+                  <td>Building2Value</td>
+                </tr>
+                <tr>
+                  <td>Building3</td>
+                  <td>Building3Value</td>
+                  <td>Building4</td>
+                  <td>Building4Value</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </section>
+
+          <section id = "help">
+          </section>
+
+        </div> <!-- end sectioncontainer -->
+      </div> <!-- end uibody -->
+    </div> <!-- end mid container -->
+
+    <div id = "containerSESEME">
+    </div>
+
+    <!-- DATA!!!! -->
+    <script src = "scripts/oldest/data.js"></script>
+    <!-- JAVASCRIPT LIBRARIES + CUSTOM SCRIPT SHOULD BE AT END OF DOCUMENT -->
+    <script src="libs/old/three.min.js"></script> 
+    <script src="libs/old/hammer.min.js"></script> 
+    <script src="libs/old/tween.min.js"></script> 
+    <script src="libs/old/velocity.min.js"></script>
+    <script src="libs/old/velocity.ui.js"></script>
+    <!-- CUSTOM  -->   
+    <script src="scripts/oldest/3d_functions.js"></script>
+    <script src="scripts/oldest/3d_setup.js"></script>
+    <script src="scripts/oldest/UI.js"></script>
+  </body> 
+</html>
