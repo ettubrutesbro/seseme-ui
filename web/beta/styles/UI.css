@@ -1,0 +1,50 @@
+html{
+	font-size: 21px;
+	overflow: hidden;
+}
+#containerSESEME{
+	position: absolute;
+	left:0;
+	top:0;
+	width:100%;
+}
+.navButton{
+	width: 3rem;
+	height: 3rem;
+	position: absolute;
+	border: 2px black solid;
+	border-radius: 50%;
+	box-sizing: border-box;
+	z-index: 2;
+	bottom: 1.5rem; left: 0; right: 0; margin: auto;
+
+}
+
+.info{
+	position: absolute;
+	/*border: 1px red solid;*/
+	z-index: 1;
+}
+
+#infoTop{
+	top: 0; left: 0; right: 0;
+	margin: 0 auto;
+	width: 100%;
+	height: 3rem;
+}
+#infoBottom{
+	bottom: 0; left: 0; right: 0;
+	margin: 0 auto;
+	width: 100%;
+	height: 3rem;
+}
+#infoLeft{
+	width: 2rem; height: 3rem;
+	margin: auto;
+  	top: 0; left: 0; bottom: 0; 
+}
+#infoRight{
+	width: 2rem; height: 3rem;
+	margin: auto;
+  	top: 0; right: 0; bottom: 0; 
+}

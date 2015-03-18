@@ -25,3 +25,7 @@ app.get('/oldest', function (req, res) {
   res.sendFile(__dirname + '/web/index_oldest.html');
 });
 
+app.get('/beta', function (req, res) {
+  res.sendFile(__dirname + '/web/beta/beta.html');
+});
+

@@ -77,6 +77,7 @@ h3,h4,h5,h6 {
 /* NAVIGATION BUTTONS */
 
 #uiNav /* holds fixed UI nav at bottom */ {
+	opacity: 0;
 	position: absolute;
 	bottom: 3%;
 	z-index: 5;	
@@ -105,6 +106,7 @@ h3,h4,h5,h6 {
 /*	BODY SECTIONS	*/
 
 #uiBody { /*holds dynamic UI data/content */
+	display: none;
 	position: absolute;
 	left: 0;
 	right: 0;
