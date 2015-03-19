@@ -36,13 +36,13 @@ function setup(){
 	 
 	  var d = 20
 	  camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
-	  camera.position.set( -20, 20, 20 )
-	  // camera.position.set( -19, 10, 20 )
+	  // camera.position.set( -20, 20, 20 )
+	  camera.position.set( -20, 13, 20 )
 	  camera.rotation.order = 'YXZ'
 	  camera.rotation.y = - Math.PI / 4
 	  camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
 	  // camera.zoom = .91
-	  camera.zoom = 2
+	  camera.zoom = 1
 	  camera.updateProjectionMatrix()
 	  defaultPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom,
 	  	rx: camera.rotation.x, ry: camera.rotation.y}
@@ -76,8 +76,8 @@ function setup(){
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
-		  projectionmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/burnleaf3.svg'), 
-		  transparent: true, opacity: 1})
+		  promtl = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true,opacity:0.75})
+		  
 		  
 		  var loader = new THREE.JSONLoader()
 
@@ -92,6 +92,37 @@ function setup(){
 		   		pedestalo.applyMatrix( new THREE.Matrix4().makeTranslation(-0, -0.5, 0))
 		   		pedestal.add(pedestalo)
 		    })
+
+		    pedestalp1 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp1.rotation.x = -90*(Math.PI/180)
+		    pedestalp1.position.set(-1.5,0,6)
+		    pedestalp2 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp2.rotation.x = -90*(Math.PI/180)
+			pedestalp2.rotation.z = 90*(Math.PI/180)
+		    pedestalp2.position.set(5.5,0,-1)
+
+		    pedestalp3 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp3.rotation.x = -90*(Math.PI/180)
+		    pedestalp3.rotation.z = 180*(Math.PI/180)
+		    pedestalp3.position.set(-1.5,0,-8)
+		    pedestalp4 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp4.rotation.x = -90*(Math.PI/180)
+		    pedestalp4.rotation.z = 90*(Math.PI/180)
+		    pedestalp4.position.set(-8.5,0,-1)
+
+
+		    pedestalprojections = new THREE.Group()
+
+		    pedestalprojections.add(pedestalp1)
+		    pedestalprojections.add(pedestalp2)
+		    pedestalprojections.add(pedestalp3)
+		    pedestalprojections.add(pedestalp4)
+
+pedestalprojections.position.set(0,-17.6,0)
+
+		    pedestal.add(pedestalprojections)
+		    
+
 		  }) 
 
 		  loader.load("assets/pillarA.js", function(geometry,evt){
@@ -116,15 +147,20 @@ function setup(){
 		      plr0.add(plr0o)
 		      plr3.add(plr3o)
 		    })
-		    plr0sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
-			plr0sp.rotation.y-=45*(Math.PI/180)
-			plr0sp.position.set(3,5,7)
-			plr0.add(plr0sp)
+		    plr0.sp1 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
+			plr0.sp1.rotation.y-=45*(Math.PI/180)
+			plr0.sp1.position.set(1.5,5.5,8.5)
+			plr0.add(plr0.sp1)
+		    plr0sp2 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
+			plr0sp2.rotation.y-=45*(Math.PI/180)
+			plr0sp2.position.set(4,0,11)
+			// plr0.add(plr0sp2)
+		    plr0sp3 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
+			plr0sp3.rotation.y-=45*(Math.PI/180)
+			plr0sp3.position.set(-1,0,6)
+			// plr0.add(plr0sp3)
 
-		    plr3sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
-			plr3sp.rotation.y-=45*(Math.PI/180)
-			plr3sp.position.set(3,5,7)
-			plr3.add(plr3sp)
+
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
@@ -149,14 +185,10 @@ function setup(){
 		      plr1.add(plr1o)
 		      plr2.add(plr2o)
 		    })
-		    plr1sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
-			plr1sp.rotation.y+=45*(Math.PI/180)
-			plr1sp.position.set(7,5,7)
-			plr1.add(plr1sp)
-		    plr2sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
-			plr2sp.rotation.y+=45*(Math.PI/180)
-			plr2sp.position.set(7,5,7)
-			plr2.add(plr2sp)
+		 //    plr1sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
+			// plr1sp.rotation.y+=45*(Math.PI/180)
+			// plr1sp.position.set(7,5,7)
+			// plr1.add(plr1sp)
 		  })
 
 

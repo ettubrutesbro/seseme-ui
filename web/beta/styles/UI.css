@@ -8,16 +8,41 @@ html{
 	top:0;
 	width:100%;
 }
-.navButton{
-	width: 3rem;
-	height: 3rem;
+
+#buttons {
+	position: absolute;
+	bottom: 1rem; left: 0; right: 0; margin: auto;
+	width: 9rem;
+	z-index: 5;
+}
+
+#back, #forward {
+	width: 2rem;
+	height: 2rem;
+	text-align: center;
+}
+
+#back {
+	position: absolute;
+	bottom: 1rem;
+	left: 0;
+}
+
+#forward {
+	position: absolute;
+	bottom: 1rem;
+	right: 0;
+}
+
+#navButton{
+	width: 3.25rem;
+	height: 3.25rem;
 	position: absolute;
 	border: 2px black solid;
 	border-radius: 50%;
 	box-sizing: border-box;
 	z-index: 2;
-	bottom: 1.5rem; left: 0; right: 0; margin: auto;
-
+	bottom: 0.25rem;left: 0; right: 0; margin: auto;
 }
 
 .info{
@@ -47,4 +72,20 @@ html{
 	width: 2rem; height: 3rem;
 	margin: auto;
   	top: 0; right: 0; bottom: 0; 
+}
+
+section {
+	position: absolute;
+}
+
+
+#grade {
+	text-align: right;
+	padding: 0.5rem;
+	font-size: 0.8rem;
+	color: white;
+	background-color: black;
+	width: 10rem;
+	z-index: 4;
+	right: 0;top: 60%; 
 }
