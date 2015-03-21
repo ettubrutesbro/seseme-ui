@@ -176,7 +176,9 @@ function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
 function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	//if explore mode, simple changes (title)
 	if(mode=="explore"){
-		console.log('showing data for ' + obj)
+		// index = obj.replace('plr','')
+		// var text = document.getElementById('infoBottom')
+		// text.textContent = data[dataset].pts[index].name
 	}
 	//if zoom mode, collapse lastobj's projections/info, deploy new ones
 	if(mode=="pillar"){
@@ -300,4 +302,28 @@ function selectProjection(obj, onoff){
 	select.start()
 	
 	
+}
+
+function textMaker(text,fontfamily,position,scale,length,transparent){
+
+	//also: name, color, bg(combine with transparent?), 
+
+	var canvas1 = document.createElement('canvas')
+	var context1 = canvas1.getContext('2d')
+	var lengthDiff = text.length-6
+	
+	canvas1.width = ((18+Math.floor(text.length/6))*text.length)+48
+
+	
+	canvas1.height = 70
+	context1.font = '32pt ' + fontfamily
+	context1.fillText(text,10,48)
+	var texture = new THREE.Texture(canvas1)
+	texture.needsUpdate = true
+	var material = new THREE.MeshBasicMaterial({map: texture})
+	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas1.width, canvas1.height), material)
+	mesh.scale.set(scale,scale,scale)
+	mesh.position.set(position.x,position.y,position.z)
+	seseme.add(mesh)
+
 }

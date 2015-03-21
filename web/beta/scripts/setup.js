@@ -33,6 +33,7 @@ function setup(){
 	sesemeSetup()
 	eventListeners()
 	syncToData()
+	textMaker('Student','Source Serif Pro',{x:10,y:-5,z:15},0.05)
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight

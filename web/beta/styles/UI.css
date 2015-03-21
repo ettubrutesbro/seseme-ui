@@ -37,7 +37,7 @@ html{
 
 .info{
 	position: absolute;
-	border: 1px red solid;
+	border: 1px black solid;
 	z-index: 1;
 }
 
@@ -54,12 +54,12 @@ html{
 	height: 3rem;
 }
 #infoLeft{
-	width: 2rem; height: 3rem;
+	width: 0.1rem; height: 3rem;
 	margin: auto;
   	top: 0; left: 0; bottom: 0; 
 }
 #infoRight{
-	width: 2rem; height: 3rem;
+	width: 0.1rem; height: 3rem;
 	margin: auto;
   	top: 0; right: 0; bottom: 0; 
 }
