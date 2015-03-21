@@ -5,23 +5,24 @@ var allValues = [], grades = [0,0,0,0], distFromCtr = []
 var scene = new THREE.Scene(), camera, renderer, 
 seseme = new THREE.Group(), plr0, plr1, plr2, plr3,
 
+uiScale = 2,
 raycast, mousePos = new THREE.Vector2(),
 
 //3d rotation utilities
 rotationIndex = ['plr0','plr1','plr2','plr3'], 
-rotDir =1, nearest90 = 0, sRotY, anglesIndex = [0,270,180,90], 
+rotDir =1,last90=0,nearest90=0,sRotY =0, anglesIndex = [0,270,180,90],
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], 
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 0, 
+mode = 'explore', targetPillar, targetProjection,
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
-highlightsOK = true, isRotating = false,
+highlightsOK = true, autoRotating = false, touchRotating = false, rotAmt = 0,
 //experimental usage metrics
-userActions = [], useTime = 0 , revolutionCount = 0 
+userActions = [], useTime = 0 , degreesRotated = 0 
 
 function setup(){
 	cameraSetup()
@@ -41,7 +42,6 @@ function setup(){
 	  camera.rotation.order = 'YXZ'
 	  camera.rotation.y = - Math.PI / 4
 	  camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
-	  // camera.zoom = .91
 	  camera.zoom = 1
 	  camera.updateProjectionMatrix()
 	  defaultPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom,
@@ -50,6 +50,7 @@ function setup(){
 	function domSetup(){
 	  var containerSESEME = document.getElementById("containerSESEME")
 	  renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
+	  renderer.shadowMapType = THREE.PCFSoftShadowMap
 	  renderer.setSize( window.innerWidth, window.innerHeight)
 	  containerSESEME.appendChild( renderer.domElement )
 	}
@@ -70,6 +71,11 @@ function setup(){
 	  scene.add(amblight) 
 	  scene.add(camlight)
 	}
+
+	function projectionsSetup(obj){
+
+	}
+
 	function sesemeSetup(){ //ground plane is also added here
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
@@ -77,7 +83,7 @@ function setup(){
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
 		  promtl = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true,opacity:0.75})
-		  
+		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 10})
 		  
 		  var loader = new THREE.JSONLoader()
 
@@ -110,17 +116,29 @@ function setup(){
 		    pedestalp4.rotation.z = 90*(Math.PI/180)
 		    pedestalp4.position.set(-8.5,0,-1)
 
+		     projections = new THREE.Group()
+		    projections.name = "projections"
 
-		    pedestalprojections = new THREE.Group()
+		    // circgeo = new THREE.Geometry()
+		    // for(var i = 0; i < 32; i++){
+		    // 	theta = (i/32) * Math.PI * 2
+		    // 	circgeo.vertices.push(
+		    // 		new THREE.Vector3(
+		    // 			Math.cos(theta)*10,
+		    // 			Math.sin(theta)*10,
+		    // 			0))
+		    // }
 
-		    pedestalprojections.add(pedestalp1)
-		    pedestalprojections.add(pedestalp2)
-		    pedestalprojections.add(pedestalp3)
-		    pedestalprojections.add(pedestalp4)
+		    // pedestalorbiter = new THREE.Line(circgeo, wiremtl)
+		    // projections.add(pedestalorbiter)
+		    projections.add(pedestalp1)
+		    projections.add(pedestalp2)
+		    projections.add(pedestalp3)
+		    projections.add(pedestalp4)
 
-pedestalprojections.position.set(0,-17.6,0)
+			projections.position.set(0,-17.6,0)
 
-		    pedestal.add(pedestalprojections)
+		    // pedestal.add(projections)
 		    
 
 		  }) 
@@ -142,25 +160,24 @@ pedestalprojections.position.set(0,-17.6,0)
 		      outlines[4] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      var plr0o = new THREE.Mesh(g, outlines[1])
 		      var plr3o = new THREE.Mesh(g, outlines[4])
-		      plr0o.name = "outline1"
-		      plr3o.name = "outline4"
+		      plr0o.name = "outline0"
+		      plr3o.name = "outline3"
 		      plr0.add(plr0o)
 		      plr3.add(plr3o)
 		    })
-		    plr0.sp1 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
-			plr0.sp1.rotation.y-=45*(Math.PI/180)
-			plr0.sp1.position.set(1.5,5.5,8.5)
-			plr0.add(plr0.sp1)
-		    plr0sp2 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
-			plr0sp2.rotation.y-=45*(Math.PI/180)
-			plr0sp2.position.set(4,0,11)
-			// plr0.add(plr0sp2)
-		    plr0sp3 = new THREE.Mesh(new THREE.PlaneGeometry(2.25,2.75), promtl)
-			plr0sp3.rotation.y-=45*(Math.PI/180)
-			plr0sp3.position.set(-1,0,6)
-			// plr0.add(plr0sp3)
-
-
+		  plrAprojections = {
+		  	origin: {x:2, y:2, z:8, ry: -45},
+		  	modes: ['grade','info','stats'],
+		  	adjust: {x:-1, z:1},
+		  	xyz: [
+				{dimX:2.75, dimY:3.25, x:1.5, y:7.5, z:8.5},
+				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11.5},
+				{dimX:2.75, dimY:3.25, x:-1.5, y:1.5, z:5},
+				// {dimX:7.5, dimY:8, x:2, y:2, z:8}
+			]
+			}
+		  initProjections(plr0,plrAprojections)
+		  initProjections(plr3,plrAprojections)
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
@@ -171,7 +188,6 @@ pedestalprojections.position.set(0,-17.6,0)
 		    plr2 = new THREE.Mesh(geometry, sesememtl)
 		    plr2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr2.rotation.y = 90 * Math.PI / 180
-		    // plr2.castShadow = true
 		    plr2.name = "plr2"
 		    seseme.add(plr2)
 		    updatePillars('plr2')
@@ -180,15 +196,25 @@ pedestalprojections.position.set(0,-17.6,0)
 		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      var plr1o = new THREE.Mesh(g, outlines[2])
 		      var plr2o = new THREE.Mesh(g, outlines[3])
-		      plr1o.name = "outline2"
-		      plr2o.name = "outline3"
+		      plr1o.name = "outline1"
+		      plr2o.name = "outline2"
 		      plr1.add(plr1o)
 		      plr2.add(plr2o)
 		    })
-		 //    plr1sp = new THREE.Mesh(new THREE.PlaneGeometry(5.5,6), projectionmtl)
-			// plr1sp.rotation.y+=45*(Math.PI/180)
-			// plr1sp.position.set(7,5,7)
-			// plr1.add(plr1sp)
+			plrBprojections = {
+		  	origin: {x:8, y:2, z:8, ry: 45},
+		  	modes: ['grade','info','stats'],
+		  	adjust: {x:1, z:1},
+		  	xyz: [
+				{dimX:2.75, dimY:3.25, x:8, y:7.5, z:8},
+				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
+				{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
+				// {dimX:7.5, dimY:8, x:8, y:2, z:8}
+			]
+			}
+			initProjections(plr1,plrBprojections)
+			initProjections(plr2,plrBprojections)
+
 		  })
 
 
@@ -233,28 +259,44 @@ pedestalprojections.position.set(0,-17.6,0)
 		hammerSESEME.on('tap',function(e){
 			mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
 			mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
+			clickedSeseme()
 		})
   		hammerSESEME.on('pan',function(evt){
-	  	if(!isRotating){	
+	  	if(!autoRotating){	
   			if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){
+  				touchRotating = true
 				rotDir = evt.velocityX < 0 ? 1: evt.velocityX > 0 ? -1: 1
-  				seseme.rotation.y-=(evt.velocityX)*(Math.PI/90)
+  				seseme.rotation.y-=((evt.velocityX)*(Math.PI/180))*uiScale
+
+  				realRotation()
+  				rotationOrder(getNearest90())
+  				if(last90!=anglesIndex[0]){
+  					browse(rotationIndex[0])
+  				}
+
   		  	}
 	  	}
   		})
   		hammerSESEME.on('panend',function(evt){ //rotation deceleration
-  			if(!isRotating){ 
+  			if(!autoRotating){ 
   				if(Math.abs(evt.velocityX)>Math.abs(evt.velocityY)){ //horizontal pan
 	  				start = {speed: evt.velocityX}
 		  			diff = (Math.abs(0-evt.velocityX)) * 85
 		  			rotDecel = new TWEEN.Tween(start)
 		  			rotDecel.to({speed:0},diff+400)
 		  			rotDecel.onUpdate(function(){
-		  				seseme.rotation.y-=(start.speed * (Math.PI/90))
+		  				seseme.rotation.y-=(start.speed * (Math.PI/180))
+		  				realRotation()
+		  				rotationOrder(getNearest90())
+		  				if(last90!=anglesIndex[0]){
+		  					browse(rotationIndex[0])
+		  				}
 		  			})
 		  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 		  			rotDecel.start()
+
 		  		}
+		  		touchRotating = false
 			}
   		})//pan finish
 	
