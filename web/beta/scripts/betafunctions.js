@@ -40,8 +40,9 @@ if(mode=='explore'){
 		console.log('clicked a non pillar')
 	}
 }else if(mode=="pillar"){
-	var clickedProj = raycast.intersectObjects(targetPillar.getObjectByName('projections').children)
+	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
 	if(clickedProj.length>0){
+		console.log('delving from pillar')
 		delve(clickedProj[0].object.name)
 		return
 	}else{ //in pillar mode clicked other pillar
@@ -54,12 +55,13 @@ if(mode=='explore'){
 		}
 	}		
 }else if(mode=="detail"){
- 	var clickedProj = raycast.intersectObjects(targetPillar.getObjectByName('projections').children)
+ 	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
 	if(clickedProj.length>0){
+		console.log('delving from detail')
 		delve(clickedProj[0].object.name)
 		return
 	}else{
-		selectProjection(targetProjection,false)
+		selectProjection(selectedProjection,false)
 		mode='pillar'
 	}		
 }
@@ -75,7 +77,9 @@ function clickRotate(){
 					if(sRotY!=nearest90){
 						autoRotate(0)
 					}else{
-						delve(rotationIndex[0],"pillar")
+						if(mode=='explore'){
+							delve(rotationIndex[0],"pillar")
+						}
 					}
 					break;
 				case 1:
@@ -175,46 +179,45 @@ function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	}
 	//if zoom mode, collapse lastobj's projections/info, deploy new ones
 	if(mode=="pillar"){
-		collapse(targetPillar)
+		collapse(selectedPillar)
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
-		targetPillar = obj
+		selectedPillar = obj
 		moveCam({zoom: 2,y: 20.75+(obj.position.y*0.65)},500)
 	}
 	if(mode=='detail'){
-		targetProjection = ''
-		collapse(targetPillar)
+		selectedProjection = ''
+		collapse(selectedPillar)
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
-		targetPillar = obj
+		selectedPillar = obj
 		moveCam({zoom: 2,y: 20.75+(obj.position.y*0.65)},500)
 	}
 }
-
 function delve(obj){ //view depth on selected object
 	if(mode == "explore"){
 		obj = seseme.getObjectByName(obj)
-		targetPillar = obj
+		selectedPillar = obj
 		moveCam({zoom: 2, y: 20.75+(obj.position.y*0.65)})
 		deploy(obj)
 	}else if(mode == "pillar"){
 		console.log(obj)
-		obj = targetPillar.getObjectByName(obj)
+		obj = selectedPillar.getObjectByName(obj)
 		selectProjection(obj, true)
-
 	}else if(mode == "detail"){
-		if(targetProjection!=undefined){
-			selectProjection(targetProjection,false)
+		if(selectedProjection!=undefined){
+			selectProjection(selectedProjection,false)
 		}
-		obj = targetPillar.getObjectByName(obj)
+		obj = selectedPillar.getObjectByName(obj)
 		selectProjection(obj,true)
 	}
 }
 
 function backOut(){
 	if(mode=="pillar"){
-		collapse(targetPillar)
-		targetPillar = undefined
+		collapse(selectedPillar)
+		selectedPillar = undefined
+		selectedProjection = undefined
 		mode = 'explore'
 		moveCam(defaultPosZoom)
 	}
@@ -277,11 +280,11 @@ function selectProjection(obj, onoff){
 	var select = new TWEEN.Tween(current)
 	if(onoff){
 		mode = 'detail'
-		targetProjection = obj
+		selectedProjection = obj
 		var adj = obj.parent.adjust
 		select.to({x:obj.expand.x+adj.x, z:obj.expand.z+adj.z,s: 1.5, opacity: 1},450)
 		select.onComplete(function(){
-			console.log('detail mode @ ' + targetPillar.name + '('+obj.mode+')')
+			console.log('detail mode @ ' + selectedPillar.name + '('+obj.mode+')')
 		})
 	}else{
 		select.to({x:obj.expand.x, z:obj.expand.z, s: 1, opacity: 0.85},450)

@@ -16,7 +16,7 @@ plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 'explore', targetPillar, targetProjection,
+mode = 'explore', selectedPillar, selectedProjection,
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
