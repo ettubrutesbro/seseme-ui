@@ -62,6 +62,7 @@ if(mode=='explore'){
 		return
 	}else{
 		selectProjection(selectedProjection,false)
+		selectedProjection = undefined
 		mode='pillar'
 	}		
 }
@@ -284,7 +285,7 @@ function selectProjection(obj, onoff){
 		var adj = obj.parent.adjust
 		select.to({x:obj.expand.x+adj.x, z:obj.expand.z+adj.z,s: 1.5, opacity: 1},450)
 		select.onComplete(function(){
-			console.log('detail mode @ ' + selectedPillar.name + '('+obj.mode+')')
+			console.log('detail mode @ ' +obj.name)
 		})
 	}else{
 		select.to({x:obj.expand.x, z:obj.expand.z, s: 1, opacity: 0.85},450)

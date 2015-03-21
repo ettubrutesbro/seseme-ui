@@ -1,4 +1,6 @@
 
+var dataset = 'ucd_bldgA', metric = 'energy',
+dataIndex
 
 var allValues = [], grades = [0,0,0,0], distFromCtr = []
 
@@ -30,7 +32,7 @@ function setup(){
 	lightingSetup()
 	sesemeSetup()
 	eventListeners()
-	// syncToData()
+	syncToData()
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight
@@ -302,7 +304,9 @@ function setup(){
 	
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
+		dataIndex = data[dataset].metrics.indexOf(metric)
 
+		console.log(data[dataset].pts[0].stats[dataIndex])
 	}
 } //end setup
 
