@@ -304,7 +304,7 @@ function selectProjection(obj, onoff){
 	
 }
 
-function textMaker(text,fontfamily,position,scale,length,transparent){
+function textMaker(text,fontfamily,position,scale,length,bg,color){
 
 	//also: name, color, bg(combine with transparent?), 
 
@@ -312,15 +312,18 @@ function textMaker(text,fontfamily,position,scale,length,transparent){
 	var context1 = canvas1.getContext('2d')
 	var lengthDiff = text.length-6
 	
-	canvas1.width = ((18+Math.floor(text.length/6))*text.length)+48
-
-	
+	canvas1.width = length
+	// canvas1.style.width = length
 	canvas1.height = 70
-	context1.font = '32pt ' + fontfamily
+	context1.font = '32pt ' + fontfamily 
+	context1.fillStyle = color
 	context1.fillText(text,10,48)
 	var texture = new THREE.Texture(canvas1)
 	texture.needsUpdate = true
 	var material = new THREE.MeshBasicMaterial({map: texture})
+	if(bg==''){
+		material.transparent=true
+	}
 	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas1.width, canvas1.height), material)
 	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y,position.z)
