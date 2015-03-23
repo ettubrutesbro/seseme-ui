@@ -43,11 +43,11 @@ function setup(){
 	  var d = 20
 	  camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
 	  // camera.position.set( -20, 20, 20 )
-	  camera.position.set( -20, 13, 20 )
+	  camera.position.set( -20, 14.75, 20 )
 	  camera.rotation.order = 'YXZ'
 	  camera.rotation.y = - Math.PI / 4
 	  camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
-	  camera.zoom = 1
+	  camera.zoom = 1.125
 	  camera.updateProjectionMatrix()
 	  defaultPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom,
 	  	rx: camera.rotation.x, ry: camera.rotation.y}
@@ -140,6 +140,8 @@ function setup(){
 			projections.position.set(0,-17.6,0)
 
 		    // pedestal.add(projections)
+
+		    createPreviews()
 		    
 
 		  }) 
@@ -179,8 +181,8 @@ function setup(){
 			}
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
-		 createText(plr0,'Plant/Enviro Sci.','Source Serif Pro',
-		 	{x:-1,y:-5,z:11,rx:rads(-35.26),ry:rads(-45),rz:rads(-23.25)},0.04,300,'white','black')
+		 // createText(plr0,'Plant/Enviro Sci.','Source Serif Pro',
+		 // 	{x:-1,y:-5,z:11,rx:rads(-35.26),ry:rads(-45),rz:rads(-23.25)},0.04,300,'white','black')
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
@@ -240,14 +242,6 @@ function setup(){
 		  seseme.add(shadow)
 		  seseme.add(ground)
 		  scene.add(seseme)
-	}
-
-	function initPreview(){
-		var dataTitles = Object.keys(data[dataset].pts)
-		[plr0,plr1,plr2,plr3].forEach(function(ele,i){
-			createText(ele,dataTitles[i],'Source Serif Pro',
-				{x:0,y:0,z:0,rx:0,ry:0,rz:0},0.05,300,'white','black')
-		})
 	}
 
 	function eventListeners(){ //raycast and interaction
@@ -316,7 +310,7 @@ function setup(){
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 		dataIndex = data[dataset].metrics.indexOf(metric)
 
-		console.log(data[dataset].pts[0].stats[dataIndex])
+		// console.log(data[dataset].pts[0].stats[dataIndex])
 	}
 } //end setup
 

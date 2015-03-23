@@ -28,7 +28,7 @@ html{
 	width: 3.25rem;
 	height: 3.25rem;
 	position: absolute;
-	border: 2px black solid;
+	/*border: 2px black solid;*/
 	border-radius: 50%;
 	box-sizing: border-box;
 	z-index: 2;
@@ -37,7 +37,7 @@ html{
 
 .info{
 	position: absolute;
-	border: 1px black solid;
+	/*border: 1px black solid;*/
 	z-index: 1;
 }
 

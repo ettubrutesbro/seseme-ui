@@ -10,7 +10,7 @@ function updatePillars(plr){
 	plrTween.start()
 }
 
-function initProjections(tgt,atr){
+function initProjections(tgt,atr){ 
 	var projections = new THREE.Group()
     projections.name = "projections"
     for(var i = 0; i<atr.xyz.length; i++){
@@ -157,7 +157,6 @@ function getNearest90(){
 	}
 }
 
-
 function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
 	var currentPosZoom = {x: camera.position.x, y: camera.position.y, zoom: camera.zoom}
 	var camSpeed = (Math.abs(camera.zoom - tgtPosZoom.zoom)) * 600 + 300
@@ -173,6 +172,7 @@ function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
 	camTween.easing(TWEEN.Easing.Cubic.InOut)
 	camTween.start()
 }
+
 function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	//if explore mode, simple changes (title)
 	if(mode==="explore"){
@@ -304,36 +304,65 @@ function selectProjection(obj, onoff){
 	
 }
 
-function createText(parent,text,fontfamily,position,scale,length,bg,color){
+function createText(parent,text,type,position,scale,bg,color){
 	var canvas = document.createElement('canvas')
 	var context = canvas.getContext('2d')
 	var texture = new THREE.Texture(canvas)
 	texture.needsUpdate = true
-	var material = new THREE.MeshBasicMaterial({map: texture,transparent: true, opacity: 0.9})
-	canvas.width = text.length*29 - ((text.length-6)*8)-5
-	canvas.height = 70
-	if(bg !==''){
-		context.fillStyle = bg	
-		context.fillRect(0,0,canvas.width,70)
+	var material = new THREE.MeshBasicMaterial({map: texture, transparent:true, opacity: 0.85})
+	
+	if(type=='A'){
+		canvas.height = text.length>8 ? 130: 65
+		if(bg !==''){
+			context.fillStyle = bg	
+			context.fillRect(0,0,300,300)
+		}
+		context.font = 'normal 300 32pt Fira Sans' 
+		context.fillStyle = color
+		context.textAlign = 'center' 
+		if(text.length>8){
+			text = text.split(" ")
+			text.forEach(function(e,i){
+				e=e.split("").join(String.fromCharCode(8202))
+				context.fillText(e,canvas.width/2,48+(i*60))
+			}) 
+		}else{
+			// canvas.width = text.length*29 - ((text.length-6)*8)-5
+			text = text.split("").join(String.fromCharCode(8202))
+			context.fillText(text,canvas.width/2,45)
+		}
 	}
-	context.font = '32pt ' + fontfamily 
-	context.fillStyle = color
-	context.textAlign = 'center' 
-	context.fillText(text,canvas.width/2,48)
+	if(type=='B'){
+		context.font = 'normal 500 32pt Fira Sans' 
+		context.fillStyle = color
+		context.textAlign = 'center' 
+		context.fillText(text,canvas.width/2,45)
+	}
+	console.log(canvas.width)
 	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material)
 	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y,position.z)
-	//+ half of canvas.width to get centering? or is there a canvas method for it
 	mesh.rotation.set(position.rx,position.ry,position.rz)
-	mesh.name = parent.name + '_text'
 	parent.add(mesh)
+
 }
 function removeText(target){
-
 }
 
 function createPreviews(){ //inits previews for each pillar in exp/browse
-
+	var dataTitles = []
+	data[dataset].pts.forEach(function(e,i){
+		dataTitles.push(e.name)
+	})
+	var translations = [{x:-8, z:6},{x:5, z:6},{x:5, z:-8},{x:-8, z:-8}]
+	for(var i=0;i<4;i++){
+		createText(pedestal,dataTitles[i],'A',
+			{x:translations[i].x, y:-1,z:translations[i].z,rx:0,ry:rads(-45)+(i*rads(90)),rz:0}
+			,0.05,'','white')
+		createText(pedestal,'ENERGY USE @','B',
+			{x:translations[i].x*.9, y:0,z:translations[i].z*.9,
+				rx:0,ry:rads(-45)+(i*rads(90)),rz:0},0.0325,'','white')
+	}
 }
 
 
