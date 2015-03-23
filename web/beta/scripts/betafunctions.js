@@ -17,7 +17,7 @@ function initProjections(tgt,atr){
     	tgt['p'+i] = new THREE.Mesh(new THREE.PlaneGeometry(atr.xyz[i].dimX,atr.xyz[i].dimY), 
     		new THREE.MeshBasicMaterial({transparent: true, opacity: 0, 
     			map: THREE.ImageUtils.loadTexture('assets/test/test.png')}))
-    	tgt['p'+i].rotation.y = atr.origin.ry * (Math.PI/180)
+    	tgt['p'+i].rotation.y = rads(atr.origin.ry)
     	tgt['p'+i].expand = {x: atr.xyz[i].x, y: atr.xyz[i].y, z: atr.xyz[i].z}
     	tgt['p'+i].origin = {x: atr.origin.x, y: atr.origin.y, z: atr.origin.z}
     	tgt['p'+i].position.set(atr.origin.x, atr.origin.y, atr.origin.z)
@@ -31,7 +31,7 @@ function initProjections(tgt,atr){
 
 function clickedSeseme(){
 raycast.setFromCamera(mousePos, camera)
-if(mode=='explore'){
+if(mode==='explore'){
 	var intersects = raycast.intersectObjects([].slice.call(seseme.children))
 	clickedObj = intersects[0].object.name
 	if(clickedObj!='pedestal'&&clickedObj!='ground'&& clickedObj!='orb'){
@@ -39,7 +39,7 @@ if(mode=='explore'){
 	}else{
 		console.log('clicked a non pillar')
 	}
-}else if(mode=="pillar"){
+}else if(mode==="pillar"){
 	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
 	if(clickedProj.length>0){
 		console.log('delving from pillar')
@@ -54,7 +54,7 @@ if(mode=='explore'){
 			backOut()
 		}
 	}		
-}else if(mode=="detail"){
+}else if(mode==="detail"){
  	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
 	if(clickedProj.length>0){
 		console.log('delving from detail')
@@ -78,7 +78,7 @@ function clickRotate(){
 					if(sRotY!=nearest90){
 						autoRotate(0)
 					}else{
-						if(mode=='explore'){
+						if(mode==='explore'){
 							delve(rotationIndex[0],"pillar")
 						}
 					}
@@ -100,7 +100,7 @@ function clickRotate(){
 }
 function autoRotate(deg){
 	current = {rotationY: seseme.rotation.y}
-	tgt = {rotationY: (nearest90*(Math.PI/180)) + (deg * (Math.PI/180))}
+	tgt = {rotationY: (rads(nearest90)) + (rads(deg))}
 	// console.log('current ' + current.rotationY*(180/Math.PI) + ' tgt ' + tgt.rotationY*(180/Math.PI))
 	spd = Math.abs(tgt.rotationY - current.rotationY)*200 + 350
 	rotate = new TWEEN.Tween(current)
@@ -124,7 +124,7 @@ function autoRotate(deg){
 	})
 }
 function realRotation(){ 
-	sRotY = seseme.rotation.y * (180/Math.PI)
+	sRotY = degs(seseme.rotation.y)
 		if(sRotY < 0){
 			seseme.rotation.y = (360+sRotY) / (180/Math.PI)
 		}
@@ -134,7 +134,7 @@ function realRotation(){
 			if(sRotY < 0){actRot = sRotY+(numRevs*360)}
 			seseme.rotation.y = actRot / (180/Math.PI)
 		}
-	sRotY = seseme.rotation.y * (180/Math.PI)
+	sRotY = degs(seseme.rotation.y)
 }
 function rotationOrder(distance){
 	last90 = anglesIndex[0]
@@ -147,7 +147,7 @@ function getNearest90(){
 	for(var i = 0; i < 5 ;i++){
 		if(Math.abs(sRotY-(i*90)) <= 45){
 			nearest90 = i*90
-			if(i==4){
+			if(i===4){
 				// nearest90 = sRotY<=45 ? 0: sRotY>=315 ? 360: 0
 				nearest90 = 0 
 				//return something else
@@ -175,20 +175,20 @@ function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
 }
 function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	//if explore mode, simple changes (title)
-	if(mode=="explore"){
+	if(mode==="explore"){
 		// index = obj.replace('plr','')
 		// var text = document.getElementById('infoBottom')
 		// text.textContent = data[dataset].pts[index].name
 	}
 	//if zoom mode, collapse lastobj's projections/info, deploy new ones
-	if(mode=="pillar"){
+	if(mode==="pillar"){
 		collapse(selectedPillar)
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
 		moveCam({zoom: 2,y: 20.75+(obj.position.y*0.65)},500)
 	}
-	if(mode=='detail'){
+	if(mode==='detail'){
 		selectedProjection = ''
 		collapse(selectedPillar)
 		obj = seseme.getObjectByName(obj)
@@ -198,16 +198,16 @@ function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	}
 }
 function delve(obj){ //view depth on selected object
-	if(mode == "explore"){
+	if(mode==="explore"){
 		obj = seseme.getObjectByName(obj)
 		selectedPillar = obj
 		moveCam({zoom: 2, y: 20.75+(obj.position.y*0.65)})
 		deploy(obj)
-	}else if(mode == "pillar"){
+	}else if(mode==="pillar"){
 		console.log(obj)
 		obj = selectedPillar.getObjectByName(obj)
 		selectProjection(obj, true)
-	}else if(mode == "detail"){
+	}else if(mode==="detail"){
 		if(selectedProjection!=undefined){
 			selectProjection(selectedProjection,false)
 		}
@@ -304,29 +304,43 @@ function selectProjection(obj, onoff){
 	
 }
 
-function textMaker(text,fontfamily,position,scale,length,bg,color){
-
-	//also: name, color, bg(combine with transparent?), 
-
-	var canvas1 = document.createElement('canvas')
-	var context1 = canvas1.getContext('2d')
-	var lengthDiff = text.length-6
-	
-	canvas1.width = length
-	// canvas1.style.width = length
-	canvas1.height = 70
-	context1.font = '32pt ' + fontfamily 
-	context1.fillStyle = color
-	context1.fillText(text,10,48)
-	var texture = new THREE.Texture(canvas1)
+function createText(parent,text,fontfamily,position,scale,length,bg,color){
+	var canvas = document.createElement('canvas')
+	var context = canvas.getContext('2d')
+	var texture = new THREE.Texture(canvas)
 	texture.needsUpdate = true
 	var material = new THREE.MeshBasicMaterial({map: texture})
-	if(bg==''){
-		material.transparent=true
+	canvas.width = length
+	canvas.height = 70
+	if(bg === ''){
+		material.transparent = true
+	}else{
+		context.fillStyle = bg	
+		context.fillRect(0,0,length,70)
 	}
-	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas1.width, canvas1.height), material)
+	context.font = '32pt ' + fontfamily 
+	context.fillStyle = color
+	context.fillText(text,10,48)
+	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material)
 	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y,position.z)
-	seseme.add(mesh)
+	//+ half of canvas.width to get centering? or is there a canvas method for it
+	mesh.rotation.set(position.rx,position.ry,position.rz)
+	mesh.name = parent.name + '_text'
+	parent.add(mesh)
+}
+function removeText(target){
 
+}
+
+function createPreviews(){ //inits previews for each pillar in exp/browse
+
+}
+
+
+function degs(rads){ //get degrees for my comprehension
+	return rads*(180/Math.PI)
+}
+function rads(degs){ //get radians for THREE instructions
+	return degs*(Math.PI/180)
 }

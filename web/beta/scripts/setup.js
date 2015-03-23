@@ -2,10 +2,10 @@
 var dataset = 'ucd_bldgA', metric = 'energy',
 dataIndex
 
-var allValues = [], grades = [0,0,0,0], distFromCtr = []
+var allValues = [], grades = [0,0,0,0], gradeRange = []
 
 var scene = new THREE.Scene(), camera, renderer, 
-seseme = new THREE.Group(), plr0, plr1, plr2, plr3,
+seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,
 
 uiScale = 2,
 raycast, mousePos = new THREE.Vector2(),
@@ -33,8 +33,9 @@ function setup(){
 	sesemeSetup()
 	eventListeners()
 	syncToData()
-	textMaker('Student Community Center','Source Serif Pro',
-		{x:10,y:-5,z:15},0.045,550,'black','red')
+	// initExperiment()
+	// createText(seseme,'Student Community Center','Source Serif Pro',
+		// {x:10,y:-5,z:15,rx:0,ry:0,rz:0},0.045,550,'','black')
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight
@@ -74,10 +75,6 @@ function setup(){
 	  scene.add(backlight)
 	  scene.add(amblight) 
 	  scene.add(camlight)
-	}
-
-	function projectionsSetup(obj){
-
 	}
 
 	function sesemeSetup(){ //ground plane is also added here
@@ -182,6 +179,8 @@ function setup(){
 			}
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
+		 createText(plr0,'your mom','Source Serif Pro',
+		 	{x:0,y:0,z:0,rx:0,ry:rads(-45),rz:0},0.05,300,'white','black')
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
@@ -242,6 +241,15 @@ function setup(){
 		  seseme.add(ground)
 		  scene.add(seseme)
 	}
+
+	function initPreview(){
+		var dataTitles = Object.keys(data[dataset].pts)
+		[plr0,plr1,plr2,plr3].forEach(function(ele,i){
+			createText(ele,dataTitles[i],'Source Serif Pro',
+				{x:0,y:0,z:0,rx:0,ry:0,rz:0},0.05,300,'white','black')
+		})
+	}
+
 	function eventListeners(){ //raycast and interaction
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
