@@ -179,8 +179,8 @@ function setup(){
 			}
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
-		 createText(plr0,'your mom','Source Serif Pro',
-		 	{x:0,y:0,z:0,rx:0,ry:rads(-45),rz:0},0.05,300,'white','black')
+		 createText(plr0,'Plant/Enviro Sci.','Source Serif Pro',
+		 	{x:-1,y:-5,z:11,rx:rads(-35.26),ry:rads(-45),rz:rads(-23.25)},0.04,300,'white','black')
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)

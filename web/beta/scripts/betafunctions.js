@@ -309,18 +309,17 @@ function createText(parent,text,fontfamily,position,scale,length,bg,color){
 	var context = canvas.getContext('2d')
 	var texture = new THREE.Texture(canvas)
 	texture.needsUpdate = true
-	var material = new THREE.MeshBasicMaterial({map: texture})
-	canvas.width = length
+	var material = new THREE.MeshBasicMaterial({map: texture,transparent: true, opacity: 0.9})
+	canvas.width = text.length*29 - ((text.length-6)*8)-5
 	canvas.height = 70
-	if(bg === ''){
-		material.transparent = true
-	}else{
+	if(bg !==''){
 		context.fillStyle = bg	
-		context.fillRect(0,0,length,70)
+		context.fillRect(0,0,canvas.width,70)
 	}
 	context.font = '32pt ' + fontfamily 
 	context.fillStyle = color
-	context.fillText(text,10,48)
+	context.textAlign = 'center' 
+	context.fillText(text,canvas.width/2,48)
 	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material)
 	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y,position.z)
