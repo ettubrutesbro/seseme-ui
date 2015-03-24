@@ -176,7 +176,11 @@ function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
 function browse(obj){ //rotation driven info changes (uiShift equivalent)
 	//if explore mode, simple changes (title)
 	if(mode==="explore"){
-		// index = obj.replace('plr','')
+		var index = obj.replace('plr','')
+		var preview = [].slice.call(pedestal.getObjectByName('plr'+index+'_preview').children)
+		preview.forEach(function(ele,i){
+			ele.material.opacity = 0.25
+		})
 		// var text = document.getElementById('infoBottom')
 		// text.textContent = data[dataset].pts[index].name
 	}
@@ -380,4 +384,13 @@ function degs(rads){ //get degrees for my comprehension
 }
 function rads(degs){ //get radians for THREE instructions
 	return degs*(Math.PI/180)
+}
+
+function fade(inOut,tgt){
+	if(inOut){
+		var current = tgt.material.opacity
+		var opTween = Tween.get(current).to({opacity: 1},1000)
+	}else{
+
+	}
 }

@@ -80,3 +80,12 @@ section {
 	z-index: 4;
 	right: 0;top: 60%; 
 }
+
+#source{
+	font-family: 'Source Serif Pro', serif;
+	font-size: 1px;
+}
+#sans{
+	font-family: 'Fira Sans', sans-serif;
+	font-size: 1px;
+}

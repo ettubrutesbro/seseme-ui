@@ -18,7 +18,7 @@ plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 'explore', selectedPillar, selectedProjection,
+mode = 'explore', selectedPillar, selectedProjection, lookingAt
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
@@ -144,7 +144,7 @@ function setup(){
 		    createPreviews()
 		    
 
-		  }) 
+		  }) 	
 
 		  loader.load("assets/pillarA.js", function(geometry,evt){
 		    plr0 = new THREE.Mesh(geometry, sesememtl)
