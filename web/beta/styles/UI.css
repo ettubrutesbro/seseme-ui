@@ -36,6 +36,7 @@ html{
 }
 
 .info{
+	font-family: 'Fira Sans';
 	position: absolute;
 	/*border: 1px black solid;*/
 	z-index: 1;

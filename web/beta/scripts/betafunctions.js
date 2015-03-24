@@ -304,46 +304,49 @@ function selectProjection(obj, onoff){
 	
 }
 
-function createText(parent,text,type,position,scale,bg,color){
-	var canvas = document.createElement('canvas')
-	var context = canvas.getContext('2d')
-	var texture = new THREE.Texture(canvas)
-	texture.needsUpdate = true
-	var material = new THREE.MeshBasicMaterial({map: texture, transparent:true, opacity: 0.85})
+function createText(text,type,position,scale,bg,color){
+	var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d'), tex = new THREE.Texture(cvs),
+	mtl= new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0.85}), subY
+	tex.needsUpdate = true
 	
 	if(type=='A'){
-		canvas.height = text.length>8 ? 130: 65
+		cvs.height = text.length>8 ? 130: 65
 		if(bg !==''){
-			context.fillStyle = bg	
-			context.fillRect(0,0,300,300)
+			ctx.fillStyle = bg	
+			ctx.fillRect(0,0,300,300)
 		}
-		context.font = 'normal 300 32pt Fira Sans' 
-		context.fillStyle = color
-		context.textAlign = 'center' 
+		ctx.font = 'normal 300 32pt Source Serif Pro' 
+		ctx.fillStyle = color
+		ctx.textAlign = 'center' 
 		if(text.length>8){
 			text = text.split(" ")
 			text.forEach(function(e,i){
-				e=e.split("").join(String.fromCharCode(8202))
-				context.fillText(e,canvas.width/2,48+(i*60))
+				// e=e.split("").join(String.fromCharCode(8202))
+				ctx.fillText(e,cvs.width/2,48+(i*52))
+				subY=1.55
 			}) 
 		}else{
-			// canvas.width = text.length*29 - ((text.length-6)*8)-5
-			text = text.split("").join(String.fromCharCode(8202))
-			context.fillText(text,canvas.width/2,45)
+			// cvs.width = text.length*29 - ((text.length-6)*8)-5
+			// text = text.split("").join(String.fromCharCode(8202))
+			ctx.fillText(text,cvs.width/2,42)
+			subY=0
 		}
 	}
 	if(type=='B'){
-		context.font = 'normal 500 32pt Fira Sans' 
-		context.fillStyle = color
-		context.textAlign = 'center' 
-		context.fillText(text,canvas.width/2,45)
+		cvs.width=340
+		ctx.font = 'normal 500 32pt Fira Sans' 
+		ctx.fillStyle = color
+		ctx.textAlign = 'center' 
+		ctx.fillText(text,cvs.width/2,45)
+		subY=0
 	}
-	console.log(canvas.width)
-	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material)
-	mesh.scale.set(scale,scale,scale)
-	mesh.position.set(position.x,position.y,position.z)
+	console.log(cvs.width)
+	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(cvs.width, cvs.height), mtl)
+	mesh.scale.set(scale,scale+0.003,scale)
+	mesh.position.set(position.x,position.y-subY,position.z)
 	mesh.rotation.set(position.rx,position.ry,position.rz)
-	parent.add(mesh)
+	
+	return mesh
 
 }
 function removeText(target){
@@ -356,12 +359,18 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 	})
 	var translations = [{x:-8, z:6},{x:5, z:6},{x:5, z:-8},{x:-8, z:-8}]
 	for(var i=0;i<4;i++){
-		createText(pedestal,dataTitles[i],'A',
-			{x:translations[i].x, y:-1,z:translations[i].z,rx:0,ry:rads(-45)+(i*rads(90)),rz:0}
-			,0.05,'','white')
-		createText(pedestal,'ENERGY USE @','B',
-			{x:translations[i].x*.9, y:0,z:translations[i].z*.9,
+		var plr_prev = new THREE.Group()
+		plr_prev.add(
+		createText(dataTitles[i],'A',
+			{x:translations[i].x, y:-3,z:translations[i].z,rx:0,ry:rads(-45)+(i*rads(90)),rz:0}
+			,0.055,'','white'))
+		plr_prev.add(
+		createText('ENERGY USE @','B',
+			{x:translations[i].x*.9, y:-2,z:translations[i].z*.9,
 				rx:0,ry:rads(-45)+(i*rads(90)),rz:0},0.0325,'','white')
+		)
+		plr_prev.name = 'plr'+i+"_preview" 
+		pedestal.add(plr_prev)
 	}
 }
 

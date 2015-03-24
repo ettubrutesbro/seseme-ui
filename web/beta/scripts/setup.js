@@ -230,7 +230,7 @@ function setup(){
 		  orb.position.set(0,-3.75,0) //it's down but visible
 		  seseme.add(orb)  
 		  //groundplane
-		  var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 70, 70 ), 
+		  var ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 150, 150 ), 
 		    groundmtl)
 		  ground.position.set(0,-17.7,0)
 		  ground.rotation.x = -90*(Math.PI/180)
