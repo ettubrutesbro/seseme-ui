@@ -12,13 +12,13 @@ raycast, mousePos = new THREE.Vector2(),
 
 //3d rotation utilities
 rotationIndex = ['plr0','plr1','plr2','plr3'], 
-rotDir =1,last90=0,nearest90=0,sRotY =0, anglesIndex = [0,270,180,90],
+rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],distCtr,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], 
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 'explore', selectedPillar, selectedProjection, lookingAt
+mode = 'explore', selectedPillar, selectedProjection, lookingAt,
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
@@ -171,9 +171,9 @@ function setup(){
 		  plrAprojections = {
 		  	origin: {x:2, y:2, z:8, ry: -45},
 		  	modes: ['grade','info','stats'],
-		  	adjust: {x:-1, z:1},
+		  	adjust: {x:-1, y:1, z:1},
 		  	xyz: [
-				{dimX:2.75, dimY:3.25, x:1.5, y:7.5, z:8.5},
+				{dimX:2.75, dimY:3.25, x:1.5, y:6.75, z:8.5},
 				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11.5},
 				{dimX:2.75, dimY:3.25, x:-1.5, y:1.5, z:5},
 				// {dimX:7.5, dimY:8, x:2, y:2, z:8}
@@ -209,9 +209,9 @@ function setup(){
 			plrBprojections = {
 		  	origin: {x:8, y:2, z:8, ry: 45},
 		  	modes: ['grade','info','stats'],
-		  	adjust: {x:1, z:1},
+		  	adjust: {x:1,y:1,z:1},
 		  	xyz: [
-				{dimX:2.75, dimY:3.25, x:8, y:7.5, z:8},
+				{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8},
 				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
 				{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
 				// {dimX:7.5, dimY:8, x:8, y:2, z:8}
