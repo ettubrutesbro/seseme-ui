@@ -143,31 +143,25 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 	var xlats = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.5, z:-8}]
 	for(var i=0;i<4;i++){
 		var plr_prev = new THREE.Group()
-		plr_prev.add(
-		makePrev(dataTitles[i],'A',
-			{x:0, y:-3,z:0,rx:camera.rotation.x,ry:0,rz:rads(0)}
-			,0.055,'','white'))
+		var title = makePrev(dataTitles[i],'A',{x:0, y:-3,z:0,rx:camera.rotation.x,ry:0,rz:rads(0)},0.055,'','white')
+		var caption = makePrev('ENERGY USE @','B',{x:0, y:25+addY,z:0,rx:0,ry:0,rz:rads(0)},0.55,'','white')
+		plr_prev.add(title)
+		
 		var addY = 0
-		if(plr_prev.children[0].material.doubleLine){
+		if(title.material.doubleLine){
 			addY = 25
 		}
-		plr_prev.children[0].add(
-		makePrev('ENERGY USE @','B',
-			{x:0, y:25+addY,z:0,
-				rx:0,ry:0,rz:rads(0)},0.55,'','white')
-		)	
+		title.add(caption)
+		
 		plr_prev.name = 'plr'+i+"_preview" 
-		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(1,1),
+		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(title.geometry.parameters.width,title.geometry.parameters.height),
 			new THREE.MeshBasicMaterial({color:0xffffff}))
-		var blkBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(1,1),
+		var blkBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.geometry.parameters.width,caption.geometry.parameters.height),
 			new THREE.MeshBasicMaterial({color:0x000000}))
-		whtBack.position.set(plr_prev.children[0].position.x,plr_prev.children[0].position.y,plr_prev.children[0].position.z)
-		blkBack.position.set(plr_prev.children[0].children[0].position.x,plr_prev.children[0].children[0].position.y,plr_prev.children[0].children[0].position.z)
-		whtBack.geometry.parameters.height = plr_prev.children[0].geometry.parameters.height
-		whtBack.geometry.parameters.width = plr_prev.children[0].geometry.parameters.width
+		
 
-		plr_prev.add(whtBack)
-		plr_prev.children[0].add(blkBack)
+		title.add(whtBack)
+		caption.add(blkBack)
 		
 		pedestal.add(plr_prev)
 		plr_prev.rotation.y = rads(-45)+(i*rads(90))
