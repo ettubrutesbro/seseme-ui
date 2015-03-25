@@ -1,9 +1,10 @@
 
 var dataset = 'ucd_bldg_nrg'
 
-var allValues = [], grades = [{rel:'',what:''},{rel:'',what:''},{rel:'',what:''},{rel:'',what:''}]
+var allValues = [], grades = [{},{},{},{}]
 
 var scene = new THREE.Scene(), camera, renderer, 
+manager = new THREE.LoadingManager(),
 seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,
 
 uiScale = 2,
@@ -17,7 +18,7 @@ plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 'explore', selectedPillar, selectedProjection, lookingAt,
+mode = 'explore', selectedPillar, selectedProjection, lookingAt = 'plr0',
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
@@ -77,7 +78,7 @@ function setup(){
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
-		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('../assets/blobshadow.svg')})
+		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
 		  promtl = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true,opacity:0.75})
 		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 10})
@@ -144,13 +145,13 @@ function setup(){
 		    plr0.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr0.name = "plr0"
 		    seseme.add(plr0)
-		    updatePillars('plr0')
+		    
 		    plr3 = new THREE.Mesh(geometry, sesememtl)
 		    plr3.applyMatrix( new THREE.Matrix4().makeTranslation( 5, 0, -5 ) )
 		    plr3.rotation.y = -90 * Math.PI / 180
 		    plr3.name = "plr3"
 		    seseme.add(plr3)
-		    updatePillars('plr3')
+		    
 		    loader.load("assets/pillarA_outline.js", function(g){
 		      outlines[1] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[4] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -161,7 +162,7 @@ function setup(){
 		      plr0.add(plr0o)
 		      plr3.add(plr3o)
 		    })
-		  plrAprojections = {
+		  var plrAprojections = {
 		  	origin: {x:2, y:2, z:8, ry: -45},
 		  	modes: ['grade','info','stats'],
 		  	adjust: {x:-1, y:1, z:1},
@@ -169,10 +170,12 @@ function setup(){
 				{dimX:2.75, dimY:3.25, x:1.5, y:6.75, z:8.5},
 				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11.5},
 				{dimX:2.75, dimY:3.25, x:-1.5, y:1.5, z:5},
-			]
+				]
 			}
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
+		  updatePillars(plr0)
+		  updatePillars(plr3)
 		
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
@@ -180,13 +183,13 @@ function setup(){
 		    plr1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr1.name = "plr1"
 		    seseme.add(plr1)
-		    updatePillars('plr1')
+		    
 		    plr2 = new THREE.Mesh(geometry, sesememtl)
 		    plr2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr2.rotation.y = 90 * Math.PI / 180
 		    plr2.name = "plr2"
 		    seseme.add(plr2)
-		    updatePillars('plr2')
+		   
 		    loader.load("assets/pillarB_outline.js", function(g){
 		      outlines[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
 		      outlines[3] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -197,18 +200,21 @@ function setup(){
 		      plr1.add(plr1o)
 		      plr2.add(plr2o)
 		    })
-			plrBprojections = {
+			var plrBprojections = {
 		  	origin: {x:8, y:2, z:8, ry: 45},
 		  	modes: ['grade','info','stats'],
 		  	adjust: {x:1,y:1,z:1},
 		  	xyz: [
 					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8},
-					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
-					{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5}
+					{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
+					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11}
 				]
 			}
 			initProjections(plr1,plrBprojections)
 			initProjections(plr2,plrBprojections)
+			updatePillars(plr1)
+			 updatePillars(plr2)
+			 populateProjections()
 		  })
 
 		  //the orb is generated here (adjust segments for smooth)
@@ -226,14 +232,23 @@ function setup(){
 		  var shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(16,16), shadowmtl)
 		  shadow.position.set(-0.1,-17.65,0.1)
 		  shadow.rotation.x -= 90 * (Math.PI/180)
+
+
+
 		  seseme.add(shadow)
 		  seseme.add(ground)
 		  scene.add(seseme)
+
+		
 	}
 
 	function eventListeners(){ //raycast and interaction
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
+
+  		manager.onProgress=function(item,loaded,total){
+  			console.log(item,loaded,total)
+  		}
 
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
 

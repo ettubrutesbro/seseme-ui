@@ -29,8 +29,8 @@ var blurbs = {
 }
 
 var criteria = {
-	ucd_bldg_nrg: [{name:'good',min:0,max:25},
-	{name:'ok',min:26,max:50},
-	{name:'bad',min:51,max:75},
-	{name:'awful',min:76,max:100}]
+	ucd_bldg_nrg: [{name:'good',color:'green',min:0,max:25},
+	{name:'ok',color:'yellow',min:26,max:50},
+	{name:'bad',color:'orange',min:51,max:75},
+	{name:'awful',color:'red',min:76,max:100}]
 }

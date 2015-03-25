@@ -9,6 +9,8 @@ function assess(){
 		criteria[dataset].forEach(function(el,it){
 			if(ele>=el.min&&ele<=el.max){
 				grades[ite].what = el.name
+				grades[ite].color = el.color
+
 				var range = el.max-el.min, mid = el.max-(range/2)
 				if(Math.abs(ele-mid)<(range/3)){
 					grades[ite].rel = 'mid'
@@ -17,18 +19,19 @@ function assess(){
 				}else if((ele-mid)<0){
 					grades[ite].rel = "low"
 				}
+				grades[ite].tex = new THREE.ImageUtils.loadTexture('assets/'+el.name+'.png')
 			}
 		})
 	})
 }
 function updatePillars(plr){
-	var index = plr.replace('plr','')
-	spd = Math.abs((seseme.getObjectByName(plr).position.y - tgtHts[index].y)*100) + 400
+	var index = plr.name.replace('plr','')
+	spd = Math.abs((plr.position.y - tgtHts[index].y)*100) + 400
 	plrTween = new TWEEN.Tween(plrHts[index])
 	plrTween.to(tgtHts[index],spd)
 	plrTween.easing(TWEEN.Easing.Cubic.InOut)
 	plrTween.onUpdate(function(){
-		seseme.getObjectByName(plr).position.y = plrHts[index].y
+		plr.position.y = plrHts[index].y
 	})
 	plrTween.start()
 }
@@ -38,10 +41,11 @@ function updatePillars(plr){
 
 function initProjections(tgt,atr){ 
 	var projections = new THREE.Group()
-
+	var index = tgt.name.replace('plr','')
     projections.name = "projections"
     for(var i = 0; i<atr.xyz.length; i++){
     	var mtl = new THREE.MeshBasicMaterial({transparent:true,opacity:0})
+    	mtl.needsUpdate = true
     	tgt['p'+i] = new THREE.Mesh(new THREE.PlaneBufferGeometry(atr.xyz[i].dimX,atr.xyz[i].dimY), 
     		mtl)
     	tgt['p'+i].rotation.y = rads(atr.origin.ry)
@@ -55,31 +59,40 @@ function initProjections(tgt,atr){
     projections.adjust = {x: atr.adjust.x, y: atr.adjust.y, z: atr.adjust.z}
     tgt.add(projections)
 }
-function populateProjection(plr, mode, mtl){ //populate projections with data
-	//1: grade with correct icon, give it subordinate planes
-		//- get data (300 co2 lbs.) of parent plr --> data
-		//- grade it through criteria system, get two words and picture
-		//- apply picture to projection map
-		//- apply those two words to two canvasas and map them to two planes
-		//- scale those two planes to x0z0, give em expansion coord properties
-	if(mode==='grade'){
-		var index = plr.replace('plr','') 
-		var icon = grades[index].what
-		mtl.map = new THREE.ImageUtils.loadTexture('assets/'+icon+'.svg')
-		console.log(mtl.map)
-	}
 
+function populateProjections(){ //pass appropriate imagery & numbers to plr projections
+	for(var i = 0; i<4; i++){
+		var plr = seseme.getObjectByName('plr'+i)
+		var projs = plr.getObjectByName('projections')
+		var gradeIcon = projs.getObjectByName('plr'+i+'_grade')
+		var statIcon = projs.getObjectByName('plr'+i+'_stats')
+		gradeIcon.material.map = grades[i].tex
 
+		var statCvs = document.createElement('canvas'), ctx = statCvs.getContext('2d'),
+		statTex = new THREE.Texture(statCvs)
+		statTex.needsUpdate = true
+		statCvs.height = 300
+		statIcon.material.map = statTex
+		ctx.fillStyle = grades[i].color
+		ctx.fillRect(0,0,300,300)
+		ctx.fillStyle = 'black'
+		ctx.font = 'normal 400 144pt Source Serif Pro'
+		ctx.textAlign = 'center'
+		ctx.fillText(allValues[i],150,200)
+		console.log(statCvs.width + ' x ' + statCvs.height)
 
-
+	}	
 }
+
 function makePrev(text,type,position,scale,bg,color){
-	var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d'), tex = new THREE.Texture(cvs),
-	mtl= new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0}), subY
+	var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d')
+	var tex = new THREE.Texture(cvs)
+	var mtl= new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0}), subY
 	tex.needsUpdate = true
 	
 	if(type=='A'){
-		cvs.height = text.length>8 ? 136: 70
+		cvs.height = text.length>8 ? 110: 60
+		cvs.width = text.length<8 ? text.length * 26.5: 208
 		if(bg !==''){
 			ctx.fillStyle = bg	
 			ctx.fillRect(0,0,300,300)
@@ -88,30 +101,36 @@ function makePrev(text,type,position,scale,bg,color){
 		ctx.fillStyle = color
 		ctx.textAlign = 'center' 
 		if(text.length>8){
+			mtl.doubleLine = true
 			text = text.split(" ")
 			text.forEach(function(e,i){
 				// e=e.split("").join(String.fromCharCode(8202))
-				ctx.fillText(e,cvs.width/2,48+(i*52))
+				ctx.fillText(e,cvs.width/2,42+(i*52))
 				subY=1.55
 			}) 
 		}else{
-			// cvs.width = text.length*29 - ((text.length-6)*8)-5
+			mtl.doubleLine = false
 			// text = text.split("").join(String.fromCharCode(8202))
-			ctx.fillText(text,cvs.width/2,48)
+			ctx.fillText(text,cvs.width/2,42)
 			subY=0
 		}
 	}
 	if(type=='B'){
+
 		cvs.width=340
+		if(bg !==''){
+			ctx.fillStyle = bg	
+			ctx.fillRect(0,0,340,65)
+		}
 		ctx.font = 'normal 500 32pt Fira Sans' 
 		ctx.fillStyle = color
 		ctx.textAlign = 'center' 
 		ctx.fillText(text,cvs.width/2,45)
 		subY=0
 	}
-	console.log(cvs.width)
+	console.log(cvs.height)
 	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(cvs.width, cvs.height), mtl)
-	mesh.scale.set(scale,scale+0.003,scale)
+	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y-subY,position.z)
 	mesh.rotation.set(position.rx,position.ry,position.rz)
 	return mesh
@@ -121,20 +140,39 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 	data[dataset].pts.forEach(function(e,i){
 		dataTitles.push(e.name)
 	})
-	var translations = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.5, z:-8}]
+	var xlats = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.5, z:-8}]
 	for(var i=0;i<4;i++){
 		var plr_prev = new THREE.Group()
 		plr_prev.add(
 		makePrev(dataTitles[i],'A',
-			{x:translations[i].x, y:-3,z:translations[i].z,rx:0,ry:rads(-45)+(i*rads(90)),rz:0}
+			{x:0, y:-3,z:0,rx:camera.rotation.x,ry:0,rz:rads(0)}
 			,0.055,'','white'))
-		plr_prev.add(
+		var addY = 0
+		if(plr_prev.children[0].material.doubleLine){
+			addY = 25
+		}
+		plr_prev.children[0].add(
 		makePrev('ENERGY USE @','B',
-			{x:translations[i].x*.9, y:-2,z:translations[i].z*.9,
-				rx:0,ry:rads(-45)+(i*rads(90)),rz:0},0.0325,'','white')
-		)
+			{x:0, y:25+addY,z:0,
+				rx:0,ry:0,rz:rads(0)},0.55,'','white')
+		)	
 		plr_prev.name = 'plr'+i+"_preview" 
+		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(1,1),
+			new THREE.MeshBasicMaterial({color:0xffffff}))
+		var blkBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(1,1),
+			new THREE.MeshBasicMaterial({color:0x000000}))
+		whtBack.position.set(plr_prev.children[0].position.x,plr_prev.children[0].position.y,plr_prev.children[0].position.z)
+		blkBack.position.set(plr_prev.children[0].children[0].position.x,plr_prev.children[0].children[0].position.y,plr_prev.children[0].children[0].position.z)
+		whtBack.geometry.parameters.height = plr_prev.children[0].geometry.parameters.height
+		whtBack.geometry.parameters.width = plr_prev.children[0].geometry.parameters.width
+
+		plr_prev.add(whtBack)
+		plr_prev.children[0].add(blkBack)
+		
 		pedestal.add(plr_prev)
+		plr_prev.rotation.y = rads(-45)+(i*rads(90))
+		plr_prev.position.set(xlats[i].x,1,xlats[i].z)
+		// plr_prev.scale.set(0.5,0.5,0.5)
 	}
 }
 
@@ -265,23 +303,30 @@ function getNearest90(){
 			}
 			return anglesIndex.indexOf(nearest90)
 		}
-	}
+	}	
 }
 
 //global UI state changes
 function browse(obj){ //rotation driven info changes 
 	if(obj!==lookingAt){
 		if(lookingAt!==undefined){
-			var fadeOut = [].slice.call(pedestal.getObjectByName(lookingAt+'_preview').children)
-			fadeOut.forEach(function(ele,i){
-				fade(false,ele,300)
-			})
+			var fadeOut = pedestal.getObjectByName(lookingAt+'_preview')
+			if(mode==="explore"){
+				move({y:1},fadeOut,500)
+				growShrink({s:0.75},fadeOut,500)
+			}
+			fade(false,fadeOut.children[0],500)
+			fade(false,fadeOut.children[0].children[0],500)
 		}
 	}
-	var preview = [].slice.call(pedestal.getObjectByName(obj+'_preview').children)
-	preview.forEach(function(ele,i){
-		fade(true,ele,300+(i*100))
-	})
+	var preview = pedestal.getObjectByName(obj+'_preview')
+	if(mode==='explore'){
+		move({y:-1},preview,500)
+		growShrink({s:1},preview,500)
+	}
+	fade(true,preview.children[0],500)
+	fade(true,preview.children[0].children[0],500)
+
 	lookingAt = obj
 	if(mode==="explore"){
 		// var text = document.getElementById('infoBottom')
@@ -292,7 +337,7 @@ function browse(obj){ //rotation driven info changes
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
-		moveCam({zoom: 1.75, y: 19+(obj.position.y*0.8)},500)
+		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)},500)
 	}
 	else if(mode==='detail'){
 		selectedProjection = ''
@@ -300,7 +345,7 @@ function browse(obj){ //rotation driven info changes
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
-		moveCam({zoom: 1.75, y: 19+(obj.position.y*0.8)},500)
+		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)},500)
 	}
 }
 function delve(obj){ //view depth on selected object
@@ -308,7 +353,7 @@ function delve(obj){ //view depth on selected object
 		obj = seseme.getObjectByName(obj)
 		previewShift(true,obj.position.y)
 		selectedPillar = obj
-		moveCam({zoom: 1.75, y: 19+(obj.position.y*0.8)})
+		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)})
 		deploy(obj)
 	}else if(mode==="pillar"){
 		console.log(obj)
@@ -426,20 +471,17 @@ function selectProjection(obj, onoff){
 }
 function previewShift(up){ //previews translate depending on explore/pillar modes
 	if(up){for(var i=0;i<4;i++){
-			var prevs = [].slice.call(pedestal.getObjectByName('plr'+i+'_preview').children)
+			var prevs = pedestal.getObjectByName('plr'+i+'_preview')
 			var plrht = seseme.getObjectByName('plr'+i).position.y
-			prevs.forEach(function(ele,it){
-				growShrink({s: ele.scale.x*0.7},ele,800)
-				move({y:ele.position.y+1.25+plrht+(0.7*(1-it))},ele,800)
-			})	
+			move({y:1+plrht},prevs,800)
+			growShrink({s:0.55},prevs,800)
+			colorize({r:0,g:0,b:0},prevs.children[0],800)
 	}}else{ //shift previews back
 		for(var i=0;i<4;i++){
-			var prevs = [].slice.call(pedestal.getObjectByName('plr'+i+'_preview').children)
-			var plrht = seseme.getObjectByName('plr'+i).position.y
-			prevs.forEach(function(ele,it){
-				growShrink({s: ele.scale.x*(1/0.7)},ele,800)
-				move({y:ele.position.y-1.25-(plrht+(0.7*(1-it)))},ele,800)
-			})
+			var prevs = pedestal.getObjectByName('plr'+i+'_preview')
+			growShrink({s:1},prevs,800)
+			move({y:0},prevs,800)
+			colorize({r:255,g:255,b:255},prevs.children[0],800)
 		}	
 	}
 }
@@ -459,7 +501,18 @@ function fade(inOut,tgt,spd){
 	opTween.easing(TWEEN.Easing.Cubic.InOut)
 	opTween.start()
 }
-
+function colorize(col,tgt,spd){
+	var current = {r: tgt.material.color.r, g:tgt.material.color.g,b:tgt.material.color.b}
+	var colorTween = new TWEEN.Tween(current)
+	colorTween.to({r:col.r/255,g:col.g/255,b:col.b/255},spd)
+	colorTween.onUpdate(function(){
+		tgt.material.color.r = current.r
+		tgt.material.color.g = current.g
+		tgt.material.color.b = current.b
+	})
+	colorTween.easing(TWEEN.Easing.Cubic.InOut)
+	colorTween.start()
+}
 function move(pos,tgt,spd){
 	var current = {x:tgt.position.x, y:tgt.position.y, z:tgt.position.z}
 	var moveTween = new TWEEN.Tween(current)
@@ -471,6 +524,17 @@ function move(pos,tgt,spd){
 	})
 	moveTween.easing(TWEEN.Easing.Cubic.InOut)
 	moveTween.start()
+}
+function rotate(rot,tgt,spd){
+	var current = {x:tgt.rotation.x,y:tgt.rotation.y,z:tgt.rotation.z}
+	var rotTween = new TWEEN.Tween(current)
+	rotTween.to(rot,spd)
+	rotTween.onUpdate(function(){
+		tgt.rotation.x = current.x
+		tgt.rotation.y = current.y
+		tgt.rotation.z = current.z
+	})
+	rotTween.easing(TWEEN.Easing.Cubic.InOut)
 }
 
 function growShrink(scale,tgt,spd){
