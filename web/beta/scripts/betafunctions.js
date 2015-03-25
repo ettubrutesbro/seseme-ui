@@ -1,4 +1,26 @@
 //server & data responses / connections
+function getValues(){
+	data[dataset].pts.forEach(function(ele,ite){
+		allValues[ite] = ele.value
+	})
+}
+function assess(){
+	allValues.forEach(function(ele,ite){
+		criteria[dataset].forEach(function(el,it){
+			if(ele>=el.min&&ele<=el.max){
+				grades[ite].what = el.name
+				var range = el.max-el.min, mid = el.max-(range/2)
+				if(Math.abs(ele-mid)<(range/3)){
+					grades[ite].rel = 'mid'
+				}else if((ele-mid)>0){
+					grades[ite].rel = "high"
+				}else if((ele-mid)<0){
+					grades[ite].rel = "low"
+				}
+			}
+		})
+	})
+}
 function updatePillars(plr){
 	var index = plr.replace('plr','')
 	spd = Math.abs((seseme.getObjectByName(plr).position.y - tgtHts[index].y)*100) + 400
@@ -12,13 +34,16 @@ function updatePillars(plr){
 }
 
 // labeling and projection initialization (styling happens here)
+
+
 function initProjections(tgt,atr){ 
 	var projections = new THREE.Group()
+
     projections.name = "projections"
     for(var i = 0; i<atr.xyz.length; i++){
-    	tgt['p'+i] = new THREE.Mesh(new THREE.PlaneGeometry(atr.xyz[i].dimX,atr.xyz[i].dimY), 
-    		new THREE.MeshBasicMaterial({transparent: true, opacity: 0, 
-    			map: THREE.ImageUtils.loadTexture('assets/test/test.png')}))
+    	var mtl = new THREE.MeshBasicMaterial({transparent:true,opacity:0})
+    	tgt['p'+i] = new THREE.Mesh(new THREE.PlaneBufferGeometry(atr.xyz[i].dimX,atr.xyz[i].dimY), 
+    		mtl)
     	tgt['p'+i].rotation.y = rads(atr.origin.ry)
     	tgt['p'+i].expand = {x: atr.xyz[i].x, y: atr.xyz[i].y, z: atr.xyz[i].z}
     	tgt['p'+i].origin = {x: atr.origin.x, y: atr.origin.y, z: atr.origin.z}
@@ -29,6 +54,24 @@ function initProjections(tgt,atr){
     }
     projections.adjust = {x: atr.adjust.x, y: atr.adjust.y, z: atr.adjust.z}
     tgt.add(projections)
+}
+function populateProjection(plr, mode, mtl){ //populate projections with data
+	//1: grade with correct icon, give it subordinate planes
+		//- get data (300 co2 lbs.) of parent plr --> data
+		//- grade it through criteria system, get two words and picture
+		//- apply picture to projection map
+		//- apply those two words to two canvasas and map them to two planes
+		//- scale those two planes to x0z0, give em expansion coord properties
+	if(mode==='grade'){
+		var index = plr.replace('plr','') 
+		var icon = grades[index].what
+		mtl.map = new THREE.ImageUtils.loadTexture('assets/'+icon+'.svg')
+		console.log(mtl.map)
+	}
+
+
+
+
 }
 function makePrev(text,type,position,scale,bg,color){
 	var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d'), tex = new THREE.Texture(cvs),
@@ -67,7 +110,7 @@ function makePrev(text,type,position,scale,bg,color){
 		subY=0
 	}
 	console.log(cvs.width)
-	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(cvs.width, cvs.height), mtl)
+	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(cvs.width, cvs.height), mtl)
 	mesh.scale.set(scale,scale+0.003,scale)
 	mesh.position.set(position.x,position.y-subY,position.z)
 	mesh.rotation.set(position.rx,position.ry,position.rz)
@@ -241,7 +284,6 @@ function browse(obj){ //rotation driven info changes
 	})
 	lookingAt = obj
 	if(mode==="explore"){
-		
 		// var text = document.getElementById('infoBottom')
 		// text.textContent = data[dataset].pts[index].name
 	}
@@ -260,7 +302,6 @@ function browse(obj){ //rotation driven info changes
 		selectedPillar = obj
 		moveCam({zoom: 1.75, y: 19+(obj.position.y*0.8)},500)
 	}
-
 }
 function delve(obj){ //view depth on selected object
 	if(mode==="explore"){
@@ -359,6 +400,7 @@ function collapse(obj){ //collapses projections
 function selectProjection(obj, onoff){
 	var current = {x:obj.position.x,y:obj.position.y,z:obj.position.z,s: obj.scale.x, opacity: obj.material.opacity}
 	var select = new TWEEN.Tween(current)
+	var bottom = document.getElementById('infoBottom')
 	if(onoff){
 		mode = 'detail'
 		selectedProjection = obj
@@ -367,6 +409,8 @@ function selectProjection(obj, onoff){
 		select.onComplete(function(){
 			console.log('detail mode @ ' +obj.name)
 		})
+		Velocity(bottom,{height:'6rem'})
+
 	}else{
 		select.to({x:obj.expand.x,y:obj.expand.y, z:obj.expand.z, s: 1, opacity: 0.85},450)
 	}

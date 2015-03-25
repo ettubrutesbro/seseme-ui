@@ -1,33 +1,36 @@
 var data = {
-	ucd_bldgA: {
-		metrics: ['ENERGY USE','WATER USE'],
+	ucd_bldg_nrg: {
 		pts: [
 			{name: 'The ARC',
-			 breakdown: [true, false],
-			 stats: [{elec: 20, heat: 10, cool: 10},{galm: 10}],
-			 etc: ''},
+			value: 86,
+			facts: ''},
 			{name: 'Memorial Union',
-			 breakdown: [false, false],
-			 stats: [{elec: 10, heat: 10, cool: 10},{galm: 10}],
-			 etc: ''},
+			value: 44,
+			facts: ''},
 			{name: 'The SCC',
-			 breakdown: [true, false],
-			 stats: [{elec: 10, heat: 10, cool: 10},{galm: 10}],
-			 etc: ''},
+			value: 99,
+			facts: ''},
 			{name: 'Shields Library',
-			 breakdown: [false, false],
-			 stats: [{elec: 10, heat: 10, cool: 10},{galm: 10}],
-			 etc: ''},
+			value: 54,
+			facts: ''}
 		],
 		agg: 10000
 	}
+
 }
 
 var blurbs = {
 	energy:{
-		grade:[],
+		grade:['building emissions account for 30% of the world\'s atmospheric carbon',
+		'the world\'s ending and it\s largely our fault', 'we are fucked' ],
 		stats:[],
 		info:[]
 	}
+}
 
+var criteria = {
+	ucd_bldg_nrg: [{name:'good',min:0,max:25},
+	{name:'ok',min:26,max:50},
+	{name:'bad',min:51,max:75},
+	{name:'awful',min:76,max:100}]
 }

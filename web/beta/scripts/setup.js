@@ -1,8 +1,7 @@
 
-var dataset = 'ucd_bldgA', metric = 'energy',
-dataIndex
+var dataset = 'ucd_bldg_nrg'
 
-var allValues = [], grades = [0,0,0,0], gradeRange = []
+var allValues = [], grades = [{rel:'',what:''},{rel:'',what:''},{rel:'',what:''},{rel:'',what:''}]
 
 var scene = new THREE.Scene(), camera, renderer, 
 seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,
@@ -34,15 +33,12 @@ function setup(){
 	eventListeners()
 	syncToData()
 	// initExperiment()
-	// createText(seseme,'Student Community Center','Source Serif Pro',
-		// {x:10,y:-5,z:15,rx:0,ry:0,rz:0},0.045,550,'','black')
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight
 	 
 	  var d = 20
 	  camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 5, 100 )
-	  // camera.position.set( -20, 20, 20 )
 	  camera.position.set( -20, 14.75, 20 )
 	  camera.rotation.order = 'YXZ'
 	  camera.rotation.y = - Math.PI / 4
@@ -140,10 +136,7 @@ function setup(){
 			projections.position.set(0,-17.6,0)
 
 		    // pedestal.add(projections)
-
 		    createPreviews()
-		    
-
 		  }) 	
 
 		  loader.load("assets/pillarA.js", function(geometry,evt){
@@ -176,13 +169,11 @@ function setup(){
 				{dimX:2.75, dimY:3.25, x:1.5, y:6.75, z:8.5},
 				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11.5},
 				{dimX:2.75, dimY:3.25, x:-1.5, y:1.5, z:5},
-				// {dimX:7.5, dimY:8, x:2, y:2, z:8}
 			]
 			}
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
-		 // createText(plr0,'Plant/Enviro Sci.','Source Serif Pro',
-		 // 	{x:-1,y:-5,z:11,rx:rads(-35.26),ry:rads(-45),rz:rads(-23.25)},0.04,300,'white','black')
+		
 		  })
 		  loader.load("assets/pillarB.js", function(geometry,evt){
 		    plr1 = new THREE.Mesh(geometry, sesememtl)
@@ -211,18 +202,14 @@ function setup(){
 		  	modes: ['grade','info','stats'],
 		  	adjust: {x:1,y:1,z:1},
 		  	xyz: [
-				{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8},
-				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
-				{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
-				// {dimX:7.5, dimY:8, x:8, y:2, z:8}
-			]
+					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8},
+					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
+					{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5}
+				]
 			}
 			initProjections(plr1,plrBprojections)
 			initProjections(plr2,plrBprojections)
-
 		  })
-
-
 
 		  //the orb is generated here (adjust segments for smooth)
 		  var orb = new THREE.Mesh( new THREE.SphereGeometry( 2.5, 7, 5 ), orbmtl )
@@ -308,9 +295,8 @@ function setup(){
 	
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
-		dataIndex = data[dataset].metrics.indexOf(metric)
-
-		// console.log(data[dataset].pts[0].stats[dataIndex])
+		getValues()
+		assess()
 	}
 } //end setup
 
