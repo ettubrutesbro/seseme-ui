@@ -4,6 +4,22 @@ function getValues(){
 		allValues[ite] = ele.value
 	})
 }
+function getVocab(mod, desc){
+	var phraseType = dice(6,1)
+	if(phraseType < 4){
+		var modifier = vocab.modifiers[mod][dice(vocab.modifiers[mod].length,0)]
+		var descriptor = vocab.descriptors[desc][dice(vocab.descriptors[desc].length,0)]
+		return modifier + " " + descriptor
+	}else if(phraseType === 4){
+		var specific = vocab.specifics[desc][mod][dice(vocab.specifics[desc][mod].length,0)]
+		return specific
+	}else if(phraseType === 5){
+		return "negatory " + mod + " " + desc
+	}else if(phraseType === 6){
+		return desc + " noun"
+	}
+	// var options = vocab.
+}	
 function assess(){
 	allValues.forEach(function(ele,ite){
 		criteria[dataset].forEach(function(el,it){
@@ -11,15 +27,29 @@ function assess(){
 				grades[ite].what = el.name
 				grades[ite].color = el.color
 
-				var range = el.max-el.min, mid = el.max-(range/2)
-				if(Math.abs(ele-mid)<(range/3)){
-					grades[ite].rel = 'mid'
-				}else if((ele-mid)>0){
-					grades[ite].rel = "high"
-				}else if((ele-mid)<0){
-					grades[ite].rel = "low"
+				var range = el.max-el.min, mid = el.max-(range/2), rel
+				if(Math.abs(ele-mid)<range/3){
+					rel = 'mid'
+				}else{
+					if(el.name == 'good' || el.name == 'ok'){
+						if((ele-mid)>0){
+							rel = "less"
+						}else if((ele-mid)<0){
+							rel = "more"
+						}	
+					}else if(el.name == 'bad' || el.name == "awful"){
+						 if((ele-mid)>0){
+							rel = "more"
+						}else if((ele-mid)<0){
+							rel = "less"
+						}	
+					}
 				}
-				grades[ite].tex = new THREE.ImageUtils.loadTexture('assets/'+el.name+'.png')
+				grades[ite].rel = rel
+				
+				
+				grades[ite].icon = new THREE.ImageUtils.loadTexture('assets/'+el.name+'.png')
+				grades[ite].words=getVocab(rel,el.name) 
 			}
 		})
 	})
@@ -66,7 +96,7 @@ function populateProjections(){ //pass appropriate imagery & numbers to plr proj
 		var projs = plr.getObjectByName('projections')
 		var gradeIcon = projs.getObjectByName('plr'+i+'_grade')
 		var statIcon = projs.getObjectByName('plr'+i+'_stats')
-		gradeIcon.material.map = grades[i].tex
+		gradeIcon.material.map = grades[i].icon
 
 		gradeIcon.more = [] //2 canvases for text
 
@@ -231,8 +261,16 @@ if(mode==='explore'){
  	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
 	if(clickedProj.length>0){
 		console.log('delving from detail')
-		delve(clickedProj[0].object.name)
-		return
+		if(clickedProj[0].object.name===selectedProjection.name){
+			console.log('clicked same one again?')
+			selectProjection(selectedProjection,false)
+			selectedProjection = 0
+			mode='pillar'
+		}else{
+			delve(clickedProj[0].object.name)
+			return
+		}
+		
 	}else{
 		selectProjection(selectedProjection,false)
 		selectedProjection = 0
@@ -629,4 +667,7 @@ function stretch(scale,tgt,spd,delay){
 	})
 	stretchTween.easing(TWEEN.Easing.Cubic.InOut)
 	stretchTween.start()
+}
+function dice(possibilities,add){
+	return Math.floor((Math.random()*possibilities) + add)
 }

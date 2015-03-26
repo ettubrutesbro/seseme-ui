@@ -8,6 +8,7 @@ function getData(reqSet, reqResource){
 	autoRotate(360) //optional visual flourish?
 	uiShift()
 	assess()
+	// hueEvent(true,255,0,0,255,255,255)
 }
 function dataToHts(){ // translates data vals 
 	data[currentDataSet].forEach(function(ele,i,arr){

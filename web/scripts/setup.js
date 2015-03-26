@@ -39,7 +39,7 @@ function setup(){
 	sesemeSetup()
 	eventListeners()
 	syncToData()
-	// hueEvent(true,255,0,0,100,50,50)
+	hueEvent(true,255,255,255,255,50,50)
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight
@@ -75,10 +75,10 @@ function setup(){
 	  camlight = new THREE.SpotLight(0xffffff, .35)
 	  camlight.position.set(camera.position.x-25,camera.position.y-29,camera.position.z-30)    
 
-	  huelight = new THREE.PointLight(0xff0000,0.4,20)
+	  huelight = new THREE.PointLight(0xff0000,0.4,30)
 	  huelight.position.set(0,-3,0)
 	  
-	  // seseme.add(huelight)
+	  seseme.add(huelight)
 	  scene.add(backlight)
 	  scene.add(amblight) 
 	  scene.add(camlight)

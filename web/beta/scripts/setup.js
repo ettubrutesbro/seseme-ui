@@ -4,7 +4,6 @@ var dataset = 'ucd_bldg_nrg'
 var allValues = [], grades = [{},{},{},{}]
 
 var scene = new THREE.Scene(), camera, renderer, 
-manager = new THREE.LoadingManager(),
 seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,
 
 uiScale = 2,
@@ -18,7 +17,7 @@ plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}],
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
-mode = 'explore', selectedPillar, selectedProjection, lookingAt = 'plr0',
+mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
@@ -246,10 +245,6 @@ function setup(){
 	function eventListeners(){ //raycast and interaction
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
-
-  		manager.onProgress=function(item,loaded,total){
-  			console.log(item,loaded,total)
-  		}
 
 		document.body.addEventListener('touchmove', function(e){ e.preventDefault() })
 
