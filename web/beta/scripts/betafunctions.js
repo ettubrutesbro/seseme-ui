@@ -68,19 +68,42 @@ function populateProjections(){ //pass appropriate imagery & numbers to plr proj
 		var statIcon = projs.getObjectByName('plr'+i+'_stats')
 		gradeIcon.material.map = grades[i].tex
 
-		var statCvs = document.createElement('canvas'), ctx = statCvs.getContext('2d'),
-		statTex = new THREE.Texture(statCvs)
+		gradeIcon.more = [] //2 canvases for text
+
+		var statCvs = document.createElement('canvas'), statCtx = statCvs.getContext('2d'),
+		statTex = new THREE.Texture(statCvs), typeSize = "144pt"
 		statTex.needsUpdate = true
 		statCvs.height = 300
+		statCtx.fillStyle = grades[i].color
+		statCtx.fillRect(0,0,300,300)
+		statCtx.fillStyle = 'black'
+		if(allValues[i]>99){
+			typeSize="120pt"
+		}
+		statCtx.font = 'normal 400 '+typeSize+' Source Serif Pro'
+		statCtx.textAlign = 'center'
+		statCtx.fillText(allValues[i],150,200)
 		statIcon.material.map = statTex
-		ctx.fillStyle = grades[i].color
-		ctx.fillRect(0,0,300,300)
-		ctx.fillStyle = 'black'
-		ctx.font = 'normal 400 144pt Source Serif Pro'
-		ctx.textAlign = 'center'
-		ctx.fillText(allValues[i],150,200)
-		console.log(statCvs.width + ' x ' + statCvs.height)
 
+		for(var it = 0; it<data[dataset].unit.length; it++){
+			var stMoreCvs = document.createElement('canvas'), stMoreCtx = stMoreCvs.getContext('2d'),  
+			stMoreTex = new THREE.Texture(stMoreCvs), mesh
+			stMoreTex.needsUpdate = true
+			stMoreCvs.height = 85
+			stMoreCvs.width = data[dataset].unit[it].length * 29.5
+			stMoreCtx.fillStyle = grades[i].color
+			stMoreCtx.fillRect(0,0,stMoreCvs.width,stMoreCvs.height)
+			stMoreCtx.fillStyle = 'black'
+			stMoreCtx.font = 'normal 500 36pt Fira Sans'
+			stMoreCtx.fillText(data[dataset].unit[it],20,60)
+			mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(stMoreCvs.width/100,stMoreCvs.height/100),
+				new THREE.MeshBasicMaterial({map: stMoreTex, transparent: true,opacity:0}))
+			mesh.position.set(0,0.5-it*1.1,-0.25)
+			mesh.defpos = {x:0,y:0.5-it*1.1,z:-0.25}
+			mesh.expand = {x:1.55+stMoreCvs.width/200,y:0.5-it*1.1,z:-0.25}
+			mesh.name = "sub"+it
+			statIcon.add(mesh)
+		}
 	}	
 }
 
@@ -140,33 +163,41 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 	data[dataset].pts.forEach(function(e,i){
 		dataTitles.push(e.name)
 	})
-	var xlats = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.5, z:-8}]
+	var xlats = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.75, z:-8.25}]
 	for(var i=0;i<4;i++){
 		var plr_prev = new THREE.Group()
 		var title = makePrev(dataTitles[i],'A',{x:0, y:-3,z:0,rx:camera.rotation.x,ry:0,rz:rads(0)},0.055,'','white')
-		var caption = makePrev('ENERGY USE @','B',{x:0, y:25+addY,z:0,rx:0,ry:0,rz:rads(0)},0.55,'','white')
 		plr_prev.add(title)
 		
 		var addY = 0
 		if(title.material.doubleLine){
 			addY = 25
 		}
+		var caption = makePrev('ENERGY USE @','B',{x:0, y:25+addY,z:0,rx:0,ry:0,rz:rads(0)},0.55,'','white')
 		title.add(caption)
 		
-		plr_prev.name = 'plr'+i+"_preview" 
-		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(title.geometry.parameters.width,title.geometry.parameters.height),
-			new THREE.MeshBasicMaterial({color:0xffffff}))
-		var blkBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.geometry.parameters.width,caption.geometry.parameters.height),
-			new THREE.MeshBasicMaterial({color:0x000000}))
 		
+		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(title.geometry.parameters.width,title.geometry.parameters.height),
+			new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0}))
+		var blkBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.geometry.parameters.width,65),
+			new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0}))
+		var dir = i===0 ? 1: i===1 ? 1: i===2 ? -1: -1
+		blkBack.position.set(dir*-xlats[i].x/5,42,dir*-xlats[i].z/5)
+		whtBack.position.set(dir*-xlats[i].x/5,0,dir*-xlats[i].z/5)
 
+		whtBack.scale.set(0.1,1,0.1)
+		blkBack.scale.set(0.1,1,0.1)
 		title.add(whtBack)
 		caption.add(blkBack)
-		
+
+		whtBack.name = 'whtBack'
+		blkBack.name = 'blkBack'
+		title.name = 'title'
+		caption.name = 'caption'
+		plr_prev.name = 'plr'+i+"_preview" 
 		pedestal.add(plr_prev)
 		plr_prev.rotation.y = rads(-45)+(i*rads(90))
 		plr_prev.position.set(xlats[i].x,1,xlats[i].z)
-		// plr_prev.scale.set(0.5,0.5,0.5)
 	}
 }
 
@@ -204,7 +235,7 @@ if(mode==='explore'){
 		return
 	}else{
 		selectProjection(selectedProjection,false)
-		selectedProjection = undefined
+		selectedProjection = 0
 		mode='pillar'
 	}		
 }
@@ -221,6 +252,7 @@ function clickRotate(){
 						autoRotate(0)
 					}else{
 						if(mode==='explore'){
+							browse(rotationIndex[0])
 							delve(rotationIndex[0],"pillar")
 						}
 					}
@@ -305,48 +337,56 @@ function browse(obj){ //rotation driven info changes
 	if(obj!==lookingAt){
 		if(lookingAt!==undefined){
 			var fadeOut = pedestal.getObjectByName(lookingAt+'_preview')
+			var fadetitle = fadeOut.getObjectByName('title')
+			var fadecaption = fadetitle.getObjectByName('caption')
 			if(mode==="explore"){
 				move({y:1},fadeOut,500)
 				growShrink({s:0.75},fadeOut,500)
 			}
-			fade(false,fadeOut.children[0],500)
-			fade(false,fadeOut.children[0].children[0],500)
+			fade(false,fadetitle,500,0)
+			fade(false,fadetitle.getObjectByName('whtBack'),500,0)
+			stretch({x:0.1,y:1,z:0.1},fadetitle.getObjectByName('whtBack'),500,0)
+			fade(false,fadecaption,500,0)
+			fade(false,fadecaption.getObjectByName('blkBack'),500,0)
+			stretch({x:0.1,y:1,z:0.1},fadecaption.getObjectByName('blkBack'),500,0)
 		}
 	}
 	var preview = pedestal.getObjectByName(obj+'_preview')
+	var prevtitle = preview.getObjectByName('title')
+	var prevcaption = prevtitle.getObjectByName('caption')
 	if(mode==='explore'){
 		move({y:-1},preview,500)
 		growShrink({s:1},preview,500)
 	}
-	fade(true,preview.children[0],500)
-	fade(true,preview.children[0].children[0],500)
+	fade(true,prevtitle,500,0)
+	fade(true,prevcaption,500,0)
 
 	lookingAt = obj
 	if(mode==="explore"){
-		// var text = document.getElementById('infoBottom')
-		// text.textContent = data[dataset].pts[index].name
+
 	}
-	else if(mode==="pillar"){
+	else if(mode==="pillar"||mode==='detail'){
+		if(selectedProjection!=0){
+		selectProjection(selectedProjection,false)
+		}
 		collapse(selectedPillar)
+		selectedProjection = 0
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
 		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)},500)
-	}
-	else if(mode==='detail'){
-		selectedProjection = ''
-		collapse(selectedPillar)
-		obj = seseme.getObjectByName(obj)
-		deploy(obj)
-		selectedPillar = obj
-		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)},500)
+		
+		fade(true,prevtitle.getObjectByName('whtBack'),500,0)
+		stretch({x:1,y:1,z:1},prevtitle.getObjectByName('whtBack'),500,0)
+		fade(true,prevcaption.getObjectByName('blkBack'),500,200)
+		stretch({x:1,y:1,z:1},prevcaption.getObjectByName('blkBack'),500,200)
 	}
 }
 function delve(obj){ //view depth on selected object
 	if(mode==="explore"){
 		obj = seseme.getObjectByName(obj)
-		previewShift(true,obj.position.y)
 		selectedPillar = obj
+		previewShift(true,obj.position.y)
 		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)})
 		deploy(obj)
 	}else if(mode==="pillar"){
@@ -354,7 +394,7 @@ function delve(obj){ //view depth on selected object
 		obj = selectedPillar.getObjectByName(obj)
 		selectProjection(obj, true)
 	}else if(mode==="detail"){
-		if(selectedProjection!=undefined){
+		if(selectedProjection!=0){
 			selectProjection(selectedProjection,false)
 		}
 		obj = selectedPillar.getObjectByName(obj)
@@ -364,9 +404,12 @@ function delve(obj){ //view depth on selected object
 function backOut(){
 	if(mode=="pillar"){
 		collapse(selectedPillar)
+		if(selectedProjection!=0){
+		selectProjection(selectedProjection,false)
+		}
 		previewShift(false)
 		selectedPillar = undefined
-		selectedProjection = undefined
+		selectedProjection = 0
 		mode = 'explore'
 		moveCam(defaultPosZoom)
 	}
@@ -395,12 +438,12 @@ function deploy(obj){ //deploys projections AND symbolgeo
 	// })
 
 	items = [].slice.call(obj.getObjectByName('projections').children)
-	items.forEach(function(ele){
+	items.forEach(function(ele,i){
 		var current = {x:ele.position.x, y:ele.position.y, z:ele.position.z, 
 			opacity:ele.material.opacity, sx:ele.scale.x, sy:ele.scale.y, sz:ele.scale.z}
 		var expand = new TWEEN.Tween(current)
 		expand.to({x:ele.expand.x,y:ele.expand.y,z:ele.expand.z,opacity:0.85,
-			sx:1,sy:1,sz:1},850)
+			sx:1,sy:1,sz:1},700)
 		expand.onUpdate(function(){
 			ele.position.x = current.x
 			ele.position.y = current.y
@@ -409,6 +452,7 @@ function deploy(obj){ //deploys projections AND symbolgeo
 			ele.scale.set(current.sx,current.sy,current.sz)
 		})
 		expand.easing(TWEEN.Easing.Quintic.Out)
+		expand.delay(50*i)
 		expand.start()
 		expand.onComplete(function(){
 		})
@@ -417,6 +461,7 @@ function deploy(obj){ //deploys projections AND symbolgeo
 	mode = 'pillar'	
 }
 function collapse(obj){ //collapses projections
+	//delete symbolgeo after it goes down
 	items = [].slice.call(obj.getObjectByName('projections').children)
 	items.forEach(function(ele,i){
 		//force finish/stop tween on ele!!!!
@@ -440,18 +485,29 @@ function selectProjection(obj, onoff){
 	var current = {x:obj.position.x,y:obj.position.y,z:obj.position.z,s: obj.scale.x, opacity: obj.material.opacity}
 	var select = new TWEEN.Tween(current)
 	var bottom = document.getElementById('infoBottom')
+	var subs = [].slice.call(obj.children)
+
 	if(onoff){
 		mode = 'detail'
 		selectedProjection = obj
 		var adj = obj.parent.adjust
-		select.to({x:obj.expand.x+adj.x,y:obj.expand.y+adj.y,z:obj.expand.z+adj.z,s: 1.5, opacity: 1},450)
-		select.onComplete(function(){
-			console.log('detail mode @ ' +obj.name)
-		})
-		Velocity(bottom,{height:'6rem'})
+		select.to({x:obj.expand.x+adj.x,y:obj.expand.y+adj.y,z:obj.expand.z+adj.z,s: 1.3, opacity: 1},450)
+		// Velocity(bottom,{height:'6rem'})
+		if(subs.length>0){
+			subs.forEach(function(ele,i){
+				fade(true,ele,600,0)
+				move(ele.expand,ele,600,30*i)
+			})
+		}
 
 	}else{
 		select.to({x:obj.expand.x,y:obj.expand.y, z:obj.expand.z, s: 1, opacity: 0.85},450)
+		if(subs.length>0){
+			subs.forEach(function(ele,i){
+				fade(false,ele,400,0)
+				move(ele.defpos,ele,600)
+			})
+		}
 	}
 	select.onUpdate(function(){
 		obj.scale.set(current.s,current.s,current.s)
@@ -464,18 +520,41 @@ function selectProjection(obj, onoff){
 	select.start()
 }
 function previewShift(up){ //previews translate depending on explore/pillar modes
-	if(up){for(var i=0;i<4;i++){
+	var index = selectedPillar.name.replace('plr','')
+	if(up){
+		// console.log(index)
+		for(var i=0;i<4;i++){
 			var prevs = pedestal.getObjectByName('plr'+i+'_preview')
+			var title = prevs.getObjectByName('title')
 			var plrht = seseme.getObjectByName('plr'+i).position.y
 			move({y:1+plrht},prevs,800)
 			growShrink({s:0.55},prevs,800)
-			colorize({r:0,g:0,b:0},prevs.children[0],800)
-	}}else{ //shift previews back
+			colorize({r:0,g:0,b:0},title,800)
+			if(i==index){
+				var wht = title.getObjectByName('whtBack')
+				var blk = prevs.getObjectByName('caption').getObjectByName('blkBack')
+				fade(true,wht,800,0)
+				fade(true,blk,800,0)
+				stretch({x:1,y:1,z:1},wht,800,0)
+				stretch({x:1,y:1,z:1},blk,800,0)
+			}
+			
+		}
+	}else{ //shift previews back
 		for(var i=0;i<4;i++){
 			var prevs = pedestal.getObjectByName('plr'+i+'_preview')
+			var title = prevs.getObjectByName('title')
 			growShrink({s:1},prevs,800)
 			move({y:0},prevs,800)
-			colorize({r:255,g:255,b:255},prevs.children[0],800)
+			colorize({r:255,g:255,b:255},title,800)
+			if(i==index){
+				var wht = title.getObjectByName('whtBack')
+				var blk = prevs.getObjectByName('caption').getObjectByName('blkBack')
+				fade(false,wht,800,0)
+				fade(false,blk,800,0)
+				stretch({x:0.1,y:1,z:0.1},wht,800,0)
+				stretch({x:0.1,y:1,z:0.1},blk,800,0)
+			}
 		}	
 	}
 }
@@ -487,12 +566,12 @@ function degs(rads){ //get degrees for my comprehension
 function rads(degs){ //get radians for THREE instructions
 	return degs*(Math.PI/180)
 }
-function fade(inOut,tgt,spd){
+function fade(inOut,tgt,spd,delay){
 	var current = {opacity: tgt.material.opacity}
 	var opTween = new TWEEN.Tween(current)
-	if(inOut){opTween.to({opacity: 1},spd)}else{opTween.to({opacity: 0},spd)}
+	if(inOut){opTween.to({opacity: 1},spd+delay)}else{opTween.to({opacity: 0},spd+delay)}
 	opTween.onUpdate(function(){tgt.material.opacity = current.opacity})
-	opTween.easing(TWEEN.Easing.Cubic.InOut)
+	opTween.easing(TWEEN.Easing.Cubic.Out)
 	opTween.start()
 }
 function colorize(col,tgt,spd){
@@ -504,10 +583,10 @@ function colorize(col,tgt,spd){
 		tgt.material.color.g = current.g
 		tgt.material.color.b = current.b
 	})
-	colorTween.easing(TWEEN.Easing.Cubic.InOut)
+	colorTween.easing(TWEEN.Easing.Cubic.Out)
 	colorTween.start()
 }
-function move(pos,tgt,spd){
+function move(pos,tgt,spd,delay){
 	var current = {x:tgt.position.x, y:tgt.position.y, z:tgt.position.z}
 	var moveTween = new TWEEN.Tween(current)
 	moveTween.to(pos,spd)
@@ -516,7 +595,8 @@ function move(pos,tgt,spd){
 		tgt.position.y = current.y
 		tgt.position.z = current.z
 	})
-	moveTween.easing(TWEEN.Easing.Cubic.InOut)
+	moveTween.easing(TWEEN.Easing.Cubic.Out)
+	if(delay!=undefined){moveTween.delay(delay)}
 	moveTween.start()
 }
 function rotate(rot,tgt,spd){
@@ -528,9 +608,8 @@ function rotate(rot,tgt,spd){
 		tgt.rotation.y = current.y
 		tgt.rotation.z = current.z
 	})
-	rotTween.easing(TWEEN.Easing.Cubic.InOut)
+	rotTween.easing(TWEEN.Easing.Cubic.Out)
 }
-
 function growShrink(scale,tgt,spd){
 	var current = {s: tgt.scale.x}
 	var scaleTween = new TWEEN.Tween(current)
@@ -538,6 +617,16 @@ function growShrink(scale,tgt,spd){
 	scaleTween.onUpdate(function(){
 		tgt.scale.set(current.s,current.s,current.s)
 	})
-	scaleTween.easing(TWEEN.Easing.Cubic.InOut)
+	scaleTween.easing(TWEEN.Easing.Cubic.Out)
 	scaleTween.start()
+}
+function stretch(scale,tgt,spd,delay){
+	var current = {x: tgt.scale.x,y:tgt.scale.y,z:tgt.scale.z}
+	var stretchTween = new TWEEN.Tween(current)
+	stretchTween.to(scale,spd+delay)
+	stretchTween.onUpdate(function(){
+		tgt.scale.set(current.x,current.y,current.z)
+	})
+	stretchTween.easing(TWEEN.Easing.Cubic.InOut)
+	stretchTween.start()
 }

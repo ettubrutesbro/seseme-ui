@@ -76,7 +76,8 @@ function setup(){
 
 	function sesemeSetup(){ //ground plane is also added here
 		//materials for seseme & orb 
-		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, specular: 0x9e6f49, emissive: 0x101011})
+		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, 
+		  	specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
@@ -97,19 +98,19 @@ function setup(){
 		   		pedestal.add(pedestalo)
 		    })
 
-		    pedestalp1 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
 		    pedestalp1.rotation.x = -90*(Math.PI/180)
 		    pedestalp1.position.set(-1.5,0,6)
-		    pedestalp2 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
 		    pedestalp2.rotation.x = -90*(Math.PI/180)
 			pedestalp2.rotation.z = 90*(Math.PI/180)
 		    pedestalp2.position.set(5.5,0,-1)
 
-		    pedestalp3 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp3 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
 		    pedestalp3.rotation.x = -90*(Math.PI/180)
 		    pedestalp3.rotation.z = 180*(Math.PI/180)
 		    pedestalp3.position.set(-1.5,0,-8)
-		    pedestalp4 = new THREE.Mesh(new THREE.PlaneGeometry(12,2), promtl)
+		    pedestalp4 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
 		    pedestalp4.rotation.x = -90*(Math.PI/180)
 		    pedestalp4.rotation.z = 90*(Math.PI/180)
 		    pedestalp4.position.set(-8.5,0,-1)
@@ -202,12 +203,12 @@ function setup(){
 		    })
 			var plrBprojections = {
 		  	origin: {x:8, y:2, z:8, ry: 45},
-		  	modes: ['grade','info','stats'],
+		  	modes: ['info','stats','grade'],
 		  	adjust: {x:1,y:1,z:1},
 		  	xyz: [
-					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8},
-					{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
-					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11}
+		  			{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
+					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
+					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8}
 				]
 			}
 			initProjections(plr1,plrBprojections)
