@@ -14,7 +14,7 @@ rotationIndex = ['plr0','plr1','plr2','plr3'],
 rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],distCtr,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], 
-tgtHts = [{y: 8}, {y: 6}, {y: 10}, {y: 2}],
+tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
 mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
@@ -174,8 +174,8 @@ function setup(){
 				{dimX:2.75, dimY:3.25, x:-1.5, y:2, z:5},
 				]
 			}
-		  // initProjections(plr0,plrAprojections)
-		  // initProjections(plr3,plrAprojections)
+		  initProjections(plr0,plrAprojections)
+		  initProjections(plr3,plrAprojections)
 		  updatePillars(plr0)
 		  updatePillars(plr3)
 		
@@ -212,11 +212,11 @@ function setup(){
 					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8}
 				]
 			}
-			// initProjections(plr1,plrBprojections)
-			// initProjections(plr2,plrBprojections)
+			initProjections(plr1,plrBprojections)
+			initProjections(plr2,plrBprojections)
 			updatePillars(plr1)
 			 updatePillars(plr2)
-			 // populateProjections()
+			 populateProjections()
 		  })
 
 		  //the orb is generated here (adjust segments for smooth)
