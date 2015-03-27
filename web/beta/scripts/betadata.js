@@ -7,7 +7,7 @@ var data = {
 			value: 86,
 			facts: ''},
 			{name: 'Memorial Union',
-			value: 0,
+			value: 49,
 			facts: ''},
 			{name: 'The SCC',
 			value: 99,
@@ -60,8 +60,7 @@ var vocab = {
 	modifiers: {
 		more: ['totally','pretty','rather','decidedly','simply','remarkably','absolutely','resolutely','resoundingly','thoroughly','straight'],
 		mid: ['kinda','basically','sorta','probably','approaching','decently','likely','just','actually'],
-		less: ['barely','hardly','almost','nearly','technically','nearing'],
-		neg: ['not','sub-','below','non','anti']
+		less: ['barely','hardly','almost','nearly','technically','nearing']
 	},
 	descriptors: {
 		good: ['efficient','acceptable','sustainable','cool','fine','solid'],
@@ -74,17 +73,17 @@ var vocab = {
 			good: {
 				more: ['real mvp','building #lifegoals','role model','*breathes heavily*'],
 				mid: ['good job','correct direction','encouraging signs','actually good'],
-				less: ['not trash','doing better','almost there','nearly there','almost acceptable']
+				less: ['sub efficient','not trash','doing better','almost there','nearly there','almost acceptable']
 			},
 			ok: {
-				more: ['not quite','what ever','needs effort','effort required','could improve','not efficient','needs work','please improve'],
+				more: ['','not quite','what ever','needs effort','effort required','could improve','not efficient','needs work','please improve'],
 				mid: ['needs intervention','what ever','basic building','simply mediocre','absolutely average','mildly unfortunate','lame sauce','snooze fest','hello mediocrity','aspiration -less','average harmful','low efficiency'],
 				less: ['congratulations (not)','needs effort','effort required','thoroughly uninspiring','normally unfortunate','mildly distasteful','normally harmful','just unfortunate','*furrowed eyebrows*','weak sauce','potential joke','kinda harmful','poor efficiency']
 			},
 			bad: {
 				less: ['hello pollution','anti efficient','crap performance','planet -harming','dude c\'mon','frown inducer','dubious building','no thanks'],
 				mid: ['goodbye flowers','wow #smh','face palm','globe warmed','dude why','c\'mon now','weak af','nature abuse','energy glutton','abyss gazing','pretty wasteful','plz stop','inspires nihilism','actually garbage'],
-				more: ['verging tears','sad animals','disown now','self destruct','omg sux','just... ...no','weeping planet','enviro suicide','nature antagonist','earth\'s nemesis','nature\'s nemesis','so wasteful','']
+				more: ['verging tears','sad animals','disown now','self destruct','omg sux','just... ...no','weeping planet','enviro suicide','nature antagonist','earth\'s nemesis','nature\'s nemesis','so wasteful']
 			},
 			awful: {
 				less: ['epic waste','wasteland harbinger','deserves demolition','bulldoze immediately','abort building','post apocalypse','demolish now','*sad violin*','epic waste','<<see image','omg sux'],

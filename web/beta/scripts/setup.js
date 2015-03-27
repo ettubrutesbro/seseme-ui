@@ -14,7 +14,7 @@ rotationIndex = ['plr0','plr1','plr2','plr3'],
 rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],distCtr,
 //pillar up and down movement
 plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], 
-tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
+tgtHts = [{y: 8}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
 mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
@@ -76,10 +76,12 @@ function setup(){
 	function sesemeSetup(){ //ground plane is also added here
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, 
-		  	specular: 0x9e6f49, emissive: 0x101011})
+		  	specular: 0x9e6f49, emissive: 0x101011}) 
+// sesememtl = new THREE.MeshLambertMaterial({color: 0x80848e, shininess: 21, 
+// 		  	specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/blobshadow.svg')})
-		  orbmtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 8, specular: 0x272727})
+		  orbmtl = new THREE.MeshPhongMaterial({color: 0xff6666, emissive: 0x771100,shininess: 1, specular: 0x272727})
 		  promtl = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true,opacity:0.75})
 		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 10})
 		  
@@ -167,13 +169,13 @@ function setup(){
 		  	modes: ['grade','info','stats'],
 		  	adjust: {x:-1, y:1, z:1},
 		  	xyz: [
-				{dimX:2.75, dimY:3.25, x:1.5, y:6.75, z:8.5},
-				{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11.5},
-				{dimX:2.75, dimY:3.25, x:-1.5, y:1.5, z:5},
+				{dimX:2.75, dimY:3.25, x:1.5, y:7, z:8.5},
+				{dimX:2.75, dimY:3.25, x:5, y:2, z:11.5},
+				{dimX:2.75, dimY:3.25, x:-1.5, y:2, z:5},
 				]
 			}
-		  initProjections(plr0,plrAprojections)
-		  initProjections(plr3,plrAprojections)
+		  // initProjections(plr0,plrAprojections)
+		  // initProjections(plr3,plrAprojections)
 		  updatePillars(plr0)
 		  updatePillars(plr3)
 		
@@ -210,11 +212,11 @@ function setup(){
 					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8}
 				]
 			}
-			initProjections(plr1,plrBprojections)
-			initProjections(plr2,plrBprojections)
+			// initProjections(plr1,plrBprojections)
+			// initProjections(plr2,plrBprojections)
 			updatePillars(plr1)
 			 updatePillars(plr2)
-			 populateProjections()
+			 // populateProjections()
 		  })
 
 		  //the orb is generated here (adjust segments for smooth)

@@ -7,18 +7,21 @@ function getValues(){
 function getVocab(mod, desc){
 	var phraseType = dice(6,1)
 	if(phraseType < 4){
-		var modifier = vocab.modifiers[mod][dice(vocab.modifiers[mod].length,0)]
-		var descriptor = vocab.descriptors[desc][dice(vocab.descriptors[desc].length,0)]
-		return modifier + " " + descriptor
-	}else if(phraseType === 4){
-		var specific = vocab.specifics[desc][mod][dice(vocab.specifics[desc][mod].length,0)]
-		return specific
-	}else if(phraseType === 5){
-		return "negatory " + mod + " " + desc
-	}else if(phraseType === 6){
-		return desc + " noun"
+		console.log('modifier descriptor')
+		var modifier = vocab.modifiers[mod][(dice(vocab.modifiers[mod].length,0))]
+		var descriptor = vocab.descriptors[desc][(dice(vocab.descriptors[desc].length,0))]
+		return [modifier,descriptor]
+	}else if(phraseType == 4){
+		console.log('specific')
+		var which = dice(vocab.specifics[data[dataset].specificsType][desc][mod].length,0)
+		var specific = vocab.specifics[data[dataset].specificsType][desc][mod][which]
+		return specific.split(' ')
+	}else if(phraseType >= 5){
+		console.log('descriptive noun')
+		var modifier = vocab.descriptors[desc][dice(vocab.descriptors[desc].length,0)]
+		var noun = vocab.nouns[data[dataset].nounType][dice(vocab.nouns[data[dataset].nounType].length,0)]
+		return [modifier,noun]
 	}
-	// var options = vocab.
 }	
 function assess(){
 	allValues.forEach(function(ele,ite){
@@ -47,7 +50,6 @@ function assess(){
 				}
 				grades[ite].rel = rel
 				
-				
 				grades[ite].icon = new THREE.ImageUtils.loadTexture('assets/'+el.name+'.png')
 				grades[ite].words=getVocab(rel,el.name) 
 			}
@@ -67,7 +69,6 @@ function updatePillars(plr){
 }
 
 // labeling and projection initialization (styling happens here)
-
 
 function initProjections(tgt,atr){ 
 	var projections = new THREE.Group()
@@ -96,42 +97,51 @@ function populateProjections(){ //pass appropriate imagery & numbers to plr proj
 		var projs = plr.getObjectByName('projections')
 		var gradeIcon = projs.getObjectByName('plr'+i+'_grade')
 		var statIcon = projs.getObjectByName('plr'+i+'_stats')
+
 		gradeIcon.material.map = grades[i].icon
 
-		gradeIcon.more = [] //2 canvases for text
+		for(var it = 0; it<2; it++){
+			var gWordCvs = document.createElement('canvas'), gWordCtx = gWordCvs.getContext('2d'),
+			gWordTex = new THREE.Texture(gWordCvs), gradeWord 
+			gWordTex.needsUpdate = true; gWordCvs.width = grades[i].words[it].length * 38; gWordCvs.height = 90
+			gWordCtx.fillStyle = '#FCFF92'; gWordCtx.fillRect(0,0,gWordCvs.width,gWordCvs.height)
+			gWordCtx.fillStyle = "black"; gWordCtx.font = 'normal 500 48pt Fira Sans';gWordCtx.textAlign='center'
+			gWordCtx.fillText(grades[i].words[it],gWordCvs.width/2,65)
+			gradeWord = new THREE.Mesh(new THREE.PlaneBufferGeometry(gWordCvs.width/100,gWordCvs.height/100),
+				new THREE.MeshBasicMaterial({map: gWordTex,transparent: true, opacity: 0}))
+			gradeWord.position.set(0,-2,-it*0.5)
+			gradeWord.defpos = {x:0,y:-2,z:-it*0.5}
+			gradeWord.expand = {x:0,y:-2-(it*1.2),z:0.45}
+			gradeWord.name = 'word_'+it
+			gradeIcon.add(gradeWord)
+		}
 
 		var statCvs = document.createElement('canvas'), statCtx = statCvs.getContext('2d'),
-		statTex = new THREE.Texture(statCvs), typeSize = "144pt"
-		statTex.needsUpdate = true
-		statCvs.height = 300
-		statCtx.fillStyle = grades[i].color
-		statCtx.fillRect(0,0,300,300)
-		statCtx.fillStyle = 'black'
-		if(allValues[i]>99){
-			typeSize="120pt"
-		}
+		statTex = new THREE.Texture(statCvs), typeSize = "144pt"; statTex.needsUpdate = true;
+		statCvs.height = 300; statCtx.fillStyle = grades[i].color; statCtx.fillRect(0,0,300,300);
+		statCtx.fillStyle = 'black'; if(allValues[i]>99){typeSize="120pt"}
 		statCtx.font = 'normal 400 '+typeSize+' Source Serif Pro'
 		statCtx.textAlign = 'center'
 		statCtx.fillText(allValues[i],150,200)
 		statIcon.material.map = statTex
 
-		for(var it = 0; it<data[dataset].unit.length; it++){
+		for(var ite = 0; ite<data[dataset].unit.length; ite++){
 			var stMoreCvs = document.createElement('canvas'), stMoreCtx = stMoreCvs.getContext('2d'),  
 			stMoreTex = new THREE.Texture(stMoreCvs), mesh
 			stMoreTex.needsUpdate = true
 			stMoreCvs.height = 85
-			stMoreCvs.width = data[dataset].unit[it].length * 29.5
+			stMoreCvs.width = data[dataset].unit[ite].length * 29.5
 			stMoreCtx.fillStyle = grades[i].color
 			stMoreCtx.fillRect(0,0,stMoreCvs.width,stMoreCvs.height)
 			stMoreCtx.fillStyle = 'black'
 			stMoreCtx.font = 'normal 500 36pt Fira Sans'
-			stMoreCtx.fillText(data[dataset].unit[it],20,60)
+			stMoreCtx.fillText(data[dataset].unit[ite],20,60)
 			mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(stMoreCvs.width/100,stMoreCvs.height/100),
 				new THREE.MeshBasicMaterial({map: stMoreTex, transparent: true,opacity:0}))
-			mesh.position.set(0,0.5-it*1.1,-0.25)
-			mesh.defpos = {x:0,y:0.5-it*1.1,z:-0.25}
-			mesh.expand = {x:1.55+stMoreCvs.width/200,y:0.5-it*1.1,z:-0.25}
-			mesh.name = "sub"+it
+			mesh.position.set(0,0.5-ite*1.1,-0.25)
+			mesh.defpos = {x:0,y:0.5-ite*1.1,z:-0.25}
+			mesh.expand = {x:1.55+stMoreCvs.width/200,y:0.5-ite*1.1,z:-0.25}
+			mesh.name = "sub"+ite
 			statIcon.add(mesh)
 		}
 	}	
