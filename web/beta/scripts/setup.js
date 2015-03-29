@@ -1,5 +1,5 @@
 
-var dataset = 'ucd_bldg_nrg'
+var dataset = 'arc_saver', screenSaverOn = true
 
 var allValues = [], grades = [{},{},{},{}]
 
@@ -11,9 +11,8 @@ raycast, mousePos = new THREE.Vector2(),
 
 //3d rotation utilities
 rotationIndex = ['plr0','plr1','plr2','plr3'], 
-rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],distCtr,
+rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],
 //pillar up and down movement
-plrHts = [{y: 0}, {y: 0}, {y: 0}, {y: 0}], 
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
 defaultPosZoom, //default camera positioning 
@@ -21,7 +20,7 @@ mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
-highlightsOK = true, autoRotating = false, touchRotating = false, rotAmt = 0,
+highlightsOK = true, autoRotating = false, touchRotating = false, rotAmt = 0, 
 //experimental usage metrics
 userActions = [], useTime = 0 , degreesRotated = 0 
 
@@ -32,6 +31,9 @@ function setup(){
 	sesemeSetup()
 	eventListeners()
 	syncToData()
+
+	// setTimeout(screenSaver(true),1000)
+	// screenSaver(true)
 	// initExperiment()
 
 	function cameraSetup(){
@@ -92,12 +94,6 @@ function setup(){
 		    pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
 		    pedestal.name = "pedestal"
 		    seseme.add(pedestal)
-		    loader.load("assets/pedestal_outline.js", function(g){
-		    	outlines[0] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide})
-		   		var pedestalo = new THREE.Mesh(g, outlines[0])
-		   		pedestalo.applyMatrix( new THREE.Matrix4().makeTranslation(-0, -0.5, 0))
-		   		pedestal.add(pedestalo)
-		    })
 
 		    pedestalp1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
 		    pedestalp1.rotation.x = -90*(Math.PI/180)
@@ -164,16 +160,7 @@ function setup(){
 		      plr0.add(plr0o)
 		      plr3.add(plr3o)
 		    })
-		  var plrAprojections = {
-		  	origin: {x:2, y:2, z:8, ry: -45},
-		  	modes: ['grade','info','stats'],
-		  	adjust: {x:-1, y:1, z:1},
-		  	xyz: [
-				{dimX:2.75, dimY:3.25, x:1.5, y:7, z:8.5},
-				{dimX:2.75, dimY:3.25, x:5, y:2, z:11.5},
-				{dimX:2.75, dimY:3.25, x:-1.5, y:2, z:5},
-				]
-			}
+		  
 		  initProjections(plr0,plrAprojections)
 		  initProjections(plr3,plrAprojections)
 		  updatePillars(plr0)
@@ -202,21 +189,11 @@ function setup(){
 		      plr1.add(plr1o)
 		      plr2.add(plr2o)
 		    })
-			var plrBprojections = {
-		  	origin: {x:8, y:2, z:8, ry: 45},
-		  	modes: ['info','stats','grade'],
-		  	adjust: {x:1,y:1,z:1},
-		  	xyz: [
-		  			{dimX:2.75, dimY:3.25, x:11, y:1.5, z:5},
-					{dimX:2.75, dimY:3.25, x:5, y:1.5, z:11},
-					{dimX:2.75, dimY:3.25, x:8, y:6.75, z:8}
-				]
-			}
+			
 			initProjections(plr1,plrBprojections)
 			initProjections(plr2,plrBprojections)
 			updatePillars(plr1)
 			 updatePillars(plr2)
-			 populateProjections()
 		  })
 
 		  //the orb is generated here (adjust segments for smooth)
@@ -263,9 +240,11 @@ function setup(){
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
-			mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
-			mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
-			clickedSeseme()
+			if(!screenSaverOn){
+				mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
+				mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
+				clickedSeseme()
+			}
 		})
   		hammerSESEME.on('pan',function(evt){
 	  	if(!autoRotating){	
@@ -291,7 +270,7 @@ function setup(){
 		  			rotDecel = new TWEEN.Tween(start)
 		  			rotDecel.to({speed:0},diff+400)
 		  			rotDecel.onUpdate(function(){
-		  				seseme.rotation.y-=(start.speed * (Math.PI/180))
+		  				seseme.rotation.y-=(start.speed * (Math.PI/90))
 		  				realRotation()
 		  				rotationOrder(getNearest90())
 		  				if(last90!=anglesIndex[0]){

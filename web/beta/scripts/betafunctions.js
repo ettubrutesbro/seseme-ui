@@ -3,6 +3,10 @@ function getValues(){
 	data[dataset].pts.forEach(function(ele,ite){
 		allValues[ite] = ele.value
 	})
+	var highVal = allValues.indexOf(Math.max.apply(Math , allValues))
+	allValues.forEach(function(ele,i,arr){
+		tgtHts[i].y = (ele/ arr[highVal]) * 12
+	})
 }
 function getVocab(mod, desc){
 	var phraseType = dice(6,1)
@@ -25,7 +29,7 @@ function getVocab(mod, desc){
 }	
 function assess(){
 	allValues.forEach(function(ele,ite){
-		criteria[dataset].forEach(function(el,it){
+		data[dataset].criteria.forEach(function(el,it){
 			if(ele>=el.min&&ele<=el.max){
 				grades[ite].what = el.name
 				grades[ite].color = el.color
@@ -49,8 +53,6 @@ function assess(){
 					}
 				}
 				grades[ite].rel = rel
-				
-				grades[ite].icon = new THREE.ImageUtils.loadTexture('assets/'+el.name+'.png')
 				grades[ite].words=getVocab(rel,el.name) 
 			}
 		})
@@ -59,16 +61,18 @@ function assess(){
 function updatePillars(plr){
 	var index = plr.name.replace('plr','')
 	spd = Math.abs((plr.position.y - tgtHts[index].y)*100) + 400
-	plrTween = new TWEEN.Tween(plrHts[index])
+	var current = {y: plr.position.y}
+	plrTween = new TWEEN.Tween(current)
 	plrTween.to(tgtHts[index],spd)
 	plrTween.easing(TWEEN.Easing.Cubic.InOut)
 	plrTween.onUpdate(function(){
-		plr.position.y = plrHts[index].y
+		plr.position.y = current.y
 	})
 	plrTween.start()
 }
 
 // labeling and projection initialization (styling happens here)
+
 
 function initProjections(tgt,atr){ 
 	var projections = new THREE.Group()
@@ -76,6 +80,82 @@ function initProjections(tgt,atr){
     projections.name = "projections"
     for(var i = 0; i<atr.xyz.length; i++){
     	var mtl = new THREE.MeshBasicMaterial({transparent:true,opacity:0})
+    	var subs = new THREE.Group()
+    	subs.name = 'subs'
+
+    	//DIFFERENT MATERIALS ARE APPLIED FOR PROJECTION TYPES
+    	if(atr.modes[i]==='info'){ //materials for info mode: 
+			mtl.map = THREE.ImageUtils.loadTexture('assets/info.png')
+			for(var it = 0; it<3; it++){
+				var factCvs = document.createElement('canvas'), factCtx = factCvs.getContext('2d'),
+				factTex = new THREE.Texture(factCvs), factPlane; factTex.needsUpdate = true
+				factCvs.width = 29 * data[dataset].pts[index].info[it].length; factCvs.height = 120
+				factCtx.fillStyle = "#172B54"; factCtx.fillRect(0,0,factCvs.width, factCvs.height); 
+				factCtx.fillStyle = "white"; factCtx.font = "normal 500 36pt Fira Sans"; factCtx.textAlign = 'center'
+				factCtx.fillText(data[dataset].pts[index].info[it],factCvs.width/2,80)
+				factPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(factCvs.width/100, factCvs.height/100),
+					new THREE.MeshBasicMaterial({map: factTex, transparent: true, opacity: 0}))
+				subs.add(factPlane)
+				factPlane.position.set(factCvs.width/100,-2.5-it*1.2,0)
+				factPlane.defpos={x: factCvs.width/100, y:-2.5-it*1.2, z:0}
+				factPlane.expand={x: -factCvs.width/200+1.25, y:-2.5-it*1.2, z:0}
+
+			}
+		}else if(atr.modes[i]=='grade'){
+			mtl.map = THREE.ImageUtils.loadTexture('assets/grade_'+grades[index].what+'.png')
+			for(var it = 0; it<2; it++){
+				var gWordCvs = document.createElement('canvas'), gWordCtx = gWordCvs.getContext('2d'),
+				gWordTex = new THREE.Texture(gWordCvs), gradeWord 
+				gWordTex.needsUpdate = true; gWordCvs.width = 350; gWordCvs.height = 150
+				gWordCtx.fillStyle = 'black'; gWordCtx.fillRect(0,0,gWordCvs.width,gWordCvs.height)
+				var fontSize = grades[index].words[it].length > 8? "36pt" : grades[index].words[it].length <= 4? "50pt": "42pt"
+				gWordCtx.fillStyle = "white"; gWordCtx.font = 'normal 500 ' +fontSize+ ' Fira Sans';
+				gWordCtx.textAlign= 'center'; var dir = it===0? -1: 1
+				gWordCtx.fillText(grades[index].words[it],175,100)
+				gradeWord = new THREE.Mesh(new THREE.PlaneBufferGeometry(gWordCvs.width/100,gWordCvs.height/100),
+					new THREE.MeshBasicMaterial({map: gWordTex,transparent: true, opacity: 0}))
+				gradeWord.position.set(dir*gWordCvs.width/100-(dir),-1,-0.5)
+				gradeWord.defpos = {x:dir*gWordCvs.width/100-(dir),y:-1,z:-0.5}
+				gradeWord.expand = {x:dir*gWordCvs.width/100-(0.5*dir),y:0.75,z:0.45}
+				gradeWord.name = 'word_'+it
+				subs.add(gradeWord)
+			}
+		}else if(atr.modes[i]==='stats'){ //materials for stats projection: shape + numbers
+			var statCvs = document.createElement('canvas'), statCtx = statCvs.getContext('2d'),
+			statTex = new THREE.Texture(statCvs), typeSize = "100pt"; statTex.needsUpdate = true;
+			statCvs.height = 300; statCtx.fillStyle = grades[index].color; statCtx.beginPath();
+			if(grades[index].what == "good"){
+				statCtx.moveTo(150,10); statCtx.lineTo(270,80); statCtx.lineTo(270,220); 
+				statCtx.lineTo(150,290); statCtx.lineTo(30,220); statCtx.lineTo(30,80)
+			}
+			else if(grades[index].what == "ok"){
+				statCtx.moveTo(150,0); statCtx.lineTo(300,150); statCtx.lineTo(150,300); statCtx.lineTo(0,150)
+			}else if(grades[index].what == "bad"){
+				statCtx.moveTo(300,225); statCtx.lineTo(280,255); statCtx.lineTo(20,255); statCtx.lineTo(0,225); statCtx.lineTo(135,0); statCtx.lineTo(165,0)
+			}else if(grades[index].what == "awful"){
+			 	statCtx.moveTo(300,98); statCtx.lineTo(280,70); statCtx.lineTo(20,70); statCtx.lineTo(0,98); statCtx.lineTo(135,300); statCtx.lineTo(165,300)
+			}
+			statCtx.closePath(); statCtx.fill() 
+			statCtx.fillStyle = 'white'; if(allValues[index]>99){typeSize="84pt"}
+			statCtx.font = 'normal 400 '+typeSize+' Source Serif Pro'
+			statCtx.textAlign = 'center'
+			statCtx.fillText(allValues[index],150,200)
+
+			mtl.map = statTex
+			
+			for(var ite = 0; ite<data[dataset].unit.length; ite++){
+				var stMoreCvs = document.createElement('canvas'), stMoreCtx = stMoreCvs.getContext('2d'),  
+				stMoreTex = new THREE.Texture(stMoreCvs), mesh; stMoreTex.needsUpdate = true; stMoreCvs.height = 85;
+				stMoreCvs.width = data[dataset].unit[ite].length * 28; stMoreCtx.fillStyle = grades[index].color
+				stMoreCtx.fillRect(0,0,stMoreCvs.width,stMoreCvs.height); stMoreCtx.fillStyle = 'white'
+				stMoreCtx.font = 'normal 500 33pt Fira Sans'; stMoreCtx.fillText(data[dataset].unit[ite],20,60);
+				mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(stMoreCvs.width/100,stMoreCvs.height/100),
+					new THREE.MeshBasicMaterial({map: stMoreTex, transparent: true,opacity:0}))
+				mesh.position.set(0,0.5-ite*1.1,-0.25); mesh.defpos = {x:0,y:0.5-ite*1.1,z:-0.25} 
+				mesh.expand = {x:1.75+stMoreCvs.width/200,y:0.5-ite*1.1,z:-0.25}; mesh.name = "sub"+ite 
+				subs.add(mesh)
+			}//end stat preps
+		}
     	mtl.needsUpdate = true
     	tgt['p'+i] = new THREE.Mesh(new THREE.PlaneBufferGeometry(atr.xyz[i].dimX,atr.xyz[i].dimY), 
     		mtl)
@@ -84,67 +164,12 @@ function initProjections(tgt,atr){
     	tgt['p'+i].origin = {x: atr.origin.x, y: atr.origin.y, z: atr.origin.z}
     	tgt['p'+i].position.set(atr.origin.x, atr.origin.y, atr.origin.z)
     	tgt['p'+i].scale.set(0.5,0.5,0.5)
+    	tgt['p'+i].adjust = {x: atr.adjusts[i].x, y:atr.adjusts[i].y, z:atr.adjusts[i].z, s:atr.adjusts[i].s}
     	tgt['p'+i].name = tgt.name + '_' + atr.modes[i]
+    	tgt['p'+i].add(subs)
     	projections.add(tgt['p'+i])
     }
-    projections.adjust = {x: atr.adjust.x, y: atr.adjust.y, z: atr.adjust.z}
     tgt.add(projections)
-}
-
-function populateProjections(){ //pass appropriate imagery & numbers to plr projections
-	for(var i = 0; i<4; i++){
-		var plr = seseme.getObjectByName('plr'+i)
-		var projs = plr.getObjectByName('projections')
-		var gradeIcon = projs.getObjectByName('plr'+i+'_grade')
-		var statIcon = projs.getObjectByName('plr'+i+'_stats')
-
-		gradeIcon.material.map = grades[i].icon
-
-		for(var it = 0; it<2; it++){
-			var gWordCvs = document.createElement('canvas'), gWordCtx = gWordCvs.getContext('2d'),
-			gWordTex = new THREE.Texture(gWordCvs), gradeWord 
-			gWordTex.needsUpdate = true; gWordCvs.width = grades[i].words[it].length * 38; gWordCvs.height = 90
-			gWordCtx.fillStyle = '#FCFF92'; gWordCtx.fillRect(0,0,gWordCvs.width,gWordCvs.height)
-			gWordCtx.fillStyle = "black"; gWordCtx.font = 'normal 500 48pt Fira Sans';gWordCtx.textAlign='center'
-			gWordCtx.fillText(grades[i].words[it],gWordCvs.width/2,65)
-			gradeWord = new THREE.Mesh(new THREE.PlaneBufferGeometry(gWordCvs.width/100,gWordCvs.height/100),
-				new THREE.MeshBasicMaterial({map: gWordTex,transparent: true, opacity: 0}))
-			gradeWord.position.set(0,-2,-it*0.5)
-			gradeWord.defpos = {x:0,y:-2,z:-it*0.5}
-			gradeWord.expand = {x:0,y:-2-(it*1.2),z:0.45}
-			gradeWord.name = 'word_'+it
-			gradeIcon.add(gradeWord)
-		}
-
-		var statCvs = document.createElement('canvas'), statCtx = statCvs.getContext('2d'),
-		statTex = new THREE.Texture(statCvs), typeSize = "144pt"; statTex.needsUpdate = true;
-		statCvs.height = 300; statCtx.fillStyle = grades[i].color; statCtx.fillRect(0,0,300,300);
-		statCtx.fillStyle = 'black'; if(allValues[i]>99){typeSize="120pt"}
-		statCtx.font = 'normal 400 '+typeSize+' Source Serif Pro'
-		statCtx.textAlign = 'center'
-		statCtx.fillText(allValues[i],150,200)
-		statIcon.material.map = statTex
-
-		for(var ite = 0; ite<data[dataset].unit.length; ite++){
-			var stMoreCvs = document.createElement('canvas'), stMoreCtx = stMoreCvs.getContext('2d'),  
-			stMoreTex = new THREE.Texture(stMoreCvs), mesh
-			stMoreTex.needsUpdate = true
-			stMoreCvs.height = 85
-			stMoreCvs.width = data[dataset].unit[ite].length * 29.5
-			stMoreCtx.fillStyle = grades[i].color
-			stMoreCtx.fillRect(0,0,stMoreCvs.width,stMoreCvs.height)
-			stMoreCtx.fillStyle = 'black'
-			stMoreCtx.font = 'normal 500 36pt Fira Sans'
-			stMoreCtx.fillText(data[dataset].unit[ite],20,60)
-			mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(stMoreCvs.width/100,stMoreCvs.height/100),
-				new THREE.MeshBasicMaterial({map: stMoreTex, transparent: true,opacity:0}))
-			mesh.position.set(0,0.5-ite*1.1,-0.25)
-			mesh.defpos = {x:0,y:0.5-ite*1.1,z:-0.25}
-			mesh.expand = {x:1.55+stMoreCvs.width/200,y:0.5-ite*1.1,z:-0.25}
-			mesh.name = "sub"+ite
-			statIcon.add(mesh)
-		}
-	}	
 }
 
 function makePrev(text,type,position,scale,bg,color){
@@ -250,7 +275,15 @@ if(mode==='explore'){
 	if(clickedObj!='pedestal'&&clickedObj!='ground'&& clickedObj!='orb'){
 		clickRotate()
 	}else{
-		console.log('clicked a non pillar')
+		if(clickedObj==='pedestal'){
+			var previewInd = rotationIndex[0].replace('plr','')
+			var clickedPrev = raycast.intersectObjects([].slice.call(pedestal.children[previewInd].children))
+			if(clickedPrev.length > 0){
+				console.log('clicked preview')
+				clickedObj = rotationIndex[0]
+				clickRotate()
+			}
+		}
 	}
 }else if(mode==="pillar"){
 	var clickedProj = raycast.intersectObjects(selectedPillar.getObjectByName('projections').children)
@@ -419,10 +452,12 @@ function browse(obj){ //rotation driven info changes
 		}
 		collapse(selectedPillar)
 		selectedProjection = 0
+
+		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},500)
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
-		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)},500)
+
 		
 		fade(true,prevtitle.getObjectByName('whtBack'),500,0)
 		stretch({x:1,y:1,z:1},prevtitle.getObjectByName('whtBack'),500,0)
@@ -432,10 +467,10 @@ function browse(obj){ //rotation driven info changes
 }
 function delve(obj){ //view depth on selected object
 	if(mode==="explore"){
+		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},500)
 		obj = seseme.getObjectByName(obj)
 		selectedPillar = obj
 		previewShift(true,obj.position.y)
-		moveCam({zoom: 2, y: 19+(obj.position.y*0.8)})
 		deploy(obj)
 	}else if(mode==="pillar"){
 		console.log(obj)
@@ -450,7 +485,7 @@ function delve(obj){ //view depth on selected object
 	}
 }
 function backOut(){
-	if(mode=="pillar"){
+	if(mode=="pillar"||mode=="detail"){
 		collapse(selectedPillar)
 		if(selectedProjection!=0){
 		selectProjection(selectedProjection,false)
@@ -533,13 +568,13 @@ function selectProjection(obj, onoff){
 	var current = {x:obj.position.x,y:obj.position.y,z:obj.position.z,s: obj.scale.x, opacity: obj.material.opacity}
 	var select = new TWEEN.Tween(current)
 	var bottom = document.getElementById('infoBottom')
-	var subs = [].slice.call(obj.children)
+	var subs = [].slice.call(obj.getObjectByName('subs').children)
 
 	if(onoff){
 		mode = 'detail'
 		selectedProjection = obj
-		var adj = obj.parent.adjust
-		select.to({x:obj.expand.x+adj.x,y:obj.expand.y+adj.y,z:obj.expand.z+adj.z,s: 1.3, opacity: 1},450)
+		var adj = obj.adjust
+		select.to({x:obj.expand.x+adj.x,y:obj.expand.y+adj.y,z:obj.expand.z+adj.z,s:adj.s, opacity: 1},450)
 		// Velocity(bottom,{height:'6rem'})
 		if(subs.length>0){
 			subs.forEach(function(ele,i){
@@ -574,8 +609,7 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 		for(var i=0;i<4;i++){
 			var prevs = pedestal.getObjectByName('plr'+i+'_preview')
 			var title = prevs.getObjectByName('title')
-			var plrht = seseme.getObjectByName('plr'+i).position.y
-			move({y:1+plrht},prevs,800)
+			move({y:1+tgtHts[i].y},prevs,800)
 			growShrink({s:0.55},prevs,800)
 			colorize({r:0,g:0,b:0},title,800)
 			if(i==index){
@@ -606,6 +640,47 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 		}	
 	}
 }
+
+function forcePillar(){ //forces user view to explore and enables 'force mode' (no data views)
+//mostly for dance mode
+}
+
+function screenSaver(onoff){
+		backOut()
+		
+
+		for(var i=0; i<4; i++){
+			var prev = pedestal.getObjectByName('plr'+i+'_preview')
+			var proj = seseme.getObjectByName('plr'+i).getObjectByName('projections')
+			// console.log(prev.name)
+			prev.traverse(function(child){
+				console.log(child.name)
+				pedestal.remove(child)
+			})
+			proj.traverse(function(child){
+				seseme.getObjectByName('plr'+i).remove(child)
+			})
+
+		}
+		screenSaverOn = onoff
+		dataset = onoff ? 'arc_saver' : 'ucd_bldg_nrg'
+		getValues()
+		assess()
+		createPreviews()
+
+		initProjections(plr0,plrAprojections)
+		initProjections(plr3,plrAprojections)
+		initProjections(plr1,plrBprojections)
+		initProjections(plr2,plrBprojections)
+
+		updatePillars(plr0)
+		updatePillars(plr1)
+		updatePillars(plr2)
+		updatePillars(plr3)
+		
+}
+
+
 
 // generic tools for a variety of situations
 function degs(rads){ //get degrees for my comprehension
