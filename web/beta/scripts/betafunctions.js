@@ -231,7 +231,7 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 	var xlats = [{x:-8.4, z:5.8},{x:5.5, z:6},{x:5.35, z:-8},{x:-8.75, z:-8.25}]
 	for(var i=0;i<4;i++){
 		var plr_prev = new THREE.Group()
-		var title = makePrev(dataTitles[i],'A',{x:0, y:-3,z:0,rx:camera.rotation.x,ry:0,rz:rads(0)},0.055,'','white')
+		var title = makePrev(dataTitles[i],'A',{x:0, y:-3,z:0,rx:0,ry:0,rz:0},0.055,'','white')
 		plr_prev.add(title)
 		
 		var addY = 0
@@ -240,7 +240,6 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 		}
 		var caption = makePrev('ENERGY USE @','B',{x:0, y:25+addY,z:0,rx:0,ry:0,rz:rads(0)},0.55,'','white')
 		title.add(caption)
-		
 		
 		var whtBack = new THREE.Mesh(new THREE.PlaneBufferGeometry(title.geometry.parameters.width,title.geometry.parameters.height),
 			new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0}))
@@ -358,23 +357,24 @@ function autoRotate(deg){
 	tgt = {rotationY: (rads(nearest90)) + (rads(deg))}
 	// console.log('current ' + current.rotationY*(180/Math.PI) + ' tgt ' + tgt.rotationY*(180/Math.PI))
 	spd = Math.abs(tgt.rotationY - current.rotationY)*200 + 350
-	rotate = new TWEEN.Tween(current)
-	rotate.to(tgt,spd)
-	rotate.easing(TWEEN.Easing.Quadratic.Out)
-	rotate.onUpdate(function(){
+	rotater = new TWEEN.Tween(current)
+	rotater.to(tgt,spd)
+	rotater.easing(TWEEN.Easing.Quadratic.Out)
+	rotater.onUpdate(function(){
 		seseme.rotation.y = current.rotationY
 		realRotation()
 		rotationOrder(getNearest90())
 		if(last90!=anglesIndex[0]){
 			browse(rotationIndex[0])
 		}
+		flipPrev()
 	})
-	rotate.start()
-	rotate.onStart(function(){
+	rotater.start()
+	rotater.onStart(function(){
 		// zoomHeightCheck()//
 		autoRotating = true
 	})
-	rotate.onComplete(function(){
+	rotater.onComplete(function(){
 		autoRotating = false
 	})
 }
@@ -424,11 +424,11 @@ function browse(obj){ //rotation driven info changes
 				move({y:1},fadeOut,500)
 				growShrink({s:0.75},fadeOut,500)
 			}
-			fade(false,fadetitle,500,0)
-			fade(false,fadetitle.getObjectByName('whtBack'),500,0)
+			fade(0,fadetitle,500,0)
+			fade(0,fadetitle.getObjectByName('whtBack'),500,0)
 			stretch({x:0.1,y:1,z:0.1},fadetitle.getObjectByName('whtBack'),500,0)
-			fade(false,fadecaption,500,0)
-			fade(false,fadecaption.getObjectByName('blkBack'),500,0)
+			fade(0,fadecaption,500,0)
+			fade(0,fadecaption.getObjectByName('blkBack'),500,0)
 			stretch({x:0.1,y:1,z:0.1},fadecaption.getObjectByName('blkBack'),500,0)
 		}
 	}
@@ -439,8 +439,8 @@ function browse(obj){ //rotation driven info changes
 		move({y:-1},preview,500)
 		growShrink({s:1},preview,500)
 	}
-	fade(true,prevtitle,500,0)
-	fade(true,prevcaption,500,0)
+	fade(1,prevtitle,500,0)
+	fade(1,prevcaption,500,0)
 
 	lookingAt = obj
 	if(mode==="explore"){
@@ -459,9 +459,9 @@ function browse(obj){ //rotation driven info changes
 		selectedPillar = obj
 
 		
-		fade(true,prevtitle.getObjectByName('whtBack'),500,0)
+		fade(1,prevtitle.getObjectByName('whtBack'),500,0)
 		stretch({x:1,y:1,z:1},prevtitle.getObjectByName('whtBack'),500,0)
-		fade(true,prevcaption.getObjectByName('blkBack'),500,200)
+		fade(1,prevcaption.getObjectByName('blkBack'),500,200)
 		stretch({x:1,y:1,z:1},prevcaption.getObjectByName('blkBack'),500,200)
 	}
 }
@@ -578,7 +578,7 @@ function selectProjection(obj, onoff){
 		// Velocity(bottom,{height:'6rem'})
 		if(subs.length>0){
 			subs.forEach(function(ele,i){
-				fade(true,ele,600,0)
+				fade(1,ele,600,0)
 				move(ele.expand,ele,600,30*i)
 			})
 		}
@@ -587,7 +587,7 @@ function selectProjection(obj, onoff){
 		select.to({x:obj.expand.x,y:obj.expand.y, z:obj.expand.z, s: 1, opacity: 0.85},450)
 		if(subs.length>0){
 			subs.forEach(function(ele,i){
-				fade(false,ele,400,0)
+				fade(0,ele,400,0)
 				move(ele.defpos,ele,600)
 			})
 		}
@@ -602,6 +602,18 @@ function selectProjection(obj, onoff){
 	select.easing(TWEEN.Easing.Quintic.Out)
 	select.start()
 }
+
+function flipPrev(){
+if(mode==="explore"){var prev = pedestal.getObjectByName(lookingAt + "_preview").getObjectByName('title')
+	if(!centerish && distCtr < 17){
+		rotate({x:camera.rotation.x,y:0,z:0},prev,500)
+		centerish = true
+	}else if(centerish && distCtr >= 17){
+		rotate({x:0,y:0,z:0},prev,500)
+		centerish = false
+	}}
+}
+
 function previewShift(up){ //previews translate depending on explore/pillar modes
 	var index = selectedPillar.name.replace('plr','')
 	if(up){
@@ -612,11 +624,12 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 			move({y:1+tgtHts[i].y},prevs,800)
 			growShrink({s:0.55},prevs,800)
 			colorize({r:0,g:0,b:0},title,800)
+			rotate({x:camera.rotation.x,y:0,z:0},title,800)
 			if(i==index){
 				var wht = title.getObjectByName('whtBack')
 				var blk = prevs.getObjectByName('caption').getObjectByName('blkBack')
-				fade(true,wht,800,0)
-				fade(true,blk,800,0)
+				fade(1,wht,800,0)
+				fade(1,blk,800,0)
 				stretch({x:1,y:1,z:1},wht,800,0)
 				stretch({x:1,y:1,z:1},blk,800,0)
 			}
@@ -629,11 +642,12 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 			growShrink({s:1},prevs,800)
 			move({y:0},prevs,800)
 			colorize({r:255,g:255,b:255},title,800)
+			rotate({x:0,y:0,z:0},title,800)
 			if(i==index){
 				var wht = title.getObjectByName('whtBack')
 				var blk = prevs.getObjectByName('caption').getObjectByName('blkBack')
-				fade(false,wht,800,0)
-				fade(false,blk,800,0)
+				fade(0,wht,800,0)
+				fade(0,blk,800,0)
 				stretch({x:0.1,y:1,z:0.1},wht,800,0)
 				stretch({x:0.1,y:1,z:0.1},blk,800,0)
 			}
@@ -641,8 +655,15 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 	}
 }
 
-function forcePillar(){ //forces user view to explore and enables 'force mode' (no data views)
+function forcedMoves(){
+	forcing = true
+}
+
+function forcePillar(plr,ht){ //forces user view to explore and enables 'force mode' (no data views)
 //mostly for dance mode
+	tgtHts[plr.name.replace('plr','')].y = ht
+	updatePillars(plr)
+	// move({y: ht},plr,spd)
 }
 
 function screenSaver(onoff){
@@ -689,10 +710,10 @@ function degs(rads){ //get degrees for my comprehension
 function rads(degs){ //get radians for THREE instructions
 	return degs*(Math.PI/180)
 }
-function fade(inOut,tgt,spd,delay){
+function fade(opa,tgt,spd,delay){
 	var current = {opacity: tgt.material.opacity}
-	var opTween = new TWEEN.Tween(current)
-	if(inOut){opTween.to({opacity: 1},spd+delay)}else{opTween.to({opacity: 0},spd+delay)}
+	var opTween = new TWEEN.Tween(current).to({opacity: opa},spd+delay)
+	// if(inOut){opTween.to({opacity: 1},spd+delay)}else{opTween.to({opacity: 0},spd+delay)}
 	opTween.onUpdate(function(){tgt.material.opacity = current.opacity})
 	opTween.easing(TWEEN.Easing.Cubic.Out)
 	opTween.start()
@@ -732,6 +753,7 @@ function rotate(rot,tgt,spd){
 		tgt.rotation.z = current.z
 	})
 	rotTween.easing(TWEEN.Easing.Cubic.Out)
+	rotTween.start()
 }
 function growShrink(scale,tgt,spd){
 	var current = {s: tgt.scale.x}

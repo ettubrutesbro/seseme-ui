@@ -10,7 +10,7 @@ uiScale = 2,
 raycast, mousePos = new THREE.Vector2(),
 
 //3d rotation utilities
-rotationIndex = ['plr0','plr1','plr2','plr3'], 
+rotationIndex = ['plr0','plr1','plr2','plr3'], distCtr, centerish,
 rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],
 //pillar up and down movement
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
@@ -20,7 +20,7 @@ mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
 outlines = [], 
 huelight, orbmtl,
 //state booleans that allow stuff
-highlightsOK = true, autoRotating = false, touchRotating = false, rotAmt = 0, 
+highlightsOK = true, autoRotating = false, touchRotating = false, rotAmt = 0, forcing = false
 //experimental usage metrics
 userActions = [], useTime = 0 , degreesRotated = 0 
 
@@ -240,7 +240,7 @@ function setup(){
 
 		hammerSESEME = new Hammer(containerSESEME)
 		hammerSESEME.on('tap',function(e){
-			if(!screenSaverOn){
+			if(!screenSaverOn&&!forcing){
 				mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
 				mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
 				clickedSeseme()
@@ -258,6 +258,7 @@ function setup(){
   				if(last90!=anglesIndex[0]){
   					browse(rotationIndex[0])
   				}
+  				flipPrev()
 
   		  	}
 	  	}
