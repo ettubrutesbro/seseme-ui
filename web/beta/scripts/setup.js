@@ -84,8 +84,7 @@ function setup(){
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0xff6666, emissive: 0x771100,shininess: 1, specular: 0x272727})
-		  promtl = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true,opacity:0.75})
-		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 10})
+		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})
 		  
 		  var loader = new THREE.JSONLoader()
 
@@ -95,46 +94,14 @@ function setup(){
 		    pedestal.name = "pedestal"
 		    seseme.add(pedestal)
 
-		    pedestalp1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
-		    pedestalp1.rotation.x = -90*(Math.PI/180)
-		    pedestalp1.position.set(-1.5,0,6)
-		    pedestalp2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
-		    pedestalp2.rotation.x = -90*(Math.PI/180)
-			pedestalp2.rotation.z = 90*(Math.PI/180)
-		    pedestalp2.position.set(5.5,0,-1)
-
-		    pedestalp3 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
-		    pedestalp3.rotation.x = -90*(Math.PI/180)
-		    pedestalp3.rotation.z = 180*(Math.PI/180)
-		    pedestalp3.position.set(-1.5,0,-8)
-		    pedestalp4 = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2), promtl)
-		    pedestalp4.rotation.x = -90*(Math.PI/180)
-		    pedestalp4.rotation.z = 90*(Math.PI/180)
-		    pedestalp4.position.set(-8.5,0,-1)
-
-		     projections = new THREE.Group()
-		    projections.name = "projections"
-
-		    // circgeo = new THREE.Geometry()
-		    // for(var i = 0; i < 32; i++){
-		    // 	theta = (i/32) * Math.PI * 2
-		    // 	circgeo.vertices.push(
-		    // 		new THREE.Vector3(
-		    // 			Math.cos(theta)*10,
-		    // 			Math.sin(theta)*10,
-		    // 			0))
-		    // }
-
-		    // pedestalorbiter = new THREE.Line(circgeo, wiremtl)
-		    // projections.add(pedestalorbiter)
-		    projections.add(pedestalp1)
-		    projections.add(pedestalp2)
-		    projections.add(pedestalp3)
-		    projections.add(pedestalp4)
-
-			projections.position.set(0,-17.6,0)
-
-		    // pedestal.add(projections)
+		    circgeo = new THREE.Geometry()
+		    for(var i = 0; i < 33; i++){
+		    	theta = (i/32) * Math.PI * 2
+		    	circgeo.vertices.push(new THREE.Vector3(Math.cos(theta)*16.5,Math.sin(theta)*16.5,0))
+		    }
+		    pedestalorbiter = new THREE.Line(circgeo, wiremtl); pedestalorbiter.rotation.x = rads(90)
+		    pedestalorbiter.position.set(-1.5,-17.5,-1); pedestal.add(pedestalorbiter)
+		    
 		    createPreviews()
 		  }) 	
 
@@ -252,14 +219,12 @@ function setup(){
   				touchRotating = true
 				rotDir = evt.velocityX < 0 ? 1: evt.velocityX > 0 ? -1: 1
   				seseme.rotation.y-=((evt.velocityX)*(Math.PI/180))*uiScale
-
   				realRotation()
   				rotationOrder(getNearest90())
   				if(last90!=anglesIndex[0]){
   					browse(rotationIndex[0])
   				}
   				flipPrev()
-
   		  	}
 	  	}
   		})
@@ -277,6 +242,7 @@ function setup(){
 		  				if(last90!=anglesIndex[0]){
 		  					browse(rotationIndex[0])
 		  				}
+		  				flipPrev()
 		  			})
 		  			rotDecel.easing(TWEEN.Easing.Quadratic.Out)
 		  			rotDecel.start()

@@ -150,23 +150,27 @@ var vocab = {
 }
 
 var plrAprojections = {
-		  	origin: {x:2, y:2, z:8, ry: -45},
-		  	modes: ['grade','info','stats'],
-		  	adjusts: [{x:0,y:1.4,z:0,s:1.25},{x:-1,y:1.5,z:1,s:1.25},{x:-1,y:-1,z:1,s:1.4}],
-		  	xyz: [
-				{dimX:3, dimY:3.75, x:1.5, y:7, z:8.5},
-				{dimX:3, dimY:3.75, x:5, y:5, z:11.5},
-				{dimX:3, dimY:3.75, x:-1.5, y:5, z:5},
-				]
-			}
+origin: {x:2, y:2, z:8, ry: -45},
+modes: ['grade','info','stats'],
+adjusts: [{x:0,y:1.4,z:0,s:1.25},{x:-1,y:1.5,z:1,s:1.25},{x:-1,y:-1,z:1,s:1.4}],
+xyz: [
+	{dimX:3, dimY:3.75, x:1.5, y:7, z:8.5},
+	{dimX:3, dimY:3.75, x:5, y:5, z:11.5},
+	{dimX:3, dimY:3.75, x:-1.5, y:5, z:5},
+	]
+}
 
 var plrBprojections = {
-		  	origin: {x:8, y:2, z:8, ry: 45},
-		  	modes: ['info','stats','grade'],
-		  	adjusts: [{x:1,y:1.5,z:1,s:1.25},{x:1,y:-1.5,z:1,s:1.3},{x:0,y:1.4,z:0,s:1.25}],
-		  	xyz: [
-		  			{dimX:3, dimY:3.75, x:11, y:5, z:5},
-					{dimX:3, dimY:3.75, x:5, y:5, z:11},
-					{dimX:3, dimY:3.75, x:8, y:7, z:8}
-				]
-			}
+	origin: {x:8, y:2, z:8, ry: 45},
+	modes: ['info','stats','grade'],
+	adjusts: [{x:1,y:1.5,z:1,s:1.25},{x:1,y:-1.5,z:1,s:1.3},{x:0,y:1.4,z:0,s:1.25}],
+	xyz: [
+		{dimX:3, dimY:3.75, x:11, y:5, z:5},
+		{dimX:3, dimY:3.75, x:5, y:5, z:11},
+		{dimX:3, dimY:3.75, x:8, y:7, z:8}
+	]
+}
+
+var prompts = {
+	welcome: [['try touching to','explore energy'],['carbon emissions:','bad stuff'],['hello UCD','i am SESEME']],
+}

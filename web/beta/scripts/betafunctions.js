@@ -71,6 +71,10 @@ function updatePillars(plr){
 	plrTween.start()
 }
 
+function updateHue(r, g, b){
+
+}
+
 // labeling and projection initialization (styling happens here)
 
 
@@ -216,7 +220,6 @@ function makePrev(text,type,position,scale,bg,color){
 		ctx.fillText(text,cvs.width/2,45)
 		subY=0
 	}
-	console.log(cvs.height)
 	var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(cvs.width, cvs.height), mtl)
 	mesh.scale.set(scale,scale,scale)
 	mesh.position.set(position.x,position.y-subY,position.z)
@@ -233,7 +236,6 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 		var plr_prev = new THREE.Group()
 		var title = makePrev(dataTitles[i],'A',{x:0, y:-3,z:0,rx:0,ry:0,rz:0},0.055,'','white')
 		plr_prev.add(title)
-		
 		var addY = 0
 		if(title.material.doubleLine){
 			addY = 25
@@ -249,17 +251,10 @@ function createPreviews(){ //inits previews for each pillar in exp/browse
 		blkBack.position.set(dir*-xlats[i].x/5,42,dir*-xlats[i].z/5)
 		whtBack.position.set(dir*-xlats[i].x/5,0,dir*-xlats[i].z/5)
 
-		whtBack.scale.set(0.1,1,0.1)
-		blkBack.scale.set(0.1,1,0.1)
-		title.add(whtBack)
-		caption.add(blkBack)
+		whtBack.scale.set(0.1,1,0.1); blkBack.scale.set(0.1,1,0.1); title.add(whtBack); caption.add(blkBack);
 
-		whtBack.name = 'whtBack'
-		blkBack.name = 'blkBack'
-		title.name = 'title'
-		caption.name = 'caption'
-		plr_prev.name = 'plr'+i+"_preview" 
-		pedestal.add(plr_prev)
+		whtBack.name = 'whtBack'; blkBack.name = 'blkBack'; title.name = 'title'; caption.name = 'caption';
+		plr_prev.name = 'plr'+i+"_preview" ; pedestal.add(plr_prev)
 		plr_prev.rotation.y = rads(-45)+(i*rads(90))
 		plr_prev.position.set(xlats[i].x,1,xlats[i].z)
 	}
@@ -276,11 +271,14 @@ if(mode==='explore'){
 	}else{
 		if(clickedObj==='pedestal'){
 			var previewInd = rotationIndex[0].replace('plr','')
-			var clickedPrev = raycast.intersectObjects([].slice.call(pedestal.children[previewInd].children))
+			var clickedPrev = raycast.intersectObjects([].slice.call(pedestal.getObjectByName('plr'+previewInd+'_preview').children))
+			console.log(clickedPrev)
 			if(clickedPrev.length > 0){
 				console.log('clicked preview')
 				clickedObj = rotationIndex[0]
 				clickRotate()
+			}else{
+				console.log('explore: clicked pedestal body')
 			}
 		}
 	}
@@ -495,6 +493,7 @@ function backOut(){
 		selectedProjection = 0
 		mode = 'explore'
 		moveCam(defaultPosZoom)
+
 	}
 }
 function moveCam(tgtPosZoom,addspd){ //translation & zoom of camera
@@ -642,7 +641,7 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 			growShrink({s:1},prevs,800)
 			move({y:0},prevs,800)
 			colorize({r:255,g:255,b:255},title,800)
-			rotate({x:0,y:0,z:0},title,800)
+			if(i!=index){ rotate({x:0,y:0,z:0},title,800) }
 			if(i==index){
 				var wht = title.getObjectByName('whtBack')
 				var blk = prevs.getObjectByName('caption').getObjectByName('blkBack')
@@ -655,6 +654,40 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 	}
 }
 
+function footProject(text){ //projects text from the base for 5-7 seconds then retracts and destroys itself
+	var footprojections = new THREE.Group()
+	var p_xlats = [{x:-8.5, z:-1,rx:rads(-90),rz:rads(-90)},{x: -1.5, z: 6, rx:rads(-90),rz:0},{x: 5.5, z: -1, rx:rads(-90),rz:rads(90)},
+	{x: -1.5, z: -8, rx:rads(-90),rz:rads(180)}]
+	for(var i=0;i<4;i++){
+		var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d')
+		cvs.width = 240; cvs.height = 40
+		ctx.font = 'normal 300 30pt Fira Sans'; ctx.fillStyle = "black";
+		ctx.textAlign = "center"; ctx.fillText(text[i],120,30)
+		var tex = new THREE.Texture(cvs); tex.needsUpdate = true
+		var mtl = new THREE.MeshBasicMaterial(
+			{map: tex,transparent: true, opacity: 0.25})
+		var projection = new THREE.Mesh(new THREE.PlaneBufferGeometry(12,2),mtl) 
+		projection.position.set(p_xlats[i].x*.5, 0, p_xlats[i].z*.5)
+		projection.rotation.set(p_xlats[i].rx,0,p_xlats[i].rz)
+		footprojections.add(projection)
+	}
+	pedestal.add(footprojections)
+	footprojections.position.set(0,-17.6,0)
+
+	footprojections.children.forEach(function(ele,i){
+		var start = {x: ele.position.x, z: ele.position.z, o:0.25}
+		var out = new TWEEN.Tween(start).to({x:p_xlats[i].x*1.15,z:p_xlats[i].z*1.15,o:1},1000).onUpdate(function(){
+			ele.position.x = start.x; ele.position.z = start.z; ele.material.opacity = start.o }).easing(TWEEN.Easing.Cubic.Out)
+		out.start()
+		out.onComplete(function(){ 
+			start = {x: ele.position.x, z: ele.position.z, o:1}; 
+			var backIn = new TWEEN.Tween(start).to({x: p_xlats[i].x*.5, z: p_xlats[i].z*.5, o: 0},1000).onUpdate(function(){
+			ele.position.x = start.x; ele.position.z = start.z; ele.material.opacity = start.o}).easing(TWEEN.Easing.Cubic.In).delay(5000)
+			backIn.start() 
+		})
+	})
+}
+
 function forcedMoves(){
 	forcing = true
 }
@@ -663,7 +696,6 @@ function forcePillar(plr,ht){ //forces user view to explore and enables 'force m
 //mostly for dance mode
 	tgtHts[plr.name.replace('plr','')].y = ht
 	updatePillars(plr)
-	// move({y: ht},plr,spd)
 }
 
 function screenSaver(onoff){
