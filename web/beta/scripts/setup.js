@@ -1,6 +1,6 @@
 
 var socket = io('10.0.1.111:5000')
-var dataset = 'arc_saver', screenSaverOn = true, dataList = Object.keys(data)
+var dataset = 'ucd_bldg_nrg', dataList = Object.keys(data)
 
 var allValues = [], grades = [{},{},{},{}]
 
@@ -18,7 +18,7 @@ rotDir =1,last90=0,nearest90=0,sRotY =0,anglesIndex = [0,270,180,90],
 //pillar up and down movement
 tgtHts = [{y: 3}, {y: 6}, {y: 10}, {y: 2}],
 //assorted
-defaultPosZoom, //default camera positioning 
+defaultPosZoom,
 mode = 'explore', selectedPillar, selectedProjection=0, lookingAt = 'plr0',
 outlines = [], 
 huelight, orbmtl,
@@ -177,59 +177,50 @@ function setup(){
 		  scene.add(seseme)		
 	}
 	function otherMdls(){
-		var ringgeo = new THREE.Geometry()
-	    for(var i = 0; i < 33; i++){
-	    	theta = (i/32) * Math.PI * 2
-	    	ringgeo.vertices.push(new THREE.Vector3(Math.cos(theta)*16,Math.sin(theta)*16,0))
-		    }
-	    ring = new THREE.Line(ringgeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})); ring.rotation.set(rads(90),0,rads(45))
-	    ring.position.set(0,-17.5,0x000000); scene.add(ring); ring.name = "ring"
+		// var ringgeo = new THREE.Geometry()
+	 //    for(var i = 0; i < 33; i++){
+	 //    	theta = (i/32) * Math.PI * 2
+	 //    	ringgeo.vertices.push(new THREE.Vector3(Math.cos(theta)*16,Math.sin(theta)*16,0))
+		//     }
+	 //    ring = new THREE.Line(ringgeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})); ring.rotation.set(rads(90),0,rads(45))
+	 //    // ring.position.set(0,-17.5,0x000000); scene.add(ring); ring.name = "ring"
 
-	    dg_xlats = [{x:16,z:0},{x:-16,z:0},{x:0,z:-16},{x:0,z:16}]
-	    for(var i = 0; i<4; i++){ //loop generates 4 symbolgeos for ring
-	    	var dataGeo = new THREE.Mesh(new THREE.BoxGeometry(3,3,3),new THREE.MeshNormalMaterial())
-	    	dataGeo.position.set(dg_xlats[i].x,dg_xlats[i].z,0); ring.add(dataGeo) 
-	    }
+	 //    dg_xlats = [{x:16,z:0},{x:-16,z:0},{x:0,z:-16},{x:0,z:16}]
+	 //    for(var i = 0; i<4; i++){ //loop generates 4 symbolgeos for ring
+	 //    	var dataGeo = new THREE.Mesh(new THREE.BoxGeometry(3,3,3),new THREE.MeshNormalMaterial())
+	 //    	// dataGeo.position.set(dg_xlats[i].x,dg_xlats[i].z,0); ring.add(dataGeo) 
+	    // }
 	}
 	function eventListeners(){ //raycast and interaction
 		//web data
 		socket.on('dataHere',function(dat){
-			console.log('datahere: ' + dat)
-			if(dat==0){
-				screenSaver(true)
-			}else if(dat==1){
-				screenSaver(false)
-			}else{
+			console.log('datahere: ' + dataset[dat])
 				backOut(); clearText(); dataset = dataList[dat]; getValues(); assess();
 				createPreviews()
 				for(var i = 0; i<4; i++){
 					var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
 					updatePillars(seseme.getObjectByName('plr'+i))
 					initProjections(seseme.getObjectByName('plr'+i),set)
-			}
-		}
+				}
+				footProject(data[dataset].name)
 		})
+
 		socket.on('changeData',function(dat){
-			console.log('big red button: send dataset '+ dataList[dat])
-			
-			for(var i = 1; i<5; i++){
-				socket.emit('moveMotorJack',{name: 'm'+i, position: (tgtHts[i-1].y/12)*100})
-			}
+			console.log(dat + 'big red button: send dataset '+ dataList[dat])
 				//change data?
-				if(screenSaverOn){
-					screenSaver(false)
-				}else if(dat==0){
-					screenSaver(true)
-				}else{
-					backOut(); clearText(); dataset = dataList[dat]; getValues(); assess();
-					createPreviews()
-					for(var i = 0; i<4; i++){
-						var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
-						updatePillars(seseme.getObjectByName('plr'+i))
-						initProjections(seseme.getObjectByName('plr'+i),set)
-					}
-				}	
-			
+			backOut(); clearText(); dataset = dataList[dat]; getValues(); assess();
+			createPreviews()
+			for(var i = 0; i<4; i++){
+				var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
+				updatePillars(seseme.getObjectByName('plr'+i))
+				initProjections(seseme.getObjectByName('plr'+i),set)
+			}	
+			for(var i = 1; i<5; i++){
+				console.log({name: 'm'+i, position:(tgtHts[i-1].y/12)*100})
+				socket.emit('moveMotorJack',{name: 'm'+i, position:(tgtHts[i-1].y/12)*100})
+			}
+			footProject(data[dataset].name)
+	
 		})
 
 		socket.on('secretButton',function(){
@@ -256,15 +247,24 @@ function setup(){
 		hammerSESEME = new Hammer(containerSESEME)
 			hammerSESEME.get('pinch').set({ enable: true })
 		hammerSESEME.on('pinch',function(evt){
-			// evt.preventDefault()
-			// camera.zoom = staticZoom * evt.scale
-			// camera.updateProjectionMatrix()
+			evt.preventDefault()
+			camera.zoom = staticZoom * evt.scale
+			camera.updateProjectionMatrix()
 		})
   		hammerSESEME.on('pinchend',function(evt){
-  			//evt.preventDefault()	
+  			evt.preventDefault()
+  			if(camera.zoom>1.75){
+  				var from = {zoom: camera.zoom}
+  				var spd = Math.abs(1.75 - camera.zoom) + 300
+  				var back = new TWEEN.Tween(from).to({zoom:2},500).onUpdate(function(){
+  					camera.zoom=from.zoom
+		  			camera.updateProjectionMatrix()
+  				}).easing(TWEEN.Easing.Cubic.Out).start()
+  			}	
+  			staticZoom = camera.zoom
   		})
 		hammerSESEME.on('tap',function(e){
-			if(!screenSaverOn&&!forcing){
+			if(dataset!=='arc_saver'&&!forcing){
 				mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
 				mousePos.y= - (e.pointers[0].clientY / window.innerHeight)*2+1
 				clickedSeseme()

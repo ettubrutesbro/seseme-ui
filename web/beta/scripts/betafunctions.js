@@ -278,7 +278,6 @@ if(mode==='explore'){
 				clickedObj = rotationIndex[0]
 				clickRotate()
 			}else{
-				editData()
 				console.log('explore: clicked pedestal body')
 			}
 		}
@@ -452,7 +451,7 @@ function browse(obj){ //rotation driven info changes
 		collapse(selectedPillar)
 		selectedProjection = 0
 
-		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},500)
+		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},200)
 		obj = seseme.getObjectByName(obj)
 		deploy(obj)
 		selectedPillar = obj
@@ -466,7 +465,7 @@ function browse(obj){ //rotation driven info changes
 }
 function delve(obj){ //view depth on selected object
 	if(mode==="explore"){
-		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},500)
+		moveCam({zoom: 2, y: 19+(tgtHts[obj.replace('plr','')].y*0.8)},200)
 		obj = seseme.getObjectByName(obj)
 		selectedPillar = obj
 		previewShift(true,obj.position.y)
@@ -565,11 +564,6 @@ function collapse(obj){ //collapses projections
 	})
 }
 
-function editData(){
-	mode = "editData"
-	moveCam({zoom: 0.7,y:11},500)
-
-}
 
 function summon(parent,riseamt,updown){
 	
@@ -705,30 +699,28 @@ function footProject(text){ //projects text from the base for 5-7 seconds then r
 	})
 }
 
-function forcedMoves(){
+
+function secret(){
+	footProject('hold on','for a sec','!!!!','????')
 	forcing = true
-}
+	rotationIndex.forEach(function(ele,i){
+		ele = seseme.getObjectByName(ele)
+		var start = {y: ele.position.y}
+		var danceUp = new TWEEN.Tween(start).to({y: 12},5000).onUpdate(function(){
+			ele.position.y=start.y
+		}).easing(TWEEN.Easing.Cubic.InOut)
+		danceUp.onComplete(function(){
+			var back = {y: ele.position.y}
+			var danceDown = new TWEEN.Tween(back).to({y: tgtHts[i].y},5000).onUpdate(function(){
+				ele.position.y = back.y
+			}).delay(1000).start().onComplete(function(){
+				forcing = false
+				console.log('routine complete')
+			}).easing(TWEEN.Easing.Cubic.InOut)
+		})
 
-function forcePillar(plr,ht){ //forces user view to explore and enables 'force mode' (no data views)
-//mostly for dance mode
-	tgtHts[plr.name.replace('plr','')].y = ht
-	updatePillars(plr)
-}
-
-function screenSaver(onoff){
-	backOut()
-	clearText()
-	screenSaverOn = onoff
-	dataset = onoff ? 'arc_saver' : 'ucd_bldg_nrg'
-	getValues()
-	assess()
-	createPreviews()
-
-	for(var i = 0; i<4; i++){
-		var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
-		updatePillars(seseme.getObjectByName('plr'+i))
-		initProjections(seseme.getObjectByName('plr'+i),set)
-	}
+		danceUp.start()
+	})
 }
 
 function clearText(){

@@ -22,9 +22,10 @@ var data = {
 		nounType: 'building',
 		unit: ['ENERGY UNIT', 'INTENSITY']
 	},
+
 	ucd_bldg_nrg: {
 		location: 'UC Davis',
-		name: ['energy use intensity','in multipurpose buildings'],
+		name: ['ENERGY USE','AT UCD','(POPULAR', 'BUILDINGS)'],
 		pts: [
 			{name: 'The ARC',
 			value: 86,
@@ -34,10 +35,14 @@ var data = {
 			info: ['EST. 1955','RENOVATIONS BEGIN SPRING \'15','COHO SERVES 800 STUDENTS/DAY']},
 			{name: 'The SCC',
 			value: 99,
-			info: ['EST 2012','RENT A MEETING ROOM HERE','MFDB ARCHITECTS, INC.']},
+			info: ['EST 2012','RENT A MEETING ROOM HERE','MFDB ARCHITECTS, INC.'],
+			suppGrade: 'building energy use accounts for 39% '
+			},
 			{name: 'Shields Library',
 			value: 54,
-			info: ['3RD LARGEST LIBRARY IN UC','PETER J SHIELDS WAS A JUDGE','50TH ANNIVERSARY ON APR. 18']}
+			info: ['3RD LARGEST LIBRARY IN UC','PETER J SHIELDS WAS A JUDGE','50TH ANNIVERSARY ON APR. 18'],
+			suppGrade: 'brain freeze: 57% of students say it\'s too cold in Shields. (check out the Thermal Feedback Tile on myUCD)'
+			}
 		],
 		criteria: [
 		{name:'good',color:'#158C61',min:21,max:51},
@@ -53,7 +58,7 @@ var data = {
 	},
 	ucd_creative_nrg: {
 		location: 'UC Davis',
-		name: ['energy use intensity','in creative major buildings'],
+		name: ['creative ppl','use energy @','uc davis','too!?'],
 		pts: [
 			{name: 'Cruess (Design)',
 			value: 31,
@@ -85,7 +90,7 @@ var data = {
 	},
 	ucd_utility_wtr: {
 		location: 'UC Davis',
-		name: ['water use by utility'],
+		name: ['UCD water use', '& DROUGHT','(we need to','improve 20%)'],
 		pts: [
 			{name: 'Cruess (Design)',
 			value: 51,
