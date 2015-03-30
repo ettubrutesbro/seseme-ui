@@ -1,3 +1,19 @@
+@font-face{
+	font-family: 'Fira Sans';
+	src: url('assets/fonts/fira-lt.ttf');
+	font-weight: 300;
+}
+@font-face{
+	font-family: 'Fira Sans';
+	src: url('assets/fonts/fira-med.ttf');
+	font-weight: 500;
+}
+@font-face{
+	font-family: 'Source Serif Pro';
+	src: url('assets/fonts/source-reg.ttf');
+	font-weight: 400;
+}
+
 html{
 	font-size: 21px;
 	overflow: hidden;
@@ -7,78 +23,6 @@ html{
 	left:0;
 	top:0;
 	width:100%;
-}
-
-#buttons {
-	position: absolute;
-	bottom: 1rem; left: 0; right: 0; margin: auto;
-	width: 9rem;
-	z-index: 5;
-}
-#back, #forward {
-	width: 2rem;
-	height: 2rem;
-	position: absolute;
-	bottom: 1rem;
-	text-align: center;
-}
-#back {left: 0;}
-#forward {right: 0;}
-#navButton{
-	width: 3.25rem;
-	height: 3.25rem;
-	position: absolute;
-	/*border: 2px black solid;*/
-	border-radius: 50%;
-	box-sizing: border-box;
-	z-index: 2;
-	bottom: 0.25rem;left: 0; right: 0; margin: auto;
-}
-
-.info{
-	font-family: 'Fira Sans';
-	position: absolute;
-	z-index: 1;
-}
-
-#infoTop{
-	top: 0; left: 0; right: 0;
-	margin: 0 auto;
-	width: 100%;
-	height: 0;
-}
-#infoBottom{
-	bottom: 0; left: 0; right: 0;
-	margin: 0 auto;
-	width: 100%;
-	height: 0; 
-	background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.85));
-}
-#infoLeft{
-	width: 0.1rem; height: 3rem;
-	margin: auto;
-  	top: 0; left: 0; bottom: 0; 
-}
-#infoRight{
-	width: 0.1rem; height: 3rem;
-	margin: auto;
-  	top: 0; right: 0; bottom: 0; 
-}
-
-section {
-	position: absolute;
-}
-
-
-#grade {
-	text-align: right;
-	padding: 0.5rem;
-	font-size: 0.8rem;
-	color: white;
-	background-color: black;
-	width: 10rem;
-	z-index: 4;
-	right: 0;top: 60%; 
 }
 
 #source{

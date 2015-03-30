@@ -189,7 +189,7 @@ function makePrev(text,type,position,scale,bg,color){
 			ctx.fillStyle = bg	
 			ctx.fillRect(0,0,300,300)
 		}
-		ctx.font = 'normal 300 32pt Source Serif Pro' 
+		ctx.font = 'normal 400 32pt Source Serif Pro' 
 		ctx.fillStyle = color
 		ctx.textAlign = 'center' 
 		if(text.length>8){
@@ -664,8 +664,8 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 		}	
 	}
 }
-
 function footProject(text){ //projects text from the base for 5-7 seconds then retracts and destroys itself
+	if(text!==undefined&&text!==null&&text!==''){
 	var footprojections = new THREE.Group()
 	var p_xlats = [{x:-8.5, z:-1,rx:rads(-90),rz:rads(-90)},{x: -1.5, z: 6, rx:rads(-90),rz:0},{x: 5.5, z: -1, rx:rads(-90),rz:rads(90)},
 	{x: -1.5, z: -8, rx:rads(-90),rz:rads(180)}]
@@ -697,9 +697,10 @@ function footProject(text){ //projects text from the base for 5-7 seconds then r
 			backIn.start() 
 		})
 	})
+	}else{
+		console.log('broken quit out')
+	}
 }
-
-
 function secret(){
 	footProject(['hold on','for a sec','!!!!','????'])
 	forcing = true
