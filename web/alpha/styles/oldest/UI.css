@@ -1,0 +1,292 @@
+
+/* GENERAL STRUCTURE / MEDIA QUERIES */
+
+html {
+	overflow: hidden;
+	background-color: #ededed;
+	font-size: 32px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+	*, *:before, *:after {
+	  box-sizing: inherit;
+	  -webkit-box-sizing: inherit;
+	  -moz-box-sizing: inherit;
+	}
+	body {
+		overflow: hidden;
+	}
+.container {
+	width: 100%;
+	max-width: 460px;
+	margin: 0 auto;
+}
+
+#containerSESEME {
+	left: 0; right: 0;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+@media (min-width: 300px) {
+	.container {
+		font-size: 21px;
+		max-width: 325px;
+	}
+}
+
+
+
+/*	TYPOGRAPHY	*/
+
+h1,h2,h3,h4,h5,h6{
+	margin: 0;
+}
+h1,h2{
+	font-family: 'Source Serif Pro', serif;
+}
+h3,h4,h5,h6 {
+	font-family: 'Fira Sans', sans-serif;
+}
+  
+  h1{ font-size: 2.6rem;} 
+  h2{ font-size: 1.5rem;}
+  h3{ font-size: 1.25rem; letter-spacing: 0.08em;}
+  h4{ font-size: 1.25rem;}
+  h5{ font-size: 1.1rem; letter-spacing: 0.05rem;}
+  h6{ font-size: 0.75rem; letter-spacing: 0.1em; }
+
+/* TOP BREAKDOWN OVERLAY */
+
+#topInfo{ /* small summary info at top */
+	font-family: 'Fira Sans', sans-serif;
+	font-size: 0.5rem;
+	letter-spacing: 0.1rem;	
+	position: absolute;
+	top: 0;
+	text-align: center;
+	width: 325px;
+	left: 0; right: 0;
+	margin: 0 auto;
+	background-color: rgba(0,0,0,0.8);
+	color: white;
+	height: 44px;
+}
+
+/* NAVIGATION BUTTONS */
+
+#uiNav /* holds fixed UI nav at bottom */ {
+	position: absolute;
+	bottom: 3%;
+	z-index: 5;	
+	width: 325px;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	/*background-color: rgba(0,0,0,0.5)*/
+}
+	.navbutt {
+		cursor: pointer;
+		float: left;
+		width: 20%;
+		height: 0px;
+		padding-bottom: 18%;
+		margin-left: 4.25%;
+		border-radius: 50%;
+		box-sizing: border-box;
+		border: 3px rgba(0,0,0,0.65) solid;
+		background-size: cover;
+	}
+	.navbutt object{
+		width: 100%;
+	}
+
+/*	BODY SECTIONS	*/
+
+#uiBody { /*holds dynamic UI data/content */
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	z-index: 2;
+	width: 100%;
+	bottom: 0;
+	font-family: 'Source Serif Pro', serif;
+	letter-spacing: 0.02rem;
+	color: black;
+	/*background-color: black;*/
+}
+#bodyTitle {
+	display: flex;
+	display: -webkit-flex;
+	padding: 0.1rem 0.3rem;
+	letter-spacing: 0;
+	font-weight: 600;	
+	/*text-align: center;*/
+}
+	#name {
+		background-color: rgba(237,237,237,0);
+		transform-origin: bottom left;
+		padding: 0 0.3rem;
+	}
+
+	#bodyTitle #titleHide {
+		display: flex;
+		display: -webkit-flex;
+		flex-grow: 3;
+		flex-shrink: 0;
+		-webkit-flex-grow: 3;
+		-webkit-flex-shrink: 0;
+	}
+
+	#titleRule {
+		flex-grow: 3;
+		flex-shrink: 0;
+		-webkit-flex-grow: 3;
+		-webkit-flex-shrink: 0;
+		background-image: url(../assets/dot.svg);
+		background-repeat: space no-repeat;
+	 	background-position: center;
+		background-size: 10px 10px;
+		
+	}
+	#titleGrade{
+		width: 50px;
+		padding: 0 0.3rem;
+		transform-origin: bottom right;
+	}
+#optionsButton{
+		opacity: 0;
+		transform: translate(1.5rem, -0.75rem);
+		-webkit-transform: translateY(1.5rem, -0.75rem);
+		position: absolute;
+		z-index: 5;
+		right: 0.6rem;
+		width: 57px;
+		height: 57px;
+		border-radius: 100%;
+		border: 2px #ededed solid;
+		background-color: rgba(0,0,0,0.75); 
+		background-image: url(../assets/eui_breakdown.svg), url(../assets/viewgrade.svg);
+		background-position: center, 60px 0;
+		background-repeat: no-repeat;
+		background-size: 100%;
+		box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		transition: ease 0.5s;
+		-webkit-transition: ease 0.5s;
+	}
+	#optionsButton.grade{
+		background-position: -60px 0, center;
+		transition: ease 0.5s;
+		-webkit-transition: ease 0.5s;
+	}
+
+#sectionContainer {
+	 /*background: -webkit-linear-gradient(red, blue); /* For Safari 5.1 to 6.0 */
+	 background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.85));
+
+}
+section{
+	display: none;
+	overflow: hidden;
+	height: 0;
+	font-family: 'Fira Sans', sans-serif;
+}
+
+	section#view {
+		padding: 0 0.3rem;
+	}
+		.viewRow {
+			width: 100%;
+			display: flex;
+			display: -webkit-flex;
+			justify-content: space-between;
+		}
+			.viewRow div {
+			}
+		#view #breakdown {
+			margin-top: 0.2rem;
+			height: 0;
+			overflow: hidden;
+			opacity: 0;
+		}
+		#view #viewRule {
+			/*transform: translateY(0.3rem);*/
+			opacity: 0; width: 0;
+			/*margin-top: 0.4rem;*/
+			background-color: white;
+			height: 0.1rem;
+		}
+		#view #semantic {
+			margin-top: 0.2rem;
+			height: 2.75rem;
+			overflow: hidden;
+		}
+			#grade {
+				width: 75%;
+				overflow: hidden;
+				display: flex;
+				display: -webkit-flex;
+				justify-content: space-between;
+			}
+				#gradePic {
+					width: 80px;
+				}
+				#gradeText{
+					flex-grow: 1;
+					flex-shrink: 0;
+					flex-basis: 120px;
+					margin-top: 0.3rem;
+				}
+				.gradeWords {
+					font-size: 0.55rem;
+					letter-spacing: 0.06rem;
+					display: block; margin: 0.15rem 0 0 0.3rem; 
+					color: white;
+					width: min-content;
+					width: -webkit-min-content;
+					text-transform: uppercase;
+				}
+			#spelledUnit {
+				margin: 0.25rem 0; opacity: 0;
+				padding: 0;
+				width: 0;
+				height: 1rem;
+				overflow: hidden;
+				font-size: 0.55rem;
+				white-space: nowrap;
+				color: white;
+				text-transform: uppercase;
+			}
+			#aggData {
+				width: 30%;
+				padding: 0.25rem 0.2rem;
+				color: #ededed;
+				background-color: rgba(237,237,237,0);
+			}
+				#dataNum {
+					float: right;
+					font-family: 'Source Serif Pro', serif;
+					font-weight: 600;
+					padding-right: 0.1rem;
+					font-size: 1.3rem;
+					line-height: 1.2rem;
+				}
+				#dataUnit{
+					padding: 0.2rem 0.2rem;
+					float: right;
+					font-size: 0.6rem;
+					text-align: right;
+				}
+.icon object{
+	width: 95%;
+}
+.icon object:nth-child(n+2){
+	display: none;
+	/*margin-top: 1rem;*/
+}
+
+
+

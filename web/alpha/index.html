@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+    <meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=.75, user-scalable=0">
+    <meta name="theme-color" content="#000000">
+    <title>Project SESEME</title>
+    <!-- FONTS -->
+    <link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600' rel='stylesheet' type='text/css'>
+    <!-- CUSTOM CSS -->
+    <link rel = "stylesheet" type = "text/css" href = "styles/UI.css">  
+
+  </head> 
+    
+  <body> 
+    <script>
+      function svgClean(which,nav){
+        tgt = which.contentDocument.querySelector('svg')
+        tgt.style['background-color'] = ''
+        tgt.addEventListener('click', function(){
+            clickedNav(nav)
+        })
+      }
+    </script>
+   <!--  <div id = "top" class = "container">
+      <div id = "topInfo">learn more @ CEED</div>
+    </div> -->
+
+<!-- #bottom .container has abs-positioned four button row
+navigates to core functions  -->
+      <div id = "bottom" class = "container">
+        <div id = "uiNav">
+            <div id = "viewnav" class = "navbutt"><object data = "assets/v_u.svg" type = "image/svg+xml" onload = "svgClean(this,0)"></object></div>
+            <div id = "datanav" class = "navbutt"><object data = "assets/d_u.svg" type = "image/svg+xml" onload = "svgClean(this,1)"></object></div>
+            <div id = "talknav" class = "navbutt"><object data = "assets/t_u.svg" type = "image/svg+xml" onload = "svgClean(this,2)"></object></div>
+            <div id = "helpnav" class = "navbutt"><object data = "assets/h_u.svg" type = "image/svg+xml" onload = "svgClean(this,3)"  ></object></div>
+      </div>
+    </div> <!-- end button bar -->
+    
+<!-- middle container = data body -->
+      <div id = "mid" class = "container">
+        <div id = "uiBody">
+      
+<!-- header contains info preview in explore mode, titles for nav modes -->
+        <div id = "bodyTitle">
+            <div id = "name">
+            </div>
+
+          <div id = "titleHide">
+            <div id = "titleRule"></div>
+            <div id = "titleGrade" class = "icon-sm">&nbsp;&nbsp;</div>
+          </div>
+          
+          <div id = "optionsButton"></div>
+         
+        </div> <!-- end header div -->
+
+
+        <div id = "sectionContainer">
+
+          <section id = "view"> <!-- detailed view -->
+              <div id = "breakdown" class = "viewRow">
+                <div class = "breakdownStat"></div>
+                <div class = "breakdownStat"></div>
+                <div class = "breakdownStat"></div>
+              </div>
+              <div id = "viewRule" class = "viewRow"></div>
+              <div id = "semantic" class = "viewRow">
+                <div id = "grade">
+                  <div id = "gradePic" class = "icon">
+                    <object id = "leaves" data = "assets/leaves.svg" type = "image/svg+xml" onload = "svgClean(this)"></object> 
+                    <object id = "okleaf" data = "assets/okleaf.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
+                    <object id = "burnleaf" data = "assets/burnleaf.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
+                    <object id = "shit" data = "assets/shit.svg" type = "image/svg+xml" onload = "svgClean(this)"></object>
+                  </div>
+                  <div id = "gradeText">
+                      <span class = "gradeWords"></span>
+                      <span class = "gradeWords">SUSTAINABLE</span>
+                  </div>
+                </div>
+                <div id = "spelledUnit">
+                  
+                </div>
+                <div id = "aggData">
+                  <span id = "dataNum"></span>
+                  <span id = "dataUnit">abbr</span>
+                </div>
+              </div>
+          </section>
+
+          <section id = "data"> <!-- conversation & vote -->
+
+          </section> <!-- end talk section -->
+
+          <section id = "talk"> <!-- data change screen  -->
+
+          </section> <!-- end data section -->
+
+          <section id = "help">
+
+          </section>
+
+        </div> <!-- end sectioncontainer -->
+      </div> <!-- end uibody -->
+    </div> <!-- end mid container -->
+
+    <div id = "containerSESEME">
+    </div>
+
+   
+    <!-- JS DEPENDENCIES -->
+    <script src="libs/three.min.js"></script> 
+    <script src="libs/hammer.min.js"></script> 
+    <script src="libs/tween.min.js"></script> 
+    <script src="libs/velocity.min.js"></script>
+    <!-- DATA!!!! -->
+    <script src = "scripts/data.js"></script>
+    <!-- CUSTOM  -->   
+    <script src = "scripts/post_data.js"></script>
+    <script src = "scripts/functions.js"></script>
+    <script src = "scripts/setup.js"></script>
+    <script>
+      setup()
+      animate()
+    </script>
+  </body> 
+</html>
