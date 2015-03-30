@@ -1,13 +1,16 @@
 
-var dataset = 'arc_saver', screenSaverOn = true
+var socket = io('10.0.1.111:5000')
+var dataset = 'arc_saver', screenSaverOn = true, dataList = Object.keys(data)
 
 var allValues = [], grades = [{},{},{},{}]
 
 var scene = new THREE.Scene(), camera, renderer, 
-seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,
+seseme = new THREE.Group(), plr0, plr1, plr2, plr3, pedestal,ring,
 
 uiScale = 2,
 raycast, mousePos = new THREE.Vector2(),
+
+staticZoom = 1.15,
 
 //3d rotation utilities
 rotationIndex = ['plr0','plr1','plr2','plr3'], distCtr, centerish,
@@ -29,12 +32,9 @@ function setup(){
 	domSetup()
 	lightingSetup()
 	sesemeSetup()
+	otherMdls()
 	eventListeners()
 	syncToData()
-
-	// setTimeout(screenSaver(true),1000)
-	// screenSaver(true)
-	// initExperiment()
 
 	function cameraSetup(){
 	  var aspect = window.innerWidth / window.innerHeight
@@ -79,12 +79,11 @@ function setup(){
 		//materials for seseme & orb 
 		  sesememtl = new THREE.MeshPhongMaterial({color: 0x80848e, shininess: 21, 
 		  	specular: 0x9e6f49, emissive: 0x101011}) 
-// sesememtl = new THREE.MeshLambertMaterial({color: 0x80848e, shininess: 21, 
-// 		  	specular: 0x9e6f49, emissive: 0x101011})
+		// sesememtl = new THREE.MeshLambertMaterial({color: 0x80848e, shininess: 21, 
+		// 		  	specular: 0x9e6f49, emissive: 0x101011})
 		  groundmtl = new THREE.MeshBasicMaterial({color: 0xededed})
 		  shadowmtl = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('assets/blobshadow.svg')})
 		  orbmtl = new THREE.MeshPhongMaterial({color: 0xff6666, emissive: 0x771100,shininess: 1, specular: 0x272727})
-		  wiremtl = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})
 		  
 		  var loader = new THREE.JSONLoader()
 
@@ -93,14 +92,6 @@ function setup(){
 		    pedestal.applyMatrix( new THREE.Matrix4().makeTranslation(1.5, 0, 1))
 		    pedestal.name = "pedestal"
 		    seseme.add(pedestal)
-
-		    circgeo = new THREE.Geometry()
-		    for(var i = 0; i < 33; i++){
-		    	theta = (i/32) * Math.PI * 2
-		    	circgeo.vertices.push(new THREE.Vector3(Math.cos(theta)*16.5,Math.sin(theta)*16.5,0))
-		    }
-		    pedestalorbiter = new THREE.Line(circgeo, wiremtl); pedestalorbiter.rotation.x = rads(90)
-		    pedestalorbiter.position.set(-1.5,-17.5,-1); pedestal.add(pedestalorbiter)
 		    
 		    createPreviews()
 		  }) 	
@@ -183,12 +174,69 @@ function setup(){
 
 		  seseme.add(shadow)
 		  seseme.add(ground)
-		  scene.add(seseme)
-
-		
+		  scene.add(seseme)		
 	}
+	function otherMdls(){
+		var ringgeo = new THREE.Geometry()
+	    for(var i = 0; i < 33; i++){
+	    	theta = (i/32) * Math.PI * 2
+	    	ringgeo.vertices.push(new THREE.Vector3(Math.cos(theta)*16,Math.sin(theta)*16,0))
+		    }
+	    ring = new THREE.Line(ringgeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})); ring.rotation.set(rads(90),0,rads(45))
+	    ring.position.set(0,-17.5,0x000000); scene.add(ring); ring.name = "ring"
 
+	    dg_xlats = [{x:16,z:0},{x:-16,z:0},{x:0,z:-16},{x:0,z:16}]
+	    for(var i = 0; i<4; i++){ //loop generates 4 symbolgeos for ring
+	    	var dataGeo = new THREE.Mesh(new THREE.BoxGeometry(3,3,3),new THREE.MeshNormalMaterial())
+	    	dataGeo.position.set(dg_xlats[i].x,dg_xlats[i].z,0); ring.add(dataGeo) 
+	    }
+	}
 	function eventListeners(){ //raycast and interaction
+		//web data
+		socket.on('dataHere',function(dat){
+			console.log('datahere: ' + dat)
+			if(dat==0){
+				screenSaver(true)
+			}else if(dat==1){
+				screenSaver(false)
+			}else{
+				backOut(); clearText(); dataset = dataList[dat]; getValues(); assess();
+				createPreviews()
+				for(var i = 0; i<4; i++){
+					var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
+					updatePillars(seseme.getObjectByName('plr'+i))
+					initProjections(seseme.getObjectByName('plr'+i),set)
+			}
+		}
+		})
+		socket.on('changeData',function(dat){
+			console.log('big red button: send dataset '+ dataList[dat])
+			
+			for(var i = 1; i<5; i++){
+				socket.emit('moveMotorJack',{name: 'm'+i, position: (tgtHts[i-1].y/12)*100})
+			}
+				//change data?
+				if(screenSaverOn){
+					screenSaver(false)
+				}else if(dat==0){
+					screenSaver(true)
+				}else{
+					backOut(); clearText(); dataset = dataList[dat]; getValues(); assess();
+					createPreviews()
+					for(var i = 0; i<4; i++){
+						var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
+						updatePillars(seseme.getObjectByName('plr'+i))
+						initProjections(seseme.getObjectByName('plr'+i),set)
+					}
+				}	
+			
+		})
+
+		socket.on('secretButton',function(){
+			console.log('sekrat button pressed')
+		})
+		//
+
 		mousePos = { x:0, y:0, z:0 }
   		raycast = new THREE.Raycaster()
 
@@ -206,6 +254,15 @@ function setup(){
 		}, false)
 
 		hammerSESEME = new Hammer(containerSESEME)
+			hammerSESEME.get('pinch').set({ enable: true })
+		hammerSESEME.on('pinch',function(evt){
+			// evt.preventDefault()
+			// camera.zoom = staticZoom * evt.scale
+			// camera.updateProjectionMatrix()
+		})
+  		hammerSESEME.on('pinchend',function(evt){
+  			//evt.preventDefault()	
+  		})
 		hammerSESEME.on('tap',function(e){
 			if(!screenSaverOn&&!forcing){
 				mousePos.x= (e.pointers[0].clientX / window.innerWidth)*2-1
@@ -251,11 +308,11 @@ function setup(){
 		  		touchRotating = false
 			}
   		})//pan finish
-	
 	}//end function eventListeners
 	function syncToData(){ //get all data, populate 3d and DOM/UI
 		getValues()
 		assess()
+		socket.emit('whatData')
 	}
 } //end setup
 

@@ -87,11 +87,32 @@ var data = {
 		location: 'UC Davis',
 		name: ['water use by utility'],
 		pts: [
-			{name: '', value:0, info: ['','']},
-			{name: '', value:0, info: ['','']},
-			{name: '', value:0, info: ['','']},
-			{name: '', value:0, info: ['','']}
-		]
+			{name: 'Cruess (Design)',
+			value: 51,
+			info: ['THE HOME OF UCD\'S DESIGN DEPT:','ONLY DESIGN DEPARTMENT IN THE UC','FORMERLY FOOD SCIENCE']
+			},
+			{name: 'Art Building',
+			value: 108,
+			info: ['MAKING ART USES A LOT OF ENERGY;', '(I.E. CLAY FIRING, METAL WORKING)', 'BUILT IN 1966','4 FLOORS','76 SPACES','36,800 SQUARE FEET'],
+			},
+			{name: 'Music Building',
+			value: 20,
+			info: ['EST. 1966','YOU CAN COME AND PRACTICE','TRY THE LISTENING LAB']
+			},
+			{name: 'Hunt (LDA)',
+			value: 193,
+			info: ['HOME OF LANDSCAPE ARCHITECTURE:','SEASONAL STUDENT EXHIBITIONS','IN THE COURTYARD']
+			}
+			],
+		criteria: [
+			{name: 'good', min:31, max:98 , color: '#158C61'},
+			{name: 'ok', min:99, max:165 , color: '#C07E2A'},
+			{name: 'bad', min:166, max:232 , color: '#C23D26'},
+			{name: 'awful', min:233, max:298, color: '#562F2D'}
+		],
+		unit: ['ENERGY UNIT', 'INTENSITY'],
+		nounType: 'building',
+		specificsType: 'energy'
 	}
 }
 

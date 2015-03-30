@@ -278,6 +278,7 @@ if(mode==='explore'){
 				clickedObj = rotationIndex[0]
 				clickRotate()
 			}else{
+				editData()
 				console.log('explore: clicked pedestal body')
 			}
 		}
@@ -563,6 +564,22 @@ function collapse(obj){ //collapses projections
 		fold.start()
 	})
 }
+
+function editData(){
+	mode = "editData"
+	moveCam({zoom: 0.7,y:11},500)
+
+}
+
+function summon(parent,riseamt,updown){
+	
+	parent.children.forEach(function(ele){
+		var current = {y: ele.position.y}
+		var rise = new TWEEN.Tween(current).to({y: ele.position+riseamt},800).onUpdate(function(){
+			ele.position.y = current.y
+		})
+	})
+}
 function selectProjection(obj, onoff){
 	var current = {x:obj.position.x,y:obj.position.y,z:obj.position.z,s: obj.scale.x, opacity: obj.material.opacity}
 	var select = new TWEEN.Tween(current)
@@ -699,41 +716,32 @@ function forcePillar(plr,ht){ //forces user view to explore and enables 'force m
 }
 
 function screenSaver(onoff){
-		backOut()
-		
+	backOut()
+	clearText()
+	screenSaverOn = onoff
+	dataset = onoff ? 'arc_saver' : 'ucd_bldg_nrg'
+	getValues()
+	assess()
+	createPreviews()
 
-		for(var i=0; i<4; i++){
-			var prev = pedestal.getObjectByName('plr'+i+'_preview')
-			var proj = seseme.getObjectByName('plr'+i).getObjectByName('projections')
-			// console.log(prev.name)
-			prev.traverse(function(child){
-				console.log(child.name)
-				pedestal.remove(child)
-			})
-			proj.traverse(function(child){
-				seseme.getObjectByName('plr'+i).remove(child)
-			})
-
-		}
-		screenSaverOn = onoff
-		dataset = onoff ? 'arc_saver' : 'ucd_bldg_nrg'
-		getValues()
-		assess()
-		createPreviews()
-
-		initProjections(plr0,plrAprojections)
-		initProjections(plr3,plrAprojections)
-		initProjections(plr1,plrBprojections)
-		initProjections(plr2,plrBprojections)
-
-		updatePillars(plr0)
-		updatePillars(plr1)
-		updatePillars(plr2)
-		updatePillars(plr3)
-		
+	for(var i = 0; i<4; i++){
+		var set = i==0 ? plrAprojections: i==3? plrAprojections: plrBprojections
+		updatePillars(seseme.getObjectByName('plr'+i))
+		initProjections(seseme.getObjectByName('plr'+i),set)
+	}
 }
 
-
+function clearText(){
+	for(var i=0; i<4; i++){
+		var prev = pedestal.getObjectByName('plr'+i+'_preview')
+		var proj = seseme.getObjectByName('plr'+i).getObjectByName('projections')
+		prev.traverse(function(child){
+			pedestal.remove(child)
+		})
+		proj.traverse(function(child){
+			seseme.getObjectByName('plr'+i).remove(child)
+		})
+}}
 
 // generic tools for a variety of situations
 function degs(rads){ //get degrees for my comprehension
