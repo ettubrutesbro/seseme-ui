@@ -1,16 +1,16 @@
 @font-face{
-	font-family: 'Fira Sans';
-	src: url('assets/fonts/fira-lt.ttf');
+	font-family: 'FiraSans';
+	src: url('../assets/fonts/fira-lt.ttf') format('truetype');
 	font-weight: 300;
 }
 @font-face{
-	font-family: 'Fira Sans';
-	src: url('assets/fonts/fira-med.ttf');
+	font-family: 'FiraSans';
+	src: url('../assets/fonts/fira-med.ttf') format('truetype');
 	font-weight: 500;
 }
 @font-face{
-	font-family: 'Source Serif Pro';
-	src: url('assets/fonts/source-reg.ttf');
+	font-family: 'SourceSerifPro';
+	src: url('../assets/fonts/source-reg.ttf') format('truetype');
 	font-weight: 400;
 }
 
@@ -26,10 +26,10 @@ html{
 }
 
 #source{
-	font-family: 'Source Serif Pro', serif;
-	font-size: 1px;
+	font-family: 'SourceSerifPro', serif;
+	font-size: 31px;
 }
 #sans{
-	font-family: 'Fira Sans', sans-serif;
-	font-size: 1px;
+	font-family: 'FiraSans', sans-serif;
+	font-size: 31px;
 }
