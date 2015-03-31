@@ -1,0 +1,49 @@
+<html>
+<head>
+	<meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=0.5, maximum-scale=0.5, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+
+	<title>Project SESEME</title>
+	
+	<link href='http://fonts.googleapis.com/css?family=Fira+Sans:300,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600' rel='stylesheet' type='text/css'>
+
+	<link rel = "stylesheet" href = "styles/UI.css" />
+</head>
+<body>
+	<div id = "etc"> <!-- font dump -->
+		<span id = "serif">loading</span><span id = "sans">fira</span>
+	</div>
+	<div id = "containerSESEME">
+	    
+	</div>
+	<div id = "UI">
+		<div id = "buttons">
+			<div id = "back"></div>
+			<div id = "navButton"></div>
+			<div id = "forward"></div>
+		</div>
+		<div class = "info" id = "infoTop"></div>
+		<div class = "info" id = "infoBottom">
+
+		</div>
+		<div class = "info" id = "infoLeft"></div>
+		<div class = "info" id = "infoRight"></div>
+	</div>
+	
+
+</body>
+<script src="libs/socket.io.js"></script> 
+<script src="libs/three.min.js"></script> 
+<script src="libs/hammer.min.js"></script> 
+<script src="libs/tween.min.js"></script> 
+<script src="libs/velocity.min.js"></script>
+
+<script src = "scripts/betadata.js"></script>
+<script src = "scripts/setup.js"></script>
+<script src = "scripts/betafunctions.js"></script>
+<script>
+	setup()
+	animate()
+</script>

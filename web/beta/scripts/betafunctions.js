@@ -95,7 +95,7 @@ function initProjections(tgt,atr){
 				factTex = new THREE.Texture(factCvs), factPlane; factTex.needsUpdate = true
 				factCvs.width = 29 * data[dataset].pts[index].info[it].length; factCvs.height = 120
 				factCtx.fillStyle = "#172B54"; factCtx.fillRect(0,0,factCvs.width, factCvs.height); 
-				factCtx.fillStyle = "white"; factCtx.font = "normal 500 36pt Fira Sans"; factCtx.textAlign = 'center'
+				factCtx.fillStyle = "white"; factCtx.font = "normal 500 36pt FiraSans"; factCtx.textAlign = 'center'
 				factCtx.fillText(data[dataset].pts[index].info[it],factCvs.width/2,80)
 				factPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(factCvs.width/100, factCvs.height/100),
 					new THREE.MeshBasicMaterial({map: factTex, transparent: true, opacity: 0}))
@@ -113,7 +113,7 @@ function initProjections(tgt,atr){
 				gWordTex.needsUpdate = true; gWordCvs.width = 350; gWordCvs.height = 150
 				gWordCtx.fillStyle = 'black'; gWordCtx.fillRect(0,0,gWordCvs.width,gWordCvs.height)
 				var fontSize = grades[index].words[it].length > 8? "36pt" : grades[index].words[it].length <= 4? "50pt": "42pt"
-				gWordCtx.fillStyle = "white"; gWordCtx.font = 'normal 500 ' +fontSize+ ' Fira Sans';
+				gWordCtx.fillStyle = "white"; gWordCtx.font = 'normal 500 ' +fontSize+ ' FiraSans';
 				gWordCtx.textAlign= 'center'; var dir = it===0? -1: 1
 				gWordCtx.fillText(grades[index].words[it],175,100)
 				gradeWord = new THREE.Mesh(new THREE.PlaneBufferGeometry(gWordCvs.width/100,gWordCvs.height/100),
@@ -141,7 +141,7 @@ function initProjections(tgt,atr){
 			}
 			statCtx.closePath(); statCtx.fill() 
 			statCtx.fillStyle = 'white'; if(allValues[index]>99){typeSize="84pt"}
-			statCtx.font = 'normal 400 '+typeSize+' Source Serif Pro'
+			statCtx.font = 'normal 400 '+typeSize+' SourceSerifPro'
 			statCtx.textAlign = 'center'
 			statCtx.fillText(allValues[index],150,200)
 
@@ -152,7 +152,7 @@ function initProjections(tgt,atr){
 				stMoreTex = new THREE.Texture(stMoreCvs), mesh; stMoreTex.needsUpdate = true; stMoreCvs.height = 85;
 				stMoreCvs.width = data[dataset].unit[ite].length * 28; stMoreCtx.fillStyle = grades[index].color
 				stMoreCtx.fillRect(0,0,stMoreCvs.width,stMoreCvs.height); stMoreCtx.fillStyle = 'white'
-				stMoreCtx.font = 'normal 500 33pt Fira Sans'; stMoreCtx.fillText(data[dataset].unit[ite],20,60);
+				stMoreCtx.font = 'normal 500 33pt FiraSans'; stMoreCtx.fillText(data[dataset].unit[ite],20,60);
 				mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(stMoreCvs.width/100,stMoreCvs.height/100),
 					new THREE.MeshBasicMaterial({map: stMoreTex, transparent: true,opacity:0}))
 				mesh.position.set(0,0.5-ite*1.1,-0.25); mesh.defpos = {x:0,y:0.5-ite*1.1,z:-0.25} 
@@ -189,7 +189,7 @@ function makePrev(text,type,position,scale,bg,color){
 			ctx.fillStyle = bg	
 			ctx.fillRect(0,0,300,300)
 		}
-		ctx.font = 'normal 300 32pt Source Serif Pro' 
+		ctx.font = 'normal 400 32pt SourceSerifPro' 
 		ctx.fillStyle = color
 		ctx.textAlign = 'center' 
 		if(text.length>8){
@@ -214,7 +214,7 @@ function makePrev(text,type,position,scale,bg,color){
 			ctx.fillStyle = bg	
 			ctx.fillRect(0,0,340,65)
 		}
-		ctx.font = 'normal 500 32pt Fira Sans' 
+		ctx.font = 'normal 500 32pt FiraSans' 
 		ctx.fillStyle = color
 		ctx.textAlign = 'center' 
 		ctx.fillText(text,cvs.width/2,45)
@@ -664,15 +664,15 @@ function previewShift(up){ //previews translate depending on explore/pillar mode
 		}	
 	}
 }
-
 function footProject(text){ //projects text from the base for 5-7 seconds then retracts and destroys itself
+	if(text!==undefined&&text!==null&&text!==''){
 	var footprojections = new THREE.Group()
 	var p_xlats = [{x:-8.5, z:-1,rx:rads(-90),rz:rads(-90)},{x: -1.5, z: 6, rx:rads(-90),rz:0},{x: 5.5, z: -1, rx:rads(-90),rz:rads(90)},
 	{x: -1.5, z: -8, rx:rads(-90),rz:rads(180)}]
 	for(var i=0;i<4;i++){
 		var cvs = document.createElement('canvas'), ctx = cvs.getContext('2d')
 		cvs.width = 240; cvs.height = 40
-		ctx.font = 'normal 300 30pt Fira Sans'; ctx.fillStyle = "black";
+		ctx.font = 'normal 300 30pt FiraSans'; ctx.fillStyle = "black";
 		ctx.textAlign = "center"; ctx.fillText(text[i],120,30)
 		var tex = new THREE.Texture(cvs); tex.needsUpdate = true
 		var mtl = new THREE.MeshBasicMaterial(
@@ -697,11 +697,12 @@ function footProject(text){ //projects text from the base for 5-7 seconds then r
 			backIn.start() 
 		})
 	})
+	}else{
+		console.log('broken quit out')
+	}
 }
-
-
 function secret(){
-	footProject('hold on','for a sec','!!!!','????')
+	footProject(['hold on','for a sec','!!!!','????'])
 	forcing = true
 	rotationIndex.forEach(function(ele,i){
 		ele = seseme.getObjectByName(ele)
