@@ -26,6 +26,10 @@ app.get('/oldest', function (req, res) {
 });
 
 app.get('/beta', function (req, res) {
-  res.sendFile(__dirname + '/web/beta/beta.html');
+  res.sendFile(__dirname + '/web/beta/index.html');
 });
+
+app.get('/v4', function (req, res) {
+	res.sendFile(__dirname + '/web/v4/index.html')
+})
 

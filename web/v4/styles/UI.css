@@ -1,0 +1,35 @@
+@font-face{
+	font-family: 'FiraSans';
+	src: url('../assets/fonts/fira-lt.ttf') format('truetype');
+	font-weight: 300;
+}
+@font-face{
+	font-family: 'FiraSans';
+	src: url('../assets/fonts/fira-med.ttf') format('truetype');
+	font-weight: 500;
+}
+@font-face{
+	font-family: 'SourceSerifPro';
+	src: url('../assets/fonts/source-reg.ttf') format('truetype');
+	font-weight: 400;
+}
+
+html{
+	font-size: 21px;
+	overflow: hidden;
+}
+#containerSESEME{
+	position: absolute;
+	left:0;
+	top:0;
+	width:100%;
+}
+
+#source{
+	font-family: 'SourceSerifPro', serif;
+	font-size: 31px;
+}
+#sans{
+	font-family: 'FiraSans', sans-serif;
+	font-size: 31px;
+}
