@@ -130,12 +130,14 @@ function setup(){
 		    plr1.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, -5 ) )
 		    plr1.name = "plr1"
 		    seseme.add(plr1)
+
 		    
 		    plr2 = new THREE.Mesh(geometry, sesememtl)
 		    plr2.applyMatrix( new THREE.Matrix4().makeTranslation( -5, 0, 5 ) )
 		    plr2.rotation.y = 90 * Math.PI / 180
 		    plr2.name = "plr2"
 		    seseme.add(plr2)
+
 		   
 		    loader.load("assets/pillarB_outline.js", function(g){
 		      outlines[2] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: 0xff0000, side: THREE.BackSide })
@@ -192,6 +194,12 @@ function setup(){
 	    // }
 	}
 	function eventListeners(){ //raycast and interaction
+
+		THREE.DefaultLoadingManager.onProgress = function ( item, loaded, total ) {
+
+				console.log( item, loaded, total );
+
+			}
 		//web data
 		socket.on('dataHere',function(dat){
 			console.log('datahere: ' + dataset[dat])
