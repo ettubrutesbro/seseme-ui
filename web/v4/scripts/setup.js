@@ -1,7 +1,8 @@
 var scene = new THREE.Scene(), camera, renderer, controls
 var resources = {geos: {}, mtls: {}}
 var seseme = new THREE.Group(), ground
-var lightrig
+var lights, gyro
+
 
 function setup(){
 	cameraDomSetup()
@@ -21,7 +22,6 @@ function cameraDomSetup(){
 
 	controls = new THREE.OrbitControls(camera)
 	controls.damping = 5
-	controls.addEventListener( 'change', render )
 
 	var containerSESEME = document.getElementById("containerSESEME")
 	renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
@@ -81,36 +81,33 @@ function loadAssets(){
 		seseme.add(seseme.pillars)
 
 		//lighting
-		lightrig = new THREE.Group()
+		lights = new THREE.Group(); gyro = new THREE.Group()
 		backlight = new THREE.SpotLight(0xeaddb9, 1.2)
-	    backlight.position.set(-15,35,-10)
 	  	amblight = new THREE.AmbientLight( 0x232330 )
-	  	camlight = new THREE.SpotLight(0xffffff, .35)
-	  	lightrig.add(backlight)
-	  	lightrig.add(amblight) 
-	  	lightrig.add(camlight)
-	  	
-	  	camlight.position.set(camera.position.x*2,camera.position.y-30,camera.position.z*-1.25)
-	  	camlight.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshNormalMaterial()))
-	  	backlight.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color: 0x000000})))
-	  	lightrig.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(5,5,5),new THREE.MeshNormalMaterial()))
+	  	camlight = new THREE.PointLight(0xffffff, .35)
+	  	backlight.position.set(-7,25,-4)
+	  	camlight.position.set(-40,-7,-24)
+
+	  	lights.add(backlight)
+	  	lights.add(amblight) 
+	  	lights.add(camlight)
+	  	gyro.add(lights)
 
 	  	 //adding to scene
 		scene.add(ground)
 		scene.add(seseme)
-		scene.add(lightrig)
-		
+		scene.add(gyro)
 
 	}//buildModel
 }//assetLoader
 function eventListeners(){
 	window.addEventListener('deviceorientation', function(evt){
-		// lightrig.rotation.y = rads(evt.gamma/1.5)
-		lightrig.position.y = rads(evt.beta)*2
-		lightrig.position.x = rads(evt.gamma)*2
-		lightrig.position.z = -rads(evt.gamma)*2
-		
+		gyro.rotation.y = rads(evt.gamma)/1.5
 	})
+	controls.addEventListener( 'change', function(){
+		lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
+		console.log(camera.zoom)
+	} )
 }
 
 }//setup
@@ -118,7 +115,6 @@ function eventListeners(){
 function animate(){ 
     requestAnimationFrame( animate )
     controls.update()
-    lightrig.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
     render()
     TWEEN.update()
   } 
