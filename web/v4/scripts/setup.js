@@ -1,7 +1,7 @@
-var scene = new THREE.Scene(), camera, renderer, controls
-var resources = {geos: {}, mtls: {}}
-var seseme = new THREE.Group(), ground
-var lights, gyro
+var scene = new THREE.Scene(), camera, renderer, controls, resources = {geos: {}, mtls: {}}
+var seseme = new THREE.Group(), ground, lights, gyro
+
+var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal'}
 
 
 function setup(){
@@ -69,7 +69,8 @@ function loadAssets(){
 		seseme.pedestal.position.set(1.5,0,1)
 		seseme.pillars = new THREE.Group()
 		plrXlats = [
-			{type:'A',ry:0, pos:{x:-5,z:-5}},{type:'B',ry:0, pos:{x:-5,z:-5}},{type:'B',ry:90, pos:{x:-5,z:5}},{type:'A',ry:-90, pos:{x:5,z:-5}}
+			{type:'A',ry:0,pos:{x:-5,z:-5}},{type:'B',ry:0, pos:{x:-5,z:-5}},
+			{type:'B',ry:90, pos:{x:-5,z:5}},{type:'A',ry:-90, pos:{x:5,z:-5}}
 		]
 		plrXlats.forEach(function(ele,i){
 			seseme['plr'+i] = new THREE.Mesh(resources.geos['pillar'+ele.type],resources.mtls.seseme)
@@ -106,7 +107,18 @@ function eventListeners(){
 	})
 	controls.addEventListener( 'change', function(){
 		lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-		console.log(camera.zoom)
+
+		facingRotations = [-45,45,135,-135]
+		facingRotations.some(function(ele,i){
+			if(Math.abs(degs(camera.rotation.y)-ele)<45){
+				if(facing!=='plr'+i){console.log('facing diff plr'); facing = 'plr'+i }
+				return true
+			}
+		})
+		height = degs(camera.rotation.x)>-14?'elevation':degs(camera.rotation.x)<-40?'plan':'isometric'
+		if(perspective.height!==height){console.log('changed perspective height'); perspective.height = height}
+	
+
 	} )
 }
 
