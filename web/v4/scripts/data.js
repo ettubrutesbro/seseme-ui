@@ -14,8 +14,8 @@ var stories = [
 				name: 'Davis: UC Sustainability Whipping Boy',
 				text: 'Within the University of California, Davis is near dead last. The likes of Berkeley, Santa Cruz, Santa Barbara, San Diego, and even Merced are ranked higher, not to mention Irvine, which at #1 occupies our old throne. The only UCs behind us are LA (close at 60) and Riverside (a dubious 90).',
 				next: 'WHAT HAPPENED?',
-				pointNames: ['UC Davis','UC Irvine','UC Berkeley','UC San Diego'],
-				pointValues: [55,1,33,17], valueType: 'smallerIsHigher', valueRange: [1,60] 
+				pointNames: ['UC Davis','UC Berkeley','UC San Diego','UC Irvine'],
+				pointValues: [55,33,17,1], valueType: 'smallerIsHigher', valueRange: [1,60] 
 			},
 			{
 				name: 'How it happened 1: Greenhouse Gas Emissions',
