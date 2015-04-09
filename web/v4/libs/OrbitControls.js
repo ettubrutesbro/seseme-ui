@@ -39,7 +39,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to true to disable this control
 	this.noRotate = false;
-	this.rotateSpeed = 0.6;
+	this.rotateSpeed = 0.1;
 
 	// Set to true to disable this control
 	this.noPan = true;
@@ -312,8 +312,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		this.object.lookAt( this.target );
 
-		thetaDelta = 0;
-		phiDelta = 0;
+		thetaDelta /= 1.15;
+		phiDelta /= 1.15;
 		scale = 1;
 		pan.set( 0, 0, 0 );
 

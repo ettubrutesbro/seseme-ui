@@ -7,11 +7,9 @@ var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal'}
 function setup(){
 	cameraDomSetup()
 	loadAssets()
-	eventListeners()
 
 function cameraDomSetup(){
 	var aspect = window.innerWidth / window.innerHeight
-	 
 	var d = 20
 	camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 	camera.position.set( -d, 10, d )
@@ -19,9 +17,6 @@ function cameraDomSetup(){
 	camera.rotation.y = - Math.PI / 4
 	camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
 	camera.updateProjectionMatrix()
-
-	controls = new THREE.OrbitControls(camera)
-	controls.damping = 5
 
 	var containerSESEME = document.getElementById("containerSESEME")
 	renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
@@ -34,7 +29,10 @@ function loadAssets(){
 
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr')
-	resourceMgr.onLoad = function(){ console.log('all resources done'); buildScene()}
+	resourceMgr.onLoad = function(){ 
+		console.log('all resources done')
+		buildScene(); eventListeners(); animate()
+	}
 
 	var mdlMgr = new THREE.LoadingManager()
 	mdlMgr.onProgress = function(item,loaded, total){console.log(item,loaded, total)}
@@ -98,29 +96,27 @@ function loadAssets(){
 		scene.add(ground)
 		scene.add(seseme)
 		scene.add(gyro)
-
-	}//buildModel
-}//assetLoader
-function eventListeners(){
-	window.addEventListener('deviceorientation', function(evt){
-		gyro.rotation.y = rads(evt.gamma)/1.5
-	})
-	controls.addEventListener( 'change', function(){
-		lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-
-		facingRotations = [-45,45,135,-135]
-		facingRotations.some(function(ele,i){
-			if(Math.abs(degs(camera.rotation.y)-ele)<45){
-				if(facing!=='plr'+i){console.log('facing diff plr'); facing = 'plr'+i }
-				return true
-			}
+	}//buildScene
+	function eventListeners(){
+		controls = new THREE.OrbitControls(camera)
+		controls.damping = 5
+		window.addEventListener('deviceorientation', function(evt){
+			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
-		height = degs(camera.rotation.x)>-14?'elevation':degs(camera.rotation.x)<-40?'plan':'isometric'
-		if(perspective.height!==height){console.log('changed perspective height'); perspective.height = height}
-	
+		controls.addEventListener( 'change', function(){ 
+			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
 
-	} )
-}
+			facingRotations = [-45,45,135,-135]
+			facingRotations.some(function(ele,i){
+				if(Math.abs(degs(camera.rotation.y)-ele)<45){
+					if(facing!=='plr'+i){console.log('facing diff plr'); facing = 'plr'+i }; return true }
+			})
+			height = degs(camera.rotation.x)>-14?'elevation':degs(camera.rotation.x)<-40?'plan':'isometric'
+			if(perspective.height!==height){console.log('changed perspective height'); perspective.height = height}
+		} )
+	}//eventListeners
+
+}//loadAssets
 
 }//setup
 
