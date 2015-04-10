@@ -98,7 +98,6 @@ function loader(){
 	}
 	function behaviors(){
 		controls = new THREE.OrbitControls(camera)
-		controls.damping = 5
 		window.addEventListener('deviceorientation', function(evt){
 			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
@@ -113,10 +112,7 @@ function loader(){
 						if(perspective.zoom==='close'){
 							perspective.zoomswitch = true
 							addzoom = camera.zoom-1.5
-							zoomswitchcallback = function(){
-								console.log('done tweening @ zoom switch')
-								perspective.zoomswitch = false
-							}
+							zoomswitchcallback = function(){perspective.zoomswitch = false}
 							move(scene,{x:0,y:-(seseme[facing].position.y)*addzoom-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
 						} 
 					}
