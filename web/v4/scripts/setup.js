@@ -1,4 +1,4 @@
-var story = 0, part = 0
+var story = 0, part = 1
 
 var scene = new THREE.Scene(), camera, renderer, controls, resources = {geos: {}, mtls: {}}
 var seseme = new THREE.Group(), ground, lights, gyro
@@ -13,10 +13,14 @@ function loader(){
 	var allModels = ['pedestal','pillarA','pillarB']
 	var allTextures = ['grade_good','grade_ok','grade_bad','grade_awful']
 	var resourceMgr = new THREE.LoadingManager()
-	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr')
+	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){ 
 		console.log('all resources done')
+		//////////////////////////////////////////////////////////////////////////////////
+		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
 		query(); build(); fill(); behaviors(); display()
+		//-----------------------END CORE FUNCTIONS FOR INIT---------------------------//
+		//////////////////////////////////////////////////////////////////////////////////
 	}
 	var mdlMgr = new THREE.LoadingManager()
 	mdlMgr.onProgress = function(item,loaded, total){console.log(item,loaded, total)}
@@ -36,7 +40,13 @@ function loader(){
 		texLoader.load('assets/'+ele+'.png',function(texture){
 			resources.mtls[ele] = new THREE.MeshBasicMaterial({map:texture})
 		})
-	})	
+	})
+	WebFontConfig = { 
+		google: {families: ['Source Serif Pro', 'Fira Sans']},
+		classes: false, 
+		active: function(){ console.log('fonts loaded'); resourceMgr.itemEnd('fonts') }
+	}
+
 	function query(){
 		//socket.emit('get')
 		//socket.on('data',function(d){
@@ -52,6 +62,7 @@ function loader(){
 		camera.updateProjectionMatrix()
 		var containerSESEME = document.getElementById("containerSESEME")
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
+		// renderer.setClearColor(0xbbbbbb)
 		renderer.setSize( window.innerWidth, window.innerHeight)
 		containerSESEME.appendChild( renderer.domElement )
 		//materials 
@@ -82,8 +93,11 @@ function loader(){
 	  	backlight.position.set(-7,25,-4); camlight.position.set(-40,-7,-24)
 	  	lights.add(backlight); lights.add(amblight); lights.add(camlight);
 	  	gyro.add(lights)
+	  	//other FX
+	  	// scene.fog = new THREE.FogExp2( 0xbbbbbb, 1.2 )
 	  	 //adding to scene
 		scene.add(ground); scene.add(seseme); scene.add(gyro)
+
 	}//build
 	function fill(){
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
@@ -95,6 +109,26 @@ function loader(){
 		stories[story].parts[part].pointValues.forEach(function(ele,i){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
+		var plrxlats = [{x:3, z:7},{x:7, z:7},{x:7, z:7},{x:3, z:7}]
+		seseme.pillars.children.forEach(function(ele,i){
+			var title = stories[story].parts[part].pointNames[i]
+			//top sprite (for close-plan)
+				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs) 
+				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(title).width * 18;
+				spritectx.scale(3,3); spritectx.beginPath(); spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true);  
+				spritectx.closePath(); spritectx.fillStyle = 'white'; spritectx.fill(); spritectx.textAlign = 'center'
+				spritectx.font= 'normal 500 32pt Fira Sans'; spritectx.fillText(title.toUpperCase(),spritecvs.width/6,50); 
+				var spritemtl = new THREE.SpriteMaterial({map: spritetex})
+				var sprite = new THREE.Sprite( spritemtl ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
+				sprite.position.set(plrxlats[i].x,0.75,plrxlats[i].z); ele.add(sprite);
+			//face plane (for normal-iso)
+				// var planecvs = document.createElement( 'canvas' ); planecvs.height = 75
+				// var planectx = planecvs.getContext('2d'); planectx.font = '';
+				// var plane = new THREE.PlaneBufferGeometry(5,5,5);  
+
+			//geo (for all close views)
+		})
+
 	}
 	function behaviors(){
 		controls = new THREE.OrbitControls(camera)
