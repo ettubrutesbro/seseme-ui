@@ -185,12 +185,13 @@ function loader(){
 
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
+			controls.zoomSpeed = 0.6-(Math.abs(camera.zoom-1)/5)
+			console.log(controls.zoomSpeed)
 			if(perspective.height!==height){
 				view(height)
 			}
 			if(perspective.zoom!==zoom){
 				zooming(zoom)
-				perspective.zoom = zoom
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
