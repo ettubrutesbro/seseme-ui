@@ -109,7 +109,7 @@ function loader(){
 		stories[story].parts[part].pointValues.forEach(function(ele,i){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
-		var plrxlats = [{sx:3, sz:7},{sx:7, sz:7},{sx:7, sz:7},{sx:3, sz:7}]
+		var plrxlats = [{sx:3,sz:7,px:0,pz:0,pr:-45},{sx:7,sz:7,px:0,pz:0,pr:45},{sx:7,sz:7,px:0,pz:0,pr:45},{sx:3,sz:7,px:0,pz:0,pr:-45}]
 		seseme.pillars.children.forEach(function(ele,i){
 			var title = stories[story].parts[part].pointNames[i]
 			//top sprite (for close-plan)
@@ -130,7 +130,8 @@ function loader(){
 				planectx.textAlign = 'center'; planectx.fillText(title,planecvs.width/6,50)
 				resources.mtls['plr'+i+'_pln'] = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, map: planetex})
 				var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls['plr'+i+'_pln'])
-				plane.position.set(0,-5,0); ele.add(plane)  
+				plane.position.set(plrxlats[i].px,-5,plrxlats[i].pz); plane.rotation.y = rads(plrxlats[i].pr)
+				ele.add(plane)  
 			//geo (for all close views)
 		})
 
