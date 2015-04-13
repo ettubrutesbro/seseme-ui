@@ -1,4 +1,4 @@
-var story = 0, part = 1
+var story = 0, part = 0
 
 var scene = new THREE.Scene(), camera, renderer, controls, resources = {geos: {}, mtls: {}}
 var seseme = new THREE.Group(), ground, lights, gyro
@@ -109,23 +109,28 @@ function loader(){
 		stories[story].parts[part].pointValues.forEach(function(ele,i){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
-		var plrxlats = [{x:3, z:7},{x:7, z:7},{x:7, z:7},{x:3, z:7}]
+		var plrxlats = [{sx:3, sz:7},{sx:7, sz:7},{sx:7, sz:7},{sx:3, sz:7}]
 		seseme.pillars.children.forEach(function(ele,i){
 			var title = stories[story].parts[part].pointNames[i]
 			//top sprite (for close-plan)
 				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs) 
 				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(title).width * 18;
 				spritectx.scale(3,3); spritectx.beginPath(); spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true);  
-				spritectx.closePath(); spritectx.fillStyle = 'white'; spritectx.fill(); spritectx.textAlign = 'center'
+				spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill(); spritectx.textAlign = 'center'
 				spritectx.font= 'normal 500 32pt Fira Sans'; spritectx.fillText(title.toUpperCase(),spritecvs.width/6,50); 
-				var spritemtl = new THREE.SpriteMaterial({map: spritetex})
-				var sprite = new THREE.Sprite( spritemtl ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
-				sprite.position.set(plrxlats[i].x,0.75,plrxlats[i].z); ele.add(sprite);
+				resources.mtls['plr'+i+'_spr'] = new THREE.SpriteMaterial({map: spritetex})
+				var sprite = new THREE.Sprite( resources.mtls['plr'+i+'_spr'] ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
+				sprite.position.set(plrxlats[i].sx,0.75,plrxlats[i].sz); ele.add(sprite);
 			//face plane (for normal-iso)
-				// var planecvs = document.createElement( 'canvas' ); planecvs.height = 75
-				// var planectx = planecvs.getContext('2d'); planectx.font = '';
-				// var plane = new THREE.PlaneBufferGeometry(5,5,5);  
-
+				var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d') 
+				var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true; 
+				planecvs.width = planectx.measureText(title).width * 11.5+200; planecvs.height = 200
+				planectx.scale(3,3); planectx.fillStyle = 'white'; planectx.fillRect(0,0,planecvs.width,planecvs.height)
+				planectx.fillStyle = 'black'; planectx.font = 'normal 400 36pt Source Serif Pro';
+				planectx.textAlign = 'center'; planectx.fillText(title,planecvs.width/6,50)
+				resources.mtls['plr'+i+'_pln'] = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, map: planetex})
+				var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls['plr'+i+'_pln'])
+				plane.position.set(0,-5,0); ele.add(plane)  
 			//geo (for all close views)
 		})
 
