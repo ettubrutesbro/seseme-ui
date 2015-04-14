@@ -130,7 +130,10 @@ function loader(){
 				spritectx.fillText(title.toUpperCase(),spritecvs.width/6,50); 
 				resources.mtls.plrs.sprs[i] = new THREE.SpriteMaterial({map: spritetex, transparent: true, opacity: 0})
 				var sprite = new THREE.Sprite( resources.mtls.plrs.sprs[i] ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
-				sprite.position.set(plrxlats[i].sx,.75,plrxlats[i].sz); sprite.name = 'sprite'; ele.add(sprite);
+				sprite.expand = {x:plrxlats[i].sx,y:.75,z:plrxlats[i].sz}; sprite.origin = {x:plrxlats[i].sx,y:1.5,z:plrxlats[i].sz}; 
+				sprite.position.set(sprite.origin.x,sprite.origin.y,sprite.origin.z); 
+
+				ele.sprite = sprite; ele.add(ele.sprite);
 			//face plane (for normal-iso)
 				var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d') 
 				var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true; 
@@ -141,7 +144,11 @@ function loader(){
 				resources.mtls.plrs.plns[i] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: planetex})
 				var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls.plrs.plns[i])
 				plane.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(defaultiso))
-				plane.position.set(plrxlats[i].px,-seseme['plr'+i].position.y-3.5,plrxlats[i].pz)
+
+				plane.expand = {x: plrxlats[i].px,y:-seseme['plr'+i].position.y-3.5, z:plrxlats[i].pz}
+				plane.origin = {x:plrxlats[i].px,y:-seseme['plr'+i].position.y-2,z:plrxlats[i].pz}
+				plane.position.set(plane.origin.x,plane.origin.y,plane.origin.z)
+				
 				plane.rotation.set(0,rads(plrxlats[i].pr),0); plane.name = 'plane'
 				ele.plane = plane; ele.add(ele.plane) 
 			//caption accompaniment
@@ -153,13 +160,23 @@ function loader(){
 				resources.mtls.plrs.plns[i].caption = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: captiontex})
 				var caption = new THREE.Mesh(new THREE.PlaneBufferGeometry(captioncvs.width/60,captioncvs.height/60),
 					resources.mtls.plrs.plns[i].caption); caption.rotation.x = defaultiso
-				plane.caption = caption; plane.add(plane.caption); caption.position.set(0,2.5,-1)
+				
+				caption.expand = {x:0,y:2.5,z:-1}; caption.origin = {x:0,y:1,z:1}
+				caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
+
+				plane.caption = caption; plane.add(plane.caption); 
 			//pointer
 				resources.mtls.plrs.plns[i].pointer = resources.mtls.tri.clone()
+				resources.mtls.plrs.plns[i].pointer.transparent = true
+				resources.mtls.plrs.plns[i].pointer.opacity = 0
 				var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.plrs.plns[i].pointer)
-				pointer.position.set(0,1.25,.1); caption.pointer = pointer; caption.add(caption.pointer)
+				
+				pointer.expand = {x:0,y:1.25,z:.1}; pointer.origin = {x:0,y:0.5,z:-1}
+				pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z); 
 
-				isoprev(facing) //one time only
+				caption.pointer = pointer; caption.add(caption.pointer)
+
+				point_prev(facing) //one time only
 			//geo (for all close views)
 		})
 
@@ -178,7 +195,7 @@ function loader(){
 					if(facing!=='plr'+i){
 						console.log('facing diff plr') 
 						if(perspective.height === 'isometric' && perspective.zoom === 'normal'){
-							isoprev('plr'+i,facing)
+							point_prev('plr'+i,facing)
 						}
 						facing = 'plr'+i
 
