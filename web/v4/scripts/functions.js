@@ -17,7 +17,6 @@ function move(obj,pos,spd,multiplier,twntype,twninout,callback){
 	.start()
 }
 function fade(mtl,tgtopacity,spd,callback){
-	mtl.tween
 	var start = {opacity: mtl.opacity}
 	var transition = new TWEEN.Tween(start).to({opacity: tgtopacity}, spd)
 	.onComplete(function(){if(callback!==undefined){callback()}})
@@ -66,9 +65,11 @@ function zooming(zoom){
 
 function isoprev(plrin, plrout){
 	if(plrout!==undefined){
-		fade(seseme[plrout].getObjectByName('plane').material,0,300)
-		fade(seseme[plrout].getObjectByName('plane').children[0].material,0,300)
+		seseme[plrout].plane.traverse(function(child){
+			fade(child.material,0,300)
+		})
 	}
-	fade(seseme[plrin].getObjectByName('plane').material,1,300)
-	fade(seseme[plrin].getObjectByName('plane').children[0].material,1,300)
+	seseme[plrin].plane.traverse(function(child){
+		fade(child.material,1,300)
+	})
 }

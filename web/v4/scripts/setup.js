@@ -6,14 +6,14 @@ var seseme = new THREE.Group(), ground, lights, gyro
 var plrmax = 12, defaultiso
 
 var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false} 
-var thresholds = {zoom: [.8,1.2], height: [-15,-60]}
+var thresholds = {zoom: [.8,1.2], height: [-12,-60]}
 
 function setup(){
 	loader()
 
 function loader(){
 	var allModels = ['pedestal','pillarA','pillarB']
-	var allTextures = ['grade_good','grade_ok','grade_bad','grade_awful'] //names of all external images
+	var allTextures = ['grade_good','grade_ok','grade_bad','grade_awful','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){ 
@@ -40,7 +40,7 @@ function loader(){
 	var texLoader = new THREE.TextureLoader( mtlMgr )
 	allTextures.forEach(function(ele){
 		texLoader.load('assets/'+ele+'.png',function(texture){
-			resources.mtls[ele] = new THREE.MeshBasicMaterial({map:texture})
+			resources.mtls[ele] = new THREE.MeshBasicMaterial({map:texture, transparent: true, opacity: 1})
 		})
 	})
 	WebFontConfig = { 
@@ -96,9 +96,11 @@ function loader(){
 	  	lights.add(backlight); lights.add(amblight); lights.add(camlight);
 	  	gyro.add(lights)
 	  	//other FX
+	  	shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(16,16), resources.mtls.shadow)
+	  	shadow.rotation.x = rads(-90); shadow.position.set(-0.1,-17.99,0.1)
 	  	// scene.fog = new THREE.FogExp2( 0xbbbbbb, 1.2 )
 	  	 //adding to scene
-		scene.add(ground); scene.add(seseme); scene.add(gyro)
+		scene.add(ground); seseme.add(shadow); scene.add(seseme); scene.add(gyro)
 
 	}//build
 	function fill(){
@@ -112,19 +114,23 @@ function loader(){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
 
-		plrxlats = [{sx:3,sz:7,px:-1,pz:11,pr:-45},{sx:7,sz:7,px:11,pz:11,pr:45},{sx:7,sz:7,px:11,pz:11,pr:45},{sx:3,sz:7,px:-1,pz:11,pr:-45}]
+		plrxlats = [{sx:3,sz:7,px:-1.5,pz:11.5,pr:-45},{sx:7,sz:7,px:11.5,pz:11.5,pr:45},{sx:7,sz:7,px:11.5,pz:11.5,pr:45},{sx:3,sz:7,px:-1.5,pz:11.5,pr:-45}]
 		seseme.pillars.children.forEach(function(ele,i){ //pillar objects
 			var title = stories[story].parts[part].pointNames[i]
 			var capt = stories[story].parts[part].metricName
 			//top sprite (for close-plan)
 				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs) 
-				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(title).width * 18;
-				spritectx.scale(3,3); spritectx.beginPath(); spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true);  
-				spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill(); spritectx.textAlign = 'center'
-				spritectx.font= 'normal 500 32pt Fira Sans'; spritectx.fillText(title.toUpperCase(),spritecvs.width/6,50); 
+				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(title).width * 11+240;
+				spritectx.scale(3,3); spritectx.beginPath(); 
+				spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true); 
+				// spritectx.moveTo(spritecvs.width/6,90);spritectx.lineTo(spritecvs.width/6-20,65);spritectx.lineTo(spritecvs.width/6+20,65)
+				spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill(); 
+				// spritectx.fillRect(0,0,spritecvs.width,65) spritectx.fillStyle = 'white'
+				spritectx.textAlign = 'center'; spritectx.font= 'normal 500 32pt Fira Sans'; 
+				spritectx.fillText(title.toUpperCase(),spritecvs.width/6,50); 
 				resources.mtls.plrs.sprs[i] = new THREE.SpriteMaterial({map: spritetex, transparent: true, opacity: 0})
 				var sprite = new THREE.Sprite( resources.mtls.plrs.sprs[i] ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
-				sprite.position.set(plrxlats[i].sx,0.75,plrxlats[i].sz); sprite.name = 'sprite'; ele.add(sprite);
+				sprite.position.set(plrxlats[i].sx,.75,plrxlats[i].sz); sprite.name = 'sprite'; ele.add(sprite);
 			//face plane (for normal-iso)
 				var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d') 
 				var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true; 
@@ -135,9 +141,9 @@ function loader(){
 				resources.mtls.plrs.plns[i] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: planetex})
 				var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls.plrs.plns[i])
 				plane.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(defaultiso))
-				plane.position.set(plrxlats[i].px,-seseme['plr'+i].position.y-5,plrxlats[i].pz)
+				plane.position.set(plrxlats[i].px,-seseme['plr'+i].position.y-3.5,plrxlats[i].pz)
 				plane.rotation.set(0,rads(plrxlats[i].pr),0); plane.name = 'plane'
-				ele.add(plane) 
+				ele.plane = plane; ele.add(ele.plane) 
 			//caption accompaniment
 				var captioncvs = document.createElement( 'canvas' ), captionctx = captioncvs.getContext('2d') 
 				var captiontex = new THREE.Texture(captioncvs); captiontex.needsUpdate = true;  
@@ -147,9 +153,13 @@ function loader(){
 				resources.mtls.plrs.plns[i].caption = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: captiontex})
 				var caption = new THREE.Mesh(new THREE.PlaneBufferGeometry(captioncvs.width/60,captioncvs.height/60),
 					resources.mtls.plrs.plns[i].caption); caption.rotation.x = defaultiso
-				ele.getObjectByName('plane').add(caption); caption.position.set(0,3,-1)
+				plane.caption = caption; plane.add(plane.caption); caption.position.set(0,2.5,-1)
+			//pointer
+				resources.mtls.plrs.plns[i].pointer = resources.mtls.tri.clone()
+				var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.plrs.plns[i].pointer)
+				pointer.position.set(0,1.25,.1); caption.pointer = pointer; caption.add(caption.pointer)
 
-				isoprev(facing) //onetimeonly
+				isoprev(facing) //one time only
 			//geo (for all close views)
 		})
 
@@ -186,7 +196,6 @@ function loader(){
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
 			controls.zoomSpeed = 0.6-(Math.abs(camera.zoom-1)/5)
-			console.log(controls.zoomSpeed)
 			if(perspective.height!==height){
 				view(height)
 			}
