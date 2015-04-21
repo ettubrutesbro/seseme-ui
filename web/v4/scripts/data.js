@@ -9,8 +9,10 @@ var stories = [
 				text: 'In 2012, UC Davis was named the #1 greenest college in America by Sierra Club. The annual recipient is the US university deemed most environmentally responsible in categories like energy use, waste management, food sourcing, and education. Since then, our ranking has slipped to #55 (as of 2014). It\'s now easy to find a university that\'s beating us on the sustainability front - near or far, old or new, big or small, expensive or cheap.',
 				next: 'VS. OTHER UCS',
 				pointNames: ['UC Davis','Stanford','CSU Chico','Harvard'],
-				pointType: 'numbers',metricName: 'GREEN SCHOOLS RANK', valuePrefix: '#',
+				pointType: 'numbers',metricName: 'GREEN SCHOOLS RANK', 
 				pointValues: [55,6,39,19], valueType: 'smallerIsHigher', valueRange: [1,60],
+				normalStat: {nums: ['55th','6th','39th','19th'], words: '"coolest school"', pics: ['s_awful','s_good','s_bad','s_ok']  }, //random num, numwords, numpics, pics
+				detailStat: {nums: ['7000','8000','7100','7900'], words: 'sierra score' }
 				// expandValues: ['700 points','900 points','800 points','850 points'],
 				// pointsText: ['','','',''],
 			},
