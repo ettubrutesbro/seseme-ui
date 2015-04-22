@@ -17,7 +17,6 @@ function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	if(delay!==undefined){translate.delay(delay)}
 	translate.start()
 }
-
 function fade(mtl,tgtopacity,spd,delay,callback){
 	var start = {opacity: mtl.opacity}
 	var transition = new TWEEN.Tween(start).to({opacity: tgtopacity}, spd)
@@ -25,14 +24,20 @@ function fade(mtl,tgtopacity,spd,delay,callback){
 	.onUpdate(function(){mtl.opacity = start.opacity}).delay(delay)
 	.start()
 }
-
-function orientIso(obj, direction, spd){ //true > iso, false > 0
-	var start = direction===true? 0: defaultiso, 
-	tgt = direction===true? defaultiso: 0
-	var orient=new TWEEN.Tween(start).to(tgt,spd).onUpdate(function(){
-		obj.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(start))
-	}).start()
+function stretch(obj,tgtscale,spd,callback){
+	var start = {sx: obj.scale.x, sy: obj.scale.y, sz: obj.scale.z}
+	var anim = new TWEEN.Tween(start).to(tgtscale,spd).onComplete(function(){
+	if(callback!==undefined){callback()}}).onUpdate(function(){obj.scale.x = start.sx
+	obj.scale.y= start.sy; obj.scale.z = start.sz}).start()
 }
+
+// function orientIso(obj, direction, spd){ //true > iso, false > 0
+// 	var start = direction===true? 0: defaultiso, 
+// 	tgt = direction===true? defaultiso: 0
+// 	var orient=new TWEEN.Tween(start).to(tgt,spd).onUpdate(function(){
+// 		obj.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(start))
+// 	}).start()
+// }
 
 function view(height){
 	console.log('height: ' + height)
@@ -41,10 +46,10 @@ function view(height){
 		point_prev(facing)
 		point_sprites(false)
 		
-	}else if(height === 'plan'){
+	}else if(height === 'plan' && perspective.zoom === 'normal'){
 		point_prev(undefined,facing)
 
-	}else if(height === 'elevation'){
+	}else if(height === 'elevation' && perspective.zoom === 'normal'){
 		point_prev(undefined,facing)
 		point_sprites(true)
 	}
@@ -65,13 +70,33 @@ function point_prev(plrin, plrout){
 		var outi = 0; seseme[plrout].plane.traverse(function(child){
 			move(child,child.origin,400,1,'Quadratic','Out',function(){},outi*100)
 			fade(child.material,0,350,outi*50); outi++
-		})	
+		})
+		if(perspective.zoom==='normal'){
+			seseme[plrout].statbox.traverse(function(child){
+				if(child.material){
+					fade(child.material,0,400,120)	
+				}
+			})
+		}
 	}
 	if(plrin!==undefined){
 		var ini = 0; seseme[plrin].plane.traverse(function(child){
 			move(child,child.expand,400,1,'Quadratic','Out',function(){},ini*100)
 			fade(child.material,1,400,ini*120); ini++
 		})
+		//zoom conditional for statsobjects: zoom determines normalWidth or detailWidth
+		if(perspective.zoom==='normal'){
+			seseme[plrin].statbox.traverse(function(child){
+				if(child.material){
+					fade(child.material,1,400,120)	
+				}
+				
+			})
+		}else if(perspective.zoom==='close'){
+
+		}else{
+
+		}
 	}
 }
 
