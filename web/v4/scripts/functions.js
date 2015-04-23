@@ -46,7 +46,7 @@ function view(height){
 
 	}else if(height === 'elevation'){
 		point_prev(undefined,facing)
-		point_sprites(true)
+		// point_sprites(true)
 	}
 	perspective.height = height
 }
