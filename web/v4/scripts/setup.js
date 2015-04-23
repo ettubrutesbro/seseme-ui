@@ -1,11 +1,11 @@
 var story = 0, part = 0
 
-var scene = new THREE.Scene(), camera, renderer, controls, 
+var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { plrs: { plns: [], sprs: [], stats: []} }}
 var seseme = new THREE.Group(), ground, lights, gyro
 var plrmax = 12, defaultiso
 
-var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false} 
+var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.8,1.2], height: [-12,-60]}
 
 function setup(){
@@ -16,7 +16,7 @@ function loader(){
 	var allTextures = ['grade_good','grade_ok','grade_bad','grade_awful','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
-	resourceMgr.onLoad = function(){ 
+	resourceMgr.onLoad = function(){
 		console.log('all resources done')
 		//////////////////////////////////////////////////////////////////////////////////
 		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
@@ -43,9 +43,9 @@ function loader(){
 			resources.mtls[ele] = new THREE.MeshBasicMaterial({map:texture, transparent: true, opacity: 1})
 		})
 	})
-	WebFontConfig = { 
+	WebFontConfig = {
 		google: {families: ['Source Serif Pro', 'Fira Sans']},
-		classes: false, 
+		classes: false,
 		active: function(){ console.log('fonts loaded'); resourceMgr.itemEnd('fonts') }
 	}
 
@@ -67,7 +67,7 @@ function loader(){
 		// renderer.setClearColor(0xbbbbbb)
 		renderer.setSize( window.innerWidth, window.innerHeight)
 		containerSESEME.appendChild( renderer.domElement )
-		//materials 
+		//materials
 		resources.mtls.seseme = new THREE.MeshPhongMaterial({color: 0x80848e,shininess:21,specular:0x9e6f49,emissive: 0x101011})
 		resources.mtls.orb = new THREE.MeshPhongMaterial({color:0xff6666,emissive:0x771100,shininess:1,specular:0x272727})
 		resources.mtls.ground = new THREE.MeshBasicMaterial({color: 0xededed})
@@ -124,33 +124,33 @@ function loader(){
 			// ele.stat.detail.type = stories[story].parts[part].detailStat.type
 
 
-			// var norm_num = stories[story].parts[part].normalStat.nums[i], 
+			// var norm_num = stories[story].parts[part].normalStat.nums[i],
 			// norm_words = (stories[story].parts[part].normalStat.words).split('').join(String.fromCharCode(8202)).split(' ')
-			// norm_pic = stories[story].parts[part].normalStat.pics[i] 
-			// var det_num = stories[story].parts[part].detailStat.nums[i], 
+			// norm_pic = stories[story].parts[part].normalStat.pics[i]
+			// var det_num = stories[story].parts[part].detailStat.nums[i],
 			// det_words = stories[story].parts[part].detailStat.words[i], det_pic = stories[story].parts[part].detailStat.pics[i]
 			//top sprite (for close-plan)
-				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs) 
+				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs)
 				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(ele.title).width * 11+240;
-				spritectx.scale(3,3); spritectx.beginPath(); 
-				spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true); 
+				spritectx.scale(3,3); spritectx.beginPath();
+				spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true);
 				// spritectx.moveTo(spritecvs.width/6,90);spritectx.lineTo(spritecvs.width/6-20,65);spritectx.lineTo(spritecvs.width/6+20,65)
-				spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill(); 
+				spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill();
 				// spritectx.fillRect(0,0,spritecvs.width,65) spritectx.fillStyle = 'white'
-				spritectx.textAlign = 'center'; spritectx.font= 'normal 500 32pt Fira Sans'; 
-				spritectx.fillText(ele.title.toUpperCase(),spritecvs.width/6,50); 
+				spritectx.textAlign = 'center'; spritectx.font= 'normal 500 32pt Fira Sans';
+				spritectx.fillText(ele.title.toUpperCase(),spritecvs.width/6,50);
 				resources.mtls.plrs.sprs[i] = new THREE.SpriteMaterial({map: spritetex, transparent: true, opacity: 0})
 				var sprite = new THREE.Sprite( resources.mtls.plrs.sprs[i] ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
-				sprite.expand = {x:plrxlats[i].sx,y:.75,z:plrxlats[i].sz}; sprite.origin = {x:plrxlats[i].sx,y:1.5,z:plrxlats[i].sz}; 
-				sprite.position.set(sprite.origin.x,sprite.origin.y,sprite.origin.z); 
+				sprite.expand = {x:plrxlats[i].sx,y:.75,z:plrxlats[i].sz}; sprite.origin = {x:plrxlats[i].sx,y:1.5,z:plrxlats[i].sz};
+				sprite.position.set(sprite.origin.x,sprite.origin.y,sprite.origin.z);
 
 				ele.sprite = sprite; ele.add(ele.sprite);
 			//face plane (for normal-iso)
-				var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d') 
-				var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true; 
+				var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d')
+				var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true;
 				planecvs.width = planectx.measureText(ele.title).width * 11.5+200; planecvs.height = 200
-				planectx.scale(3,3); planectx.fillStyle = 'white'; 
-				planectx.font = 'normal 400 36pt Source Serif Pro';planectx.textAlign = 'center'; 
+				planectx.scale(3,3); planectx.fillStyle = 'white';
+				planectx.font = 'normal 400 36pt Source Serif Pro';planectx.textAlign = 'center';
 				planectx.fillText(ele.title,planecvs.width/6,50)
 				resources.mtls.plrs.plns[i] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: planetex})
 				var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls.plrs.plns[i])
@@ -159,48 +159,48 @@ function loader(){
 				plane.origin = {x:plrxlats[i].px,y:-seseme['plr'+i].position.y-2,z:plrxlats[i].pz}
 				plane.position.set(plane.origin.x,plane.origin.y,plane.origin.z)
 				plane.rotation.set(0,rads(plrxlats[i].pr),0); plane.name = 'plane'
-				ele.plane = plane; ele.add(ele.plane) 
+				ele.plane = plane; ele.add(ele.plane)
 			//caption accompaniment
-				var captioncvs = document.createElement( 'canvas' ), captionctx = captioncvs.getContext('2d') 
-				var captiontex = new THREE.Texture(captioncvs); captiontex.needsUpdate = true;  
-				captioncvs.width = captionctx.measureText(caption).width*11.5+200; captioncvs.height = 80; captionctx.scale(3,3); 
+				var captioncvs = document.createElement( 'canvas' ), captionctx = captioncvs.getContext('2d')
+				var captiontex = new THREE.Texture(captioncvs); captiontex.needsUpdate = true;
+				captioncvs.width = captionctx.measureText(caption).width*11.5+200; captioncvs.height = 80; captionctx.scale(3,3);
 				captionctx.fillStyle = 'white'; captionctx.font = 'normal 500 16pt Fira Sans'; captionctx.textAlign = 'center'
 				captionctx.fillText(ele.caption,captioncvs.width/6,20)
 				resources.mtls.plrs.plns[i].caption = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: captiontex})
 				var caption = new THREE.Mesh(new THREE.PlaneBufferGeometry(captioncvs.width/60,captioncvs.height/60),
-					resources.mtls.plrs.plns[i].caption); caption.rotation.x = defaultiso	
+					resources.mtls.plrs.plns[i].caption); caption.rotation.x = defaultiso
 				caption.expand = {x:0,y:1.6,z:-1}; caption.origin = {x:0,y:.5,z:1}
 				caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
-				plane.caption = caption; plane.add(plane.caption); 
+				plane.caption = caption; plane.add(plane.caption);
 			//pointer
 				resources.mtls.plrs.plns[i].pointer = resources.mtls.tri.clone()
 				resources.mtls.plrs.plns[i].pointer.transparent = true
 				resources.mtls.plrs.plns[i].pointer.opacity = 0
 				var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.plrs.plns[i].pointer)
 				pointer.expand = {x:0,y:1.5,z:.1}; pointer.origin = {x:0,y:0.75,z:-1}
-				pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z); 
+				pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z);
 				caption.pointer = pointer; caption.add(caption.pointer)
 			//stat
-				ele.statText = new THREE.Group()
 				ele.stats = [{stat: 'normal', type: Object.keys(stories[story].parts[part].normalStat).toString().replace(',','')},
 				{stat: 'detail', type: Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')}]
-		
+
 				ele.stats.forEach(function(el,it){
 					el.cvs = document.createElement('canvas'); el.ctx = el.cvs.getContext('2d')
 					el.tex = new THREE.Texture(el.cvs); el.tex.needsUpdate = true
 					el.cvs.height = 200
 					if(el.type === 'numswords'){
-						el.num = stories[story].parts[part][el.stat+'Stat'].nums[i], 
+						el.num = stories[story].parts[part][el.stat+'Stat'].nums[i],
 						el.words = stories[story].parts[part][el.stat+'Stat'].words.split(' ')
 						//potential issue: that presupposes that it's always multiple words
-						el.cvs.width = (el.ctx.measureText(el.num).width+el.ctx.measureText(Math.max(el.words)).width)*12.5 
+						el.cvs.width = (el.ctx.measureText(el.num).width+el.ctx.measureText(Math.max(el.words)).width)*12.5
 						el.ctx.scale(3,3)
 						el.ctx.textAlign = 'start'; el.ctx.font = 'normal 400 32pt Source Serif Pro'; el.ctx.fillStyle = 'white'
 						el.ctx.fillText(el.num,10,43)
 						el.ctx.textAlign = 'end'; el.ctx.font = 'normal 500 14pt Fira Sans'
 						el.ctx.fillText(el.words[0],el.cvs.width/3-10,25)
 						el.ctx.fillText(el.words[1],el.cvs.width/3-10,45)
-						el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60), new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map: el.tex}))
+						el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60),
+						new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map: el.tex, opacity:0}))
 						el.obj.position.y+=3
 					}else if(el.type === 'nums'){
 						el.num = stories[story].parts[part][el.stat+'Stat'].nums[i].split('').join(String.fromCharCode(8202))
@@ -208,25 +208,30 @@ function loader(){
 						el.ctx.scale(3,3)
 						el.ctx.textAlign = 'center'; el.ctx.font = 'normal 400 36pt Source Serif Pro'; el.ctx.fillStyle = 'white'
 						el.ctx.fillText(el.num,el.cvs.width/6,46)
-						el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60), new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map:el.tex}))
+						el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60),
+						new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map:el.tex, opacity:0}))
 					}
-					el.obj.position.z = 0.1; ele.statText.add(el.obj); ele[el.stat+'Width'] = el.cvs.width / 50; ele.ht = el.cvs.height / 50
+					el.obj.position.z = 0.1; ele[el.stat+'Width'] = el.cvs.width / 50; ele.ht = el.cvs.height / 50
 				})
 
-				ele.statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(ele.normalWidth,ele.ht), new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.8}))
-				ele.statbox.rotation.y = rads(plrxlats[i].pr); ele.statbox.position.set(plrxlats[i].sx,3.1+((12-ele.position.y)/6),plrxlats[i].sz); ele.add(ele.statbox);
-				ele.statbox.add(ele.statText); ele.stats[1].obj.material.opacity=0
+				ele.statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(ele.normalWidth,ele.ht),
+				new THREE.MeshBasicMaterial({depthWrite:false, color:0x000000,transparent:true,opacity:0}))
+
+				ele.statbox.rotation.y = rads(plrxlats[i].pr);
+				ele.statbox.expand = {x: plrxlats[i].sx, y:3.1+((12-ele.position.y)/6), z: plrxlats[i].sz}
+				ele.statbox.origin = {x: plrxlats[i].sx, y:1.5, z: plrxlats[i].sz}
+				ele.statbox.position.set(ele.statbox.origin.x,ele.statbox.origin.y,ele.statbox.origin.z);
 
 				trigeo = new THREE.Shape(); trigeo.moveTo( -0.75,0 ); trigeo.lineTo( 0.75,0); trigeo.lineTo( 0,-1 ); trigeo.lineTo(-0.75,0)
 				ele.stattri = new THREE.Mesh(new THREE.ShapeGeometry(trigeo), ele.statbox.material); ele.stattri.position.y = -(ele.ht/2)
-				ele.statbox.add(ele.stattri)
-				// var stattri = new THREE.Mesh(new THREE.PlaneBufferGeometry(), resources.mtls.blacktri)
+				ele.statbox.text = ele.stats[0].obj
+
+				ele.statbox.add(ele.stattri); ele.statbox.add(ele.statbox.text)
+				ele.add(ele.statbox)
 
 
-				
 
-		
-				
+
 				point_prev(facing) //one time only
 			//geo (for all close views)
 		})
@@ -237,14 +242,14 @@ function loader(){
 		window.addEventListener('deviceorientation', function(evt){
 			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
-		controls.addEventListener( 'change', function(){ 
+		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
 
 			facingRotations = [-45,45,135,-135]
 			facingRotations.some(function(ele,i){
 				if(Math.abs(degs(camera.rotation.y)-ele)<45){
 					if(facing!=='plr'+i){
-						console.log('facing diff plr') 
+						console.log('facing diff plr')
 						if(perspective.height === 'isometric' && perspective.zoom === 'normal'){
 							point_prev('plr'+i,facing)
 						}
@@ -255,7 +260,7 @@ function loader(){
 							addzoom = camera.zoom-thresholds.zoom[1]
 							zoomswitchcallback = function(){perspective.zoomswitch = false}
 							move(scene,{x:0,y:-(seseme[facing].position.y)*addzoom-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
-						} 
+						}
 					}
 				return true }
 			})
@@ -282,12 +287,12 @@ function loader(){
 			camera.left = -d*aspect; camera.right = d*aspect; camera.top = d; camera.bottom = -d
 	  		renderer.setSize( window.innerWidth, window.innerHeight); camera.updateProjectionMatrix()
 		}, false)
-		
+
 	}//behaviors
 }//loader
 }//setup
 
-function display(){ 
+function display(){
     requestAnimationFrame( display ); renderer.render( scene, camera )
     controls.update(); TWEEN.update();
-} 
+}
