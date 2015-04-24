@@ -116,19 +116,12 @@ function loader(){
 
 		plrxlats = [{sx:3,sz:7,px:-1.5,pz:11.5,pr:-45},{sx:7,sz:7,px:11.5,pz:11.5,pr:45},{sx:7,sz:7,px:11.5,pz:11.5,pr:45},{sx:3,sz:7,px:-1.5,pz:11.5,pr:-45}]
 		seseme.pillars.children.forEach(function(ele,i){ //pillar objects
+
+			ele.preview = new THREE.Group()
+
 			ele.title = stories[story].parts[part].pointNames[i]
 			ele.caption = stories[story].parts[part].metricName
-			// ele.stat = {normal:{stories[story].parts[part].normalStat}, detail:{stories[story].parts[part].detailStat}}
 
-			// console.log(Object.keys(stories[story].parts[part].normalStat))
-			// ele.stat.detail.type = stories[story].parts[part].detailStat.type
-
-
-			// var norm_num = stories[story].parts[part].normalStat.nums[i],
-			// norm_words = (stories[story].parts[part].normalStat.words).split('').join(String.fromCharCode(8202)).split(' ')
-			// norm_pic = stories[story].parts[part].normalStat.pics[i]
-			// var det_num = stories[story].parts[part].detailStat.nums[i],
-			// det_words = stories[story].parts[part].detailStat.words[i], det_pic = stories[story].parts[part].detailStat.pics[i]
 			//top sprite (for close-plan)
 				var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs)
 				spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(ele.title).width * 11+240;
@@ -159,7 +152,7 @@ function loader(){
 				plane.origin = {x:plrxlats[i].px,y:-seseme['plr'+i].position.y-2,z:plrxlats[i].pz}
 				plane.position.set(plane.origin.x,plane.origin.y,plane.origin.z)
 				plane.rotation.set(0,rads(plrxlats[i].pr),0); plane.name = 'plane'
-				ele.plane = plane; ele.add(ele.plane)
+				ele.plane = plane; ele.preview.add(ele.plane)
 			//caption accompaniment
 				var captioncvs = document.createElement( 'canvas' ), captionctx = captioncvs.getContext('2d')
 				var captiontex = new THREE.Texture(captioncvs); captiontex.needsUpdate = true;
@@ -224,10 +217,13 @@ function loader(){
 
 				trigeo = new THREE.Shape(); trigeo.moveTo( -0.75,0 ); trigeo.lineTo( 0.75,0); trigeo.lineTo( 0,-1 ); trigeo.lineTo(-0.75,0)
 				ele.stattri = new THREE.Mesh(new THREE.ShapeGeometry(trigeo), ele.statbox.material); ele.stattri.position.y = -(ele.ht/2)
+
 				ele.statbox.text = ele.stats[0].obj
 
 				ele.statbox.add(ele.stattri); ele.statbox.add(ele.statbox.text)
-				ele.add(ele.statbox)
+				ele.preview.add(ele.statbox)
+
+				ele.add(ele.preview)
 
 
 
@@ -248,11 +244,10 @@ function loader(){
 			facingRotations = [-45,45,135,-135]
 			facingRotations.some(function(ele,i){
 				if(Math.abs(degs(camera.rotation.y)-ele)<45){
+
 					if(facing!=='plr'+i){
+
 						console.log('facing diff plr')
-						if(perspective.height === 'isometric' && perspective.zoom === 'normal'){
-							point_prev('plr'+i,facing)
-						}
 						facing = 'plr'+i
 
 						if(perspective.zoom==='close'){
@@ -264,7 +259,7 @@ function loader(){
 					}
 				return true }
 			})
-			deviation = degs(camera.rotation.y) - facingRotations[facing.replace('plr','')]
+
 
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
