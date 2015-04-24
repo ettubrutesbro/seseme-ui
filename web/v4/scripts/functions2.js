@@ -26,7 +26,7 @@ function fade(obj,tgtopacity,spd,delay,callback){
 	var transition = new TWEEN.Tween(start).to({opacity: tgtopacity}, spd)
 	.onComplete(function(){if(callback!==undefined){callback()}})
 	.onUpdate(function(){obj.material.opacity = start.opacity}).delay(delay)
-	.start(); obj.fadeTween = transition
+	.easing(TWEEN.Easing.Quadratic.Out).start(); obj.fadeTween = transition
 }
 function size(obj,tgtscale,spd,callback){
 	if(obj.sizeTween){obj.sizeTween.stop()}
