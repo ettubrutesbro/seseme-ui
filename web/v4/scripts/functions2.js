@@ -7,6 +7,7 @@ function rads(degs){
 }
 function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	// console.log('move operation')
+
 	var start = {x: obj.position.x, y: obj.position.y, z: obj.position.z}
 	var dist = multiplier*((Math.abs(obj.position.x-pos.x))+(Math.abs(obj.position.y-pos.y))+(Math.abs(obj.position.z-pos.z)))
 	var translate = new TWEEN.Tween(start).to(pos,spd+dist)
@@ -17,21 +18,21 @@ function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	.easing(TWEEN.Easing[twntype][twninout])
 	if(delay!==undefined){translate.delay(delay)}
 	translate.start()
-
+	obj.moveTween = translate
 }
 function fade(obj,tgtopacity,spd,delay,callback){
 	var start = {opacity: obj.material.opacity}
 	var transition = new TWEEN.Tween(start).to({opacity: tgtopacity}, spd)
 	.onComplete(function(){if(callback!==undefined){callback()}})
 	.onUpdate(function(){obj.material.opacity = start.opacity}).delay(delay)
-	.start()
-
+	.start(); obj.fadeTween = transition
 }
 function size(obj,tgtscale,spd,callback){
 	var start = {x: obj.scale.x, y: obj.scale.y, z: obj.scale.z}
 	var anim = new TWEEN.Tween(start).to(tgtscale,spd).onComplete(function(){
 	if(callback!==undefined){callback()}}).onUpdate(function(){obj.scale.x = start.x
-	obj.scale.y= start.y; obj.scale.z = start.z}).start()
+	obj.scale.y= start.y; obj.scale.z = start.z}).easing(TWEEN.Easing.Quadratic.Out).start()
+	obj.sizeTween = anim
 }
 
 function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,align){ //'400 36pt Source Serif Pro'

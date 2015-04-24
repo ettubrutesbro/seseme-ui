@@ -134,29 +134,33 @@ function loader(){
 
 				var label = new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
 				36, 400, 'center')
-				label.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map: label.tex})
+				label.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map: label.tex,opacity: 0})
 				label.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(label.cvs.width/60,label.cvs.height/60),label.mtl)
-				label.obj.rotation.x = defaultiso; label.obj.origin = {x:0,y:-seseme['plr'+i].position.y-5,z:6.5}
+				label.obj.rotation.x = defaultiso; label.obj.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
 				label.obj.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
 				label.obj.position.y = -seseme['plr'+i].position.y-3.5; label.obj.position.z = 6.5
 				info.prev[i].label = label.obj; info.prev[i].add(label.obj)
 					var caption = new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center')
-					caption.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map:caption.tex})
+					caption.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map:caption.tex,opacity: 0})
 					caption.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.cvs.width/60,caption.cvs.height/60),caption.mtl)
-					caption.obj.origin={x:0,y:0,z:0};caption.obj.expand={x:0,y:2,z:0}; caption.obj.position.y = 2
+					caption.obj.origin={x:0,y:0.5,z:0};caption.obj.expand={x:0,y:2,z:0};
+					caption.obj.position.set(caption.obj.origin.x,caption.obj.origin.y,caption.obj.origin.z)
 					label.obj.caption = caption; label.obj.add(caption.obj);
 					var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.tri.clone())
-					pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:2,z:.1};pointer.position.set(0,3.4,.1)
-					label.obj.pointer = pointer; label.obj.add(pointer);
+					pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
+					pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
+					label.obj.pointer = pointer; label.obj.add(pointer)
 
 				var stat = new THREE.Group()
-				stat.position.y = 3.1+((plrmax-seseme['plr'+i].position.y)/6)
+				stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
+				stat.origin = {x:0,y:1.5,z:0}; stat.position.set(stat.origin.x,stat.origin.y,stat.origin.z)
+				stat.scale.set(.75,.75,.75)
 				info.prev[i].add(stat); info.prev[i].stat = stat
 					if(stattype==='nums'){
 						stat.num = new Text(stories[story].parts[part].normalStat.nums[i],
 						13,70,200,'white','Source Serif Pro',36,400,'center')
 						stat.width = stat.num.cvs.width/60; stat.height = stat.num.cvs.height/60
-						stat.num.mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.num.tex})
+						stat.num.mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.num.tex,opacity:0})
 						stat.num.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.width,stat.height),stat.num.mtl)
 						stat.add(stat.num.obj); stat.num.obj.position.z = 0.1
 					}else if(stattype==='numswords'){
@@ -166,150 +170,47 @@ function loader(){
 						// stat.add(stat.num.obj); stat.add(stat.words.obj)
 					}
 					var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.width*1.2,stat.height*1.2),
-					new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true }))
+					new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
 					var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
 					statbox.add(triangle); stat.add(statbox)
-					//PREVIEW FUNCTIONS: transform, show, hide, newdata
-					info.prev[i].show = function(){
 
+					//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
+					info.prev[i].show = function(){
+						var label_i = 0
+						this.label.traverse(function(child){
+							if(child.moveTween){child.moveTween.stop()}
+							if(child.fadeTween){child.fadeTween.stop()}
+							fade(child,1,200,label_i*100)
+							move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
+						})
+						this.stat.traverse(function(child){if(child.material){
+							if(child.fadeTween){child.fadeTween.stop()}
+							fade(child,1,200,0)}})
+						if(this.stat.sizeTween){this.stat.sizeTween.stop()}
+						if(this.stat.moveTween){this.stat.moveTween.stop()}
+						size(this.stat,{x:1,y:1,z:1},400)
+						move(this.stat,this.stat.expand,400,1,'Quadratic','Out',function(){},0)
 					}
 					info.prev[i].hide = function(){
 						var label_i = 0
 						this.label.traverse(function(child){
-							fade(child,0,200,label_i*100);
+							if(child.moveTween){child.moveTween.stop()}
+							if(child.fadeTween){child.fadeTween.stop()}
+							fade(child,0,400-(label_i*150),0);
 							move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
 							label_i++
 						})
-						this.stat.traverse(function(child){if(child.material){fade(child,0,200,0)}})
-						// size(this.stat)
-						// move(this.stat)
+						this.stat.traverse(function(child){if(child.material){
+							if(child.fadeTween){child.fadeTween.stop()}
+							fade(child,0,200,0)}})
+						if(this.stat.sizeTween){this.stat.sizeTween.stop()}
+						if(this.stat.moveTween){this.stat.moveTween.stop()}
+						size(this.stat,{x:.75,y:.75,z:.75},400)
+						move(this.stat,this.stat.origin,400,1,'Quadratic','Out',function(){},0)
 					}
-
-
-
 
 				seseme['plr'+i].add(info.prev[i])
 		}
-
-
-
-
-		// seseme.pillars.children.forEach(function(ele,i){ //pillar objects
-		//
-		// 	ele.preview = new THREE.Group()
-		//
-		// 	ele.title = stories[story].parts[part].pointNames[i]
-		// 	ele.caption = stories[story].parts[part].metricName
-		//
-		// 	//top sprite (for close-plan)
-		// 		var spritecvs = document.createElement( 'canvas' ), spritectx = spritecvs.getContext('2d'), spritetex = new THREE.Texture(spritecvs)
-		// 		spritetex.needsUpdate = true; spritecvs.height = 360; spritecvs.width = spritectx.measureText(ele.title).width * 11+240;
-		// 		spritectx.scale(3,3); spritectx.beginPath();
-		// 		spritectx.arc(spritecvs.width/6, 75, 8, 0, Math.PI*2, true);
-		// 		// spritectx.moveTo(spritecvs.width/6,90);spritectx.lineTo(spritecvs.width/6-20,65);spritectx.lineTo(spritecvs.width/6+20,65)
-		// 		spritectx.closePath(); spritectx.fillStyle = 'black'; spritectx.fill();
-		// 		// spritectx.fillRect(0,0,spritecvs.width,65) spritectx.fillStyle = 'white'
-		// 		spritectx.textAlign = 'center'; spritectx.font= 'normal 500 32pt Fira Sans';
-		// 		spritectx.fillText(ele.title.toUpperCase(),spritecvs.width/6,50);
-		// 		resources.mtls.plrs.sprs[i] = new THREE.SpriteMaterial({map: spritetex, transparent: true, opacity: 0})
-		// 		var sprite = new THREE.Sprite( resources.mtls.plrs.sprs[i] ); sprite.scale.set(spritecvs.width/100,spritecvs.height/100,1)
-		// 		sprite.expand = {x:plrxlats[i].sx,y:.75,z:plrxlats[i].sz}; sprite.origin = {x:plrxlats[i].sx,y:1.5,z:plrxlats[i].sz};
-		// 		sprite.position.set(sprite.origin.x,sprite.origin.y,sprite.origin.z);
-		//
-		// 		ele.sprite = sprite; ele.add(ele.sprite);
-		// 	//face plane (for normal-iso)
-		// 		var planecvs = document.createElement( 'canvas' ), planectx = planecvs.getContext('2d')
-		// 		var planetex = new THREE.Texture(planecvs); planetex.needsUpdate = true;
-		// 		planecvs.width = planectx.measureText(ele.title).width * 11.5+200; planecvs.height = 200
-		// 		planectx.scale(3,3); planectx.fillStyle = 'white';
-		// 		planectx.font = 'normal 400 36pt Source Serif Pro';planectx.textAlign = 'center';
-		// 		planectx.fillText(ele.title,planecvs.width/6,50)
-		// 		resources.mtls.plrs.plns[i] = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: planetex})
-		// 		var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(planecvs.width/60,planecvs.height/60), resources.mtls.plrs.plns[i])
-		// 		plane.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(defaultiso))
-		// 		plane.expand = {x: plrxlats[i].px,y:-seseme['plr'+i].position.y-3.5, z:plrxlats[i].pz}
-		// 		plane.origin = {x:plrxlats[i].px,y:-seseme['plr'+i].position.y-2,z:plrxlats[i].pz}
-		// 		plane.position.set(plane.origin.x,plane.origin.y,plane.origin.z)
-		// 		plane.rotation.set(0,rads(plrxlats[i].pr),0); plane.name = 'plane'
-		// 		ele.plane = plane; ele.preview.add(ele.plane)
-		// 	//caption accompaniment
-		// 		var captioncvs = document.createElement( 'canvas' ), captionctx = captioncvs.getContext('2d')
-		// 		var captiontex = new THREE.Texture(captioncvs); captiontex.needsUpdate = true;
-		// 		captioncvs.width = captionctx.measureText(caption).width*11.5+200; captioncvs.height = 80; captionctx.scale(3,3);
-		// 		captionctx.fillStyle = 'white'; captionctx.font = 'normal 500 16pt Fira Sans'; captionctx.textAlign = 'center'
-		// 		captionctx.fillText(ele.caption,captioncvs.width/6,20)
-		// 		resources.mtls.plrs.plns[i].caption = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, map: captiontex})
-		// 		var caption = new THREE.Mesh(new THREE.PlaneBufferGeometry(captioncvs.width/60,captioncvs.height/60),
-		// 			resources.mtls.plrs.plns[i].caption); caption.rotation.x = defaultiso
-		// 		caption.expand = {x:0,y:1.6,z:-1}; caption.origin = {x:0,y:.5,z:1}
-		// 		caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
-		// 		plane.caption = caption; plane.add(plane.caption);
-		// 	//pointer
-		// 		resources.mtls.plrs.plns[i].pointer = resources.mtls.tri.clone()
-		// 		resources.mtls.plrs.plns[i].pointer.transparent = true
-		// 		resources.mtls.plrs.plns[i].pointer.opacity = 0
-		// 		var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.plrs.plns[i].pointer)
-		// 		pointer.expand = {x:0,y:1.5,z:.1}; pointer.origin = {x:0,y:0.75,z:-1}
-		// 		pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z);
-		// 		caption.pointer = pointer; caption.add(caption.pointer)
-		// 	//stat
-		// 		ele.stats = [{stat: 'normal', type: Object.keys(stories[story].parts[part].normalStat).toString().replace(',','')},
-		// 		{stat: 'detail', type: Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')}]
-		//
-		// 		ele.stats.forEach(function(el,it){
-		// 			el.cvs = document.createElement('canvas'); el.ctx = el.cvs.getContext('2d')
-		// 			el.tex = new THREE.Texture(el.cvs); el.tex.needsUpdate = true
-		// 			el.cvs.height = 200
-		// 			if(el.type === 'numswords'){
-		// 				el.num = stories[story].parts[part][el.stat+'Stat'].nums[i],
-		// 				el.words = stories[story].parts[part][el.stat+'Stat'].words.split(' ')
-		// 				//potential issue: that presupposes that it's always multiple words
-		// 				el.cvs.width = (el.ctx.measureText(el.num).width+el.ctx.measureText(Math.max(el.words)).width)*12.5
-		// 				el.ctx.scale(3,3)
-		// 				el.ctx.textAlign = 'start'; el.ctx.font = 'normal 400 32pt Source Serif Pro'; el.ctx.fillStyle = 'white'
-		// 				el.ctx.fillText(el.num,10,43)
-		// 				el.ctx.textAlign = 'end'; el.ctx.font = 'normal 500 14pt Fira Sans'
-		// 				el.ctx.fillText(el.words[0],el.cvs.width/3-10,25)
-		// 				el.ctx.fillText(el.words[1],el.cvs.width/3-10,45)
-		// 				el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60),
-		// 				new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map: el.tex, opacity:0}))
-		// 				el.obj.position.y+=3
-		// 			}else if(el.type === 'nums'){
-		// 				el.num = stories[story].parts[part][el.stat+'Stat'].nums[i].split('').join(String.fromCharCode(8202))
-		// 				el.cvs.width = (el.ctx.measureText(el.num).width)*13+70
-		// 				el.ctx.scale(3,3)
-		// 				el.ctx.textAlign = 'center'; el.ctx.font = 'normal 400 36pt Source Serif Pro'; el.ctx.fillStyle = 'white'
-		// 				el.ctx.fillText(el.num,el.cvs.width/6,46)
-		// 				el.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(el.cvs.width/60,el.cvs.height/60),
-		// 				new THREE.MeshBasicMaterial({depthWrite: false,transparent: true, map:el.tex, opacity:0}))
-		// 			}
-		// 			el.obj.position.z = 0.1; ele[el.stat+'Width'] = el.cvs.width / 50; ele.ht = el.cvs.height / 50
-		// 		})
-		//
-		// 		ele.statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(ele.normalWidth,ele.ht),
-		// 		new THREE.MeshBasicMaterial({depthWrite:false, color:0x000000,transparent:true,opacity:0}))
-		//
-		// 		ele.statbox.rotation.y = rads(plrxlats[i].pr);
-		// 		ele.statbox.expand = {x: plrxlats[i].sx, y:3.1+((12-ele.position.y)/6), z: plrxlats[i].sz}
-		// 		ele.statbox.origin = {x: plrxlats[i].sx, y:1.5, z: plrxlats[i].sz}
-		// 		ele.statbox.position.set(ele.statbox.origin.x,ele.statbox.origin.y,ele.statbox.origin.z);
-		//
-		// 		trigeo = new THREE.Shape(); trigeo.moveTo( -0.75,0 ); trigeo.lineTo( 0.75,0); trigeo.lineTo( 0,-1 ); trigeo.lineTo(-0.75,0)
-		// 		ele.stattri = new THREE.Mesh(new THREE.ShapeGeometry(trigeo), ele.statbox.material); ele.stattri.position.y = -(ele.ht/2)
-		//
-		// 		ele.statbox.text = ele.stats[0].obj
-		//
-		// 		ele.statbox.add(ele.stattri); ele.statbox.add(ele.statbox.text)
-		// 		ele.preview.add(ele.statbox)
-		//
-		// 		ele.add(ele.preview)
-		//
-		//
-		//
-		//
-		// 		point_prev(facing) //one time only
-		// 	//geo (for all close views)
-		// })
 
 	}
 	function behaviors(){
@@ -329,6 +230,10 @@ function loader(){
 					if(facing!=='plr'+i){
 
 						console.log('facing diff plr')
+						if(perspective.height=='isometric'){
+							info.prev[facing.replace('plr','')].hide()
+							info.prev[i].show()
+						}
 						facing = 'plr'+i
 
 						if(perspective.zoom==='close'){
@@ -347,10 +252,12 @@ function loader(){
 			controls.zoomSpeed = 0.6-(Math.abs(camera.zoom-1)/5)
 
 			if(perspective.height!==height){ //on height change
+				perspective.height = height
 
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
 
+				perspective.zoom = zoom
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
