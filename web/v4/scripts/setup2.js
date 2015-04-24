@@ -7,7 +7,7 @@ var info = {prev: [], summ: [], multi: [], detail: []}
 var plrmax = 12, defaultiso
 
 var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.8,1.2], height: [-12,-60]}
+var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
 
 function setup(){
 	loader()
@@ -113,7 +113,11 @@ function loader(){
 
 	}//build
 	function fill(){
-		var stattype = Object.keys(stories[story].parts[part].normalStat).toString().replace(',','')
+		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
+		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
+		]
+
+
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
 		}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
@@ -139,7 +143,7 @@ function loader(){
 				label.obj.rotation.x = defaultiso; label.obj.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
 				label.obj.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
 				label.obj.position.y = -seseme['plr'+i].position.y-3.5; label.obj.position.z = 6.5
-				info.prev[i].label = label.obj; info.prev[i].add(label.obj)
+				info.prev[i].label = label.obj;
 					var caption = new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center')
 					caption.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map:caption.tex,opacity: 0})
 					caption.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.cvs.width/60,caption.cvs.height/60),caption.mtl)
@@ -150,65 +154,80 @@ function loader(){
 					pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
 					pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
 					label.obj.pointer = pointer; label.obj.add(pointer)
+				info.prev[i].labelgroup = new THREE.Group(); info.prev[i].labelgroup.add(label.obj); info.prev[i].add(info.prev[i].labelgroup)
 
-				var stat = new THREE.Group()
+				var stat = new THREE.Group(); stat.stats = []
 				stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
 				stat.origin = {x:0,y:1.5,z:0}; stat.position.set(stat.origin.x,stat.origin.y,stat.origin.z)
 				stat.scale.set(.75,.75,.75)
 				info.prev[i].add(stat); info.prev[i].stat = stat
-					if(stattype==='nums'){
-						stat.num = new Text(stories[story].parts[part].normalStat.nums[i],
+				stattype.forEach(function(ele,ite){
+					var which = ite===0? 'normalStat': 'detailStat'
+					if(ele==='nums'){
+						stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
 						13,70,200,'white','Source Serif Pro',36,400,'center')
-						stat.width = stat.num.cvs.width/60; stat.height = stat.num.cvs.height/60
-						stat.num.mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.num.tex,opacity:0})
-						stat.num.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.width,stat.height),stat.num.mtl)
-						stat.add(stat.num.obj); stat.num.obj.position.z = 0.1
-					}else if(stattype==='numswords'){
-						// stat.num = new Text(stories[story].parts[part].normalStat.nums[i],
-						// 12.5,0,200,'white','Source Serif Pro',32,400,'start')
-						// stat.words = new Text()
-						// stat.add(stat.num.obj); stat.add(stat.words.obj)
+						stat.stats[ite].width = stat.stats[ite].cvs.width/60; stat.stats[ite].height = stat.stats[ite].cvs.height/60
+						stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.stats[ite].tex,opacity:0})
+						stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),stat.stats[ite].mtl)
+						stat.stats[ite].obj.position.z = 0.1
+					}else if(ele==='numswords'){
+						var words = stories[story].parts[part][which].words
+						var longest = Math.max(words[0].length,words[1].length)
+						stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
+						12.5,longest*28,200,'white','Source Serif Pro',32,400,'start')
+						stat.stats[ite].ctx.font = 'normal 500 14pt Fira Sans'; stat.stats[ite].ctx.textAlign = 'end'
+						stat.stats[ite].ctx.fillText(words[0],stat.stats[ite].cvs.width/3,28)
+						stat.stats[ite].ctx.fillText(words[1],stat.stats[ite].cvs.width/3,52)
+						stat.stats[ite].width = stat.stats[ite].cvs.width/60;stat.stats[ite].height = stat.stats[ite].cvs.height/60
+						stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,opacity:0,map:stat.stats[ite].tex})
+						stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),
+						stat.stats[ite].mtl); stat.stats[ite].obj.position.z = 0.2;
 					}
-					var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.width*1.2,stat.height*1.2),
+				})
+				stat.normalStat = stat.stats[0].obj; stat.detailStat = stat.stats[1].obj
+
+
+					var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[0].width*1.2,stat.stats[0].height*1.2),
 					new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
 					var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
-					statbox.add(triangle); stat.add(statbox)
+
+					stat.add(triangle); stat.statbox = statbox; stat.add(stat.statbox); stat.add(stat.normalStat)
 
 					//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
 					info.prev[i].show = function(){
 						var label_i = 0
 						this.label.traverse(function(child){
-							if(child.moveTween){child.moveTween.stop()}
-							if(child.fadeTween){child.fadeTween.stop()}
 							fade(child,1,200,label_i*100)
 							move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
 						})
-						this.stat.traverse(function(child){if(child.material){
-							if(child.fadeTween){child.fadeTween.stop()}
-							fade(child,1,200,0)}})
-						if(this.stat.sizeTween){this.stat.sizeTween.stop()}
-						if(this.stat.moveTween){this.stat.moveTween.stop()}
+						this.stat.traverse(function(child){if(child.material){fade(child,1,200,0)}})
 						size(this.stat,{x:1,y:1,z:1},400)
 						move(this.stat,this.stat.expand,400,1,'Quadratic','Out',function(){},0)
 					}
 					info.prev[i].hide = function(){
 						var label_i = 0
 						this.label.traverse(function(child){
-							if(child.moveTween){child.moveTween.stop()}
-							if(child.fadeTween){child.fadeTween.stop()}
 							fade(child,0,400-(label_i*150),0);
 							move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
 							label_i++
 						})
-						this.stat.traverse(function(child){if(child.material){
-							if(child.fadeTween){child.fadeTween.stop()}
-							fade(child,0,200,0)}})
-						if(this.stat.sizeTween){this.stat.sizeTween.stop()}
-						if(this.stat.moveTween){this.stat.moveTween.stop()}
+						this.stat.traverse(function(child){if(child.material){fade(child,0,200,0)}})
 						size(this.stat,{x:.75,y:.75,z:.75},400)
 						move(this.stat,this.stat.origin,400,1,'Quadratic','Out',function(){},0)
 					}
-
+					info.prev[i].detail = function(){
+						var scalefactor = this.stat.stats[1].width / this.stat.stats[0].width
+						size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
+						this.stat.remove(this.stat.normalStat); this.stat.add(this.stat.detailStat)
+						fade(this.stat.normalStat,0,300,0)
+						if(info.prev[facing.replace('plr','')] === this){	fade(this.stat.detailStat,1,300,0)}
+					}
+					info.prev[i].normal = function(){
+						size(this.stat.statbox,{x:1,y:1,z:1},300)
+						this.stat.remove(this.stat.detailStat); this.stat.add(this.stat.normalStat)
+						fade(this.stat.detailStat,0,300,0)
+						if(info.prev[facing.replace('plr','')] === this){	fade(this.stat.normalStat,1,300,0)}
+					}
 				seseme['plr'+i].add(info.prev[i])
 		}
 
@@ -253,17 +272,24 @@ function loader(){
 
 			if(perspective.height!==height){ //on height change
 				perspective.height = height
-
+				if(perspective.height!=='isometric'){
+					info.prev.forEach(function(ele){ele.hide()})
+				}else{info.prev[facing.replace('plr','')].show()}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
-
 				perspective.zoom = zoom
+				if(perspective.zoom === 'close'){ info.prev.forEach(function(ele){ele.detail()})
+				}else{	info.prev.forEach(function(ele){ ele.normal() })}
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
 				//scene moves up and down at close zoom levels
 				addzoom = camera.zoom-thresholds.zoom[1]
 				scene.position.y = -(seseme[facing].position.y)*addzoom-(addzoom*4)
+				info.prev.forEach(function(ele){
+					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
+					ele.labelgroup.position.y = -addzoom * 15
+				})
 			}
 		})//end controls 'change' event
 
