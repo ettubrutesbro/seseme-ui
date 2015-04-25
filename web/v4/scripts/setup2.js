@@ -9,6 +9,8 @@ var plrmax = 12, defaultiso
 var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
 
+var domtitle = document.querySelector('#bottom #header'), dominfo = document.querySelector('#bottom #main')
+
 function setup(){
 	loader()
 
@@ -113,11 +115,6 @@ function loader(){
 
 	}//build
 	function fill(){
-		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
-		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
-		]
-
-
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
 		}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
@@ -128,8 +125,12 @@ function loader(){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
 
+		domtitle.textContent = stories[story].parts[part].name
+		dominfo.textContent = stories[story].parts[part].text
 
-
+		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
+		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
+		]
 		for(var i = 0; i<4; i++){ //pillar-matching infos
 			//PREVIEWS: label(title,caption,pointer) and stat showing facing pillar data
 			info.prev[i] = new THREE.Group()
