@@ -10,8 +10,6 @@ html{
 	position: absolute; overflow: hidden;
 	z-index: 2; opacity: 1;
 	left: 0; right: 0; margin: 0 auto;
-	transform-origin: 0% 0%;
-	-webkit-transform-origin: 0% 0%;
 }
 #top{
 	top: 0; padding: 0.5rem 0.75rem 0.5rem 0.75rem;
@@ -29,6 +27,8 @@ html{
 			font-weight: 600; text-transform: uppercase;
 			font-size: 1rem; letter-spacing: 0.2rem;
 		}
+		#part_text{
+		}
 	.text{
 		padding: 1.4rem .75rem .75rem .75rem;
 		font-family: 'Fira Sans', sans-serif;
@@ -37,21 +37,6 @@ html{
 		text-align: justify;
 	}
 
-#point_text{
-	/*transform: rotateX(-70deg);*/
-	transform-origin: 50% 50%;
-	-webkit-transform-style: preserve-3d;
-				-moz-transform-style: preserve-3d;
-					-o-transform-style: preserve-3d;
-						transform-style: preserve-3d;
-
-}
-
-.boxface{
- transform: translateZ(100px);
-}
-
-.boxface:nth-child(2){
-		transform: translateX(10%) rotateY(70deg);
-
+#point_title{
+	display: none;
 }
