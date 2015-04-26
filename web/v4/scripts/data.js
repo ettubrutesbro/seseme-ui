@@ -1,19 +1,16 @@
 var stories = [
 	{
 		title: 'Fall from Grace',
-		subject: 'HOW SUSTAINABLE IS UCD?',
+		topic: 'UCD & SUSTAINABILITY', tagline: '',
 		summary: 'UC Davis used to be thought of as the national leader in college sustainability. We\'ve slacked off considerably since then - let the data explain how.',
 		parts: [
 			{
-				name: 'Glory Days',
+				name: 'Glory Days Gone By',
 				text: 'In 2012, UC Davis was named the greenest college in the US by the Sierra Club. The award celebrates campus environmental responsibility in categories like energy use, waste management, food sources, and education. But a lot has changed since then...',
-				pointNames: ['UC Davis','Stanford','CSU Chico','Harvard'],
-				pointType: 'numbers',metricName: 'GREEN SCHOOLS RANK',
+				pointNames: ['UC Davis','Stanford','CSU Chico','Harvard'], metricName: '"COOL SCHOOL" RANKING',
 				pointValues: [55,6,39,19], valueType: 'smallerIsHigher', valueRange: [1,60],
-				normalStat: {nums: ['#55','6th','#39','19th'] }, //random num, numwords, numpics, pics
+				normalStat: {nums: ['#55','6th','#39','19th'] },
 				detailStat: {nums: ['7000','8000','7100','7900'], words: ['sierra' , 'score'] }
-				// expandValues: ['700 points','900 points','800 points','850 points'],
-				// pointsText: ['','','',''],
 			},
 			{
 				name: 'A School in Decline',

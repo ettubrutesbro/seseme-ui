@@ -37,6 +37,27 @@ function size(obj,tgtscale,spd,callback){
 	obj.sizeTween = anim
 }
 
+// function dom_anim(obj,properties,values,dur,twntype,twninout){
+// 		properties.forEach(function(ele,i){
+// 			if(obj[ele+'anim']){ obj[ele+'anim'].stop() }
+// 			var origin = {}; origin[ele] = parseFloat(obj.style[ele])
+// 			var tgt = {}; tgt[ele] = values[i]
+// 			obj[ele+'anim'] = new TWEEN.Tween(origin).to(tgt,dur).onUpdate(function(){
+// 				obj.style[ele] = origin[ele]
+// 				console.log(origin[ele])
+// 			}).easing(TWEEN.Easing[twntype][twninout]).start()
+// 		})
+// }
+//
+// function dom_xform(obj){
+// 		var style = window.getComputedStyle(obj,null)
+// 		var xform = style.getPropertyValue("-webkit-transform") || style.getPropertyValue("-moz-transform") ||
+//          style.getPropertyValue("-ms-transform") || style.getPropertyValue("-o-transform") ||
+//          style.getPropertyValue("transform") ||
+// 		console.log(xform)
+// }
+
+
 function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,align){ //'400 36pt Source Serif Pro'
 	this.cvs = document.createElement('canvas'), this.ctx = this.cvs.getContext('2d')
 	this.tex = new THREE.Texture(this.cvs); this.tex.needsUpdate = true

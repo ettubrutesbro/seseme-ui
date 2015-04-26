@@ -9,7 +9,9 @@ var plrmax = 12, defaultiso
 var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
 
-var domtitle = document.querySelector('#bottom #header'), dominfo = document.querySelector('#bottom #main')
+var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
+point_text = document.getElementById('point_text'),point_title = document.getElementById('point_title'),
+story_title = document.getElementById('story_title'),story_text = document.getElementById('story_text')
 
 function setup(){
 	loader()
@@ -125,8 +127,19 @@ function loader(){
 			seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 		})
 
-		domtitle.textContent = stories[story].parts[part].name
-		dominfo.textContent = stories[story].parts[part].text
+		part_title.textContent = stories[story].parts[part].name
+		part_text.textContent = stories[story].parts[part].text
+
+		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
+		point_title.style.top = point_text.style.top = Number(part_text.style.top.replace('px','')) + part_text.offsetHeight
+
+		Array.prototype.forEach.call(document.querySelectorAll('div'), function(ele){
+			ele.style.height = ele.offsetHeight; ele.style.opacity = 1
+		})
+
+		// domtitle.change = function(){
+		// 		Velocity(this,{opacity:0, height:'/=4'},{duration:1000,complete:function(){Velocity(this,{opacity:1,height:'*=4'},1000)}})
+		// }
 
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
@@ -293,6 +306,7 @@ function loader(){
 				})
 			}
 		})//end controls 'change' event
+
 
 		window.addEventListener('resize', function(){
 			var aspect = window.innerWidth / window.innerHeight; var d = 20
