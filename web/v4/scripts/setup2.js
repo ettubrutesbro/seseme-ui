@@ -4,14 +4,15 @@ var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { prev: {} }}
 var seseme = new THREE.Group(), ground, lights, gyro
 var info = {prev: [], summ: [], multi: [], detail: []}
+
 var plrmax = 12, defaultiso
 
-var facing = 'plr0', perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
+var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
+var thresholds = {zoom: [.8,1.15], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
-point_text = document.getElementById('point_text'),point_title = document.getElementById('point_title'),
-point_box = document.getElementById('point_box')
+points_info = document.getElementById('points_info'),
+points = document.getElementsByClassName('point')
 
 function setup(){
 	loader()
@@ -45,7 +46,7 @@ function loader(){
 	var texLoader = new THREE.TextureLoader( mtlMgr )
 	allTextures.forEach(function(ele){
 		texLoader.load('assets/'+ele+'.png',function(texture){
-			resources.mtls[ele] = new THREE.MeshBasicMaterial({map:texture, transparent: true, opacity: 1})
+			resources.mtls[ele] = new THREE.MeshBasicMaterial({depthWrite: false, map:texture, transparent: true, opacity: 1})
 		})
 	})
 	WebFontConfig = {
@@ -65,7 +66,7 @@ function loader(){
 		var aspect = window.innerWidth / window.innerHeight; var d = 20
 		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 		camera.position.set( -d, 10, d ); camera.rotation.order = 'YXZ'
-		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) )
+		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) ); camera.zoom = 0.9
 		camera.updateProjectionMatrix(); defaultiso = camera.rotation.x
 		var containerSESEME = document.getElementById("containerSESEME")
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
@@ -130,17 +131,20 @@ function loader(){
 		part_title.textContent = stories[story].parts[part].name
 		part_text.textContent = stories[story].parts[part].text
 
-		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-		// point_title.style.top = point_text.style.top = window.innerHeight - part_text.offsetHeight
-		// point_title.style.top = point_text.style.top = Number(part_text.style.top.replace('px','')) + part_text.offsetHeight
-		point_title.style.bottom = 50
-		// Array.prototype.forEach.call(document.querySelectorAll('div'), function(ele){
-		// 	ele.style.height = ele.offsetHeight; ele.style.opacity = 1
-		// })
+		for(var i = 0; i < points.length; i++){
+			points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
+			points[i].name.textContent = stories[story].parts[part].pointNames[i]
+			points[i].text.textContent = stories[story].parts[part].pointText[i]
+		}
 
-		// domtitle.change = function(){
-		// 		(this,{opacity:0, height:'/=4'},{duration:1000,complete:function(){(this,{opacity:1,height:'*=4'},1000)}})
-		// }
+
+
+		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
+
+		points_info.style.top = window.innerHeight - points_info.offsetHeight
+
+
+
 
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
@@ -235,16 +239,20 @@ function loader(){
 						size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
 						this.stat.remove(this.stat.normalStat); this.stat.add(this.stat.detailStat)
 						fade(this.stat.normalStat,0,300,0)
-						if(info.prev[facing.replace('plr','')] === this){	fade(this.stat.detailStat,1,300,0)}
+						if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
 					}
 					info.prev[i].normal = function(){
 						size(this.stat.statbox,{x:1,y:1,z:1},300)
 						this.stat.remove(this.stat.detailStat); this.stat.add(this.stat.normalStat)
 						fade(this.stat.detailStat,0,300,0)
-						if(info.prev[facing.replace('plr','')] === this){	fade(this.stat.normalStat,1,300,0)}
+						if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
 					}
 				seseme['plr'+i].add(info.prev[i])
 		}
+
+		info.prev[0].show()
+		points[facing].name.style.opacity = 1
+		points[facing].text.style.opacity = 1
 
 	}
 	function behaviors(){
@@ -261,20 +269,19 @@ function loader(){
 			facingRotations.some(function(ele,i){
 				if(Math.abs(degs(camera.rotation.y)-ele)<45){
 
-					if(facing!=='plr'+i){
-
+					if(facing!==i){
+						info.cyclePoints(i)
 						console.log('facing diff plr')
-						if(perspective.height=='isometric'){
-							info.prev[facing.replace('plr','')].hide()
+						if(perspective.height==='isometric'&&perspective.zoom!=='far'){
+							info.prev[facing].hide()
 							info.prev[i].show()
 						}
-						facing = 'plr'+i
+						facing = i
 
 						if(perspective.zoom==='close'){
 							perspective.zoomswitch = true
-							addzoom = camera.zoom-thresholds.zoom[1]
 							zoomswitchcallback = function(){perspective.zoomswitch = false}
-							move(scene,{x:0,y:-(seseme[facing].position.y)*addzoom-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
+							move(scene,{x:0,y:-(seseme['plr'+facing].position.y)*addzoom-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
 						}
 					}
 				return true }
@@ -283,24 +290,30 @@ function loader(){
 			//HEIGHT AND ZOOM: NEW HEIGHt/ZOOM? WHAT ACTION?
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
-			controls.zoomSpeed = 0.6-(Math.abs(camera.zoom-1)/5)
+			addzoom = camera.zoom-thresholds.zoom[1]
+			controls.zoomSpeed = 0.8-(Math.abs(camera.zoom-1)/4)
 
 			if(perspective.height!==height){ //on height change
 				perspective.height = height
 				if(perspective.height!=='isometric'){
 					info.prev.forEach(function(ele){ele.hide()})
-				}else{info.prev[facing.replace('plr','')].show()}
+				}else{info.prev[facing].show()}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
+				if(perspective.zoom==='close' && zoom === 'normal'){ info.part(); info.prev.forEach(function(ele){ ele.normal()})}
+				else if(zoom === 'close'){ info.point(); info.prev.forEach(function(ele){ele.detail()})	}
 				perspective.zoom = zoom
-				if(perspective.zoom === 'close'){ info.prev.forEach(function(ele){ele.detail()})
-				}else{	info.prev.forEach(function(ele){ ele.normal() })}
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
 				//scene moves up and down at close zoom levels
-				addzoom = camera.zoom-thresholds.zoom[1]
-				scene.position.y = -(seseme[facing].position.y)*addzoom-(addzoom*4)
+				// part_title.style.opacity = 1 - addzoom*0.5
+				// part_title.style.transform = 'translateY(' + (-parseInt(part_title.style.top)*addzoom/.75) + 'px)'
+				// part_text.style.opacity = 1-(addzoom*2)
+				// part_text.style.transform = 'translateY('+ addzoom*(-part_text.offsetHeight/2) + 'px)'
+				// points_info.style.opacity = addzoom*1.5
+				// points_info.style.transform = 'translateY('+(1-(addzoom))*3+'rem)'
+				scene.position.y = -(seseme['plr'+facing].position.y)*addzoom-(addzoom*4)
 				info.prev.forEach(function(ele){
 					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 					ele.labelgroup.position.y = -addzoom * 15
@@ -309,11 +322,38 @@ function loader(){
 		})//end controls 'change' event
 
 		info.point = function(){
-			Velocity(point_title, 'transition.perspectiveUpIn', {queue: false, duration: 800})
-			Velocity(point_title, {translateZ: [0, -50]}, {duration: 800, queue: false})
-			Velocity(part_text, {translateZ: [50, 0]}, {duration: 800, queue: false})
-			Velocity(part_text, 'transition.perspectiveDownOut', {queue: false, duration: 800})
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
+			Velocity(part_title, { opacity: .7, scale: 0.75, translateY: -parseInt(part_title.style.top)*1/.75 + part_title.offsetHeight}
+				, {duration: 600}, [.42, .21, .5, 1])
+			Velocity(part_text, { opacity: 0, translateY: -part_text.offsetHeight/2, scale: 0.9  }, {duration: 500})
+			Velocity(points_info, { opacity: [1,0], translateY: [ 0,'3rem'] }, {duration: 500})
+		}
 
+		info.part = function(){
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
+			Velocity(part_title, { opacity: 1, scale: 1, translateY: 0}
+				, {duration: 600}, [.42, .21, .5, 1])
+			Velocity(part_text, { opacity: 1, translateY: 0, scale: 1  }, {duration: 500})
+			Velocity(points_info, { opacity: 0, translateY: '3rem' }, {duration: 500})
+		}
+
+		info.cyclePoints = function(show){
+			if(show===1&&facing===3 || show > facing){
+				Velocity(points[show].name, {opacity: 1, translateX: ['0', '4rem']}, {duration: 400})
+				Velocity(points[facing].name, {opacity: 0, translateX: ['-4rem',0]}, {duration: 300})
+				Velocity(points[show].text, {opacity: 1, translateX: ['0', '3rem']}, {duration: 300})
+				Velocity(points[facing].text, {opacity: 0, translateX: ['-3rem',0]}, {duration: 200})
+			}else{
+				Velocity(points[show].name, {opacity: 1, translateX: [0, '-4rem']}, {duration: 400})
+				Velocity(points[facing].name, {opacity: 0, translateX: ['4rem',0]}, {duration: 300})
+				Velocity(points[show].text, {opacity: 1, translateX: [0, '-3rem']}, {duration: 300})
+				Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
+			}
+		}
+
+		info.story = function(){
+			Velocity(part_title, {opacity: 0.75, translateY: [part_text.offsetHeight*.78,0], scale: 0.75})
+			Velocity(part_text, {opacity: 0, translateY: ['3rem',0], scale: .9, transformOriginX: ['100%','100%']})
 		}
 
 

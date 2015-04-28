@@ -7,9 +7,10 @@ html{
 
 .info{
 	color: black;
-	position: absolute; overflow: hidden;
+	position: absolute;
 	z-index: 2; opacity: 1;
 	left: 0; right: 0; margin: 0 auto;
+	transform-origin: 10% 0%;
 }
 #top{
 	top: 0; padding: 0.5rem 0.75rem 0.5rem 0.75rem;
@@ -18,25 +19,28 @@ html{
 }
 
 	.title{
-		padding: 0 .75rem;
-		font-family: 'Fira Sans', sans-serif;
-
+		padding: 0 .75rem; font-family: 'Fira Sans', sans-serif;
+		z-index: 3;
 	}
 		#part_title{
 			font-family: 'Fira Sans', serif;
 			font-weight: 600; text-transform: uppercase;
 			font-size: 1rem; letter-spacing: 0.2rem;
 		}
-		#part_text{
-		}
 	.text{
-		padding: 1.4rem .75rem .75rem .75rem;
+		padding: 1.5rem .75rem .75rem .75rem;
 		font-family: 'Fira Sans', sans-serif;
-		font-weight: 400;
-		font-size: 0.65rem;
-		text-align: justify;
+		font-weight: 400; font-size: 0.65rem; text-align: justify;
 	}
 
-#point_title{
-	display: none;
+#points_info{
+	opacity: 0; position: absolute; height: 5rem; 
+}
+
+.point .title, .point .text{
+	opacity: 0;
+}
+
+#first .title {
+	opacity: 1;
 }

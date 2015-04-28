@@ -640,7 +640,7 @@ return function (global, window, document, undefined) {
             "transition.perspectiveUpIn": {
                 defaultDuration: 800,
                 calls: [
-                    [ { opacity: [ 1, 0 ], transformPerspective: [ 800, 800 ], transformOriginX: [ 0, 0 ], transformOriginY: [ "100%", "100%" ], rotateX: [ 0, -180 ] } ]
+                    [ { opacity: [ 1, 0 ], transformPerspective: [ 800, 800 ], transformOriginX: [ 0, 0 ], transformOriginY: [ "100%", "0%" ], rotateX: [ 0, -90 ] } ]
                 ]
             },
             /* Magic.css */
@@ -657,7 +657,7 @@ return function (global, window, document, undefined) {
             "transition.perspectiveDownIn": {
                 defaultDuration: 800,
                 calls: [
-                    [ { opacity: [ 1, 0 ], transformPerspective: [ 800, 800 ], transformOriginX: [ 0, 0 ], transformOriginY: [ 0, 0 ], rotateX: [ 0, 180 ] } ]
+                    [ { opacity: [ 1, 0 ], transformPerspective: [ 300, 300 ], transformOriginX: [ 0, 0 ], transformOriginY: [ 0, 0 ], rotateX: [ 0, 180 ] } ]
                 ],
                 reset: { transformPerspective: 0, transformOriginX: "50%", transformOriginY: "50%" }
             },
@@ -666,7 +666,7 @@ return function (global, window, document, undefined) {
             "transition.perspectiveDownOut": {
                 defaultDuration: 850,
                 calls: [
-                    [ { opacity: [ 0, 1 ], transformPerspective: [ 800, 800 ], transformOriginX: [ 0, 0 ], transformOriginY: [ 0, 0 ], rotateX: 90 } ]
+                    [ { opacity: [ 0, 1 ], transformPerspective: [ 1000, 1000 ], transformOriginX: ['50%','50%' ], transformOriginY: [ 0, 0 ], rotateX: 90 } ]
                 ],
                 reset: { transformPerspective: 0, transformOriginX: "50%", transformOriginY: "50%", rotateX: 0 }
             },

@@ -69,3 +69,9 @@ function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,alig
 	}else if(align==='start'){this.ctx.fillText(words,1,this.cvs.height/6+fontSize/2.2)}
 	else{this.ctx.fillText(words,this.cvs.width/3-10,this.cvs.height/6+fontSize/2.2)}
 	}
+
+function traverseDom (array, callback, scope) {
+  for (var i = 0; i < array.length; i++) {
+    callback.call(scope, i, array[i]); // passes back stuff we need
+  }
+}
