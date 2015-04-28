@@ -34,7 +34,7 @@ html{
 	}
 
 #points_info{
-	opacity: 0; position: absolute; height: 5rem; 
+	opacity: 0; position: absolute; height: 5rem;
 }
 
 .point .title, .point .text{
@@ -43,4 +43,11 @@ html{
 
 #first .title {
 	opacity: 1;
+}
+
+#whitebox {
+	position: absolute; z-index: 1;
+	width: 100%; bottom: 0; left: 0;
+	height: 30px;
+	background-color: red;
 }

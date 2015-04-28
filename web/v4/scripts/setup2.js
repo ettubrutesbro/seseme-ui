@@ -11,8 +11,8 @@ var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: 
 var thresholds = {zoom: [.8,1.15], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
-points_info = document.getElementById('points_info'),
-points = document.getElementsByClassName('point')
+points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
+white_box = document.getElementById('whitebox')
 
 function setup(){
 	loader()
@@ -140,9 +140,9 @@ function loader(){
 
 
 		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-
 		points_info.style.top = window.innerHeight - points_info.offsetHeight
 
+		whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
 
 
 
@@ -302,6 +302,8 @@ function loader(){
 			if(perspective.zoom!==zoom){ //on zoom change
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.part(); info.prev.forEach(function(ele){ ele.normal()})}
 				else if(zoom === 'close'){ info.point(); info.prev.forEach(function(ele){ele.detail()})	}
+				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}) }
+				else{	info.prev[facing].show() }
 				perspective.zoom = zoom
 			}
 
@@ -338,6 +340,8 @@ function loader(){
 		}
 
 		info.cyclePoints = function(show){
+			Velocity(points[show].name, 'stop'); Velocity(points[facing].name, 'stop')
+			Velocity(points[show].text, 'stop'); Velocity(points[facing].text, 'stop')
 			if(show===1&&facing===3 || show > facing){
 				Velocity(points[show].name, {opacity: 1, translateX: ['0', '4rem']}, {duration: 400})
 				Velocity(points[facing].name, {opacity: 0, translateX: ['-4rem',0]}, {duration: 300})
