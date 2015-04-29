@@ -319,20 +319,21 @@ function loader(){
 		})//end controls 'change' event
 
 		info.point = function(){
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
 			Velocity(whitebox, {scaleY:  (points[0].text.offsetHeight+points[0].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
-			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
-			Velocity(part_title, { opacity: .7, scale: 0.75, translateY: -parseInt(part_title.style.top)-part_text.offsetHeight}
+			Velocity(part_title, { opacity: .7, scale: [.75,1],
+				translateY: [-parseInt(part_title.style.top)-(part_text.offsetHeight),0]}
 				, {duration: 600}, [.42, .21, .5, 1])
-			Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight/2, scale: 0.9  }, {duration: 500})
+			Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight/2}, {duration: 500})
 			Velocity(points_info, { opacity: [1,0], translateY: [ 0,'3rem'] }, {duration: 500})
 		}
 
 		info.part = function(){
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
 			Velocity(whitebox, {scaleY: 1}, {delay: 200, duration: 600} )
-			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 			Velocity(part_title, { opacity: 1, scale: 1, translateY: 0}
 				, {duration: 600}, [.42, .21, .5, 1])
-			Velocity(part_text, { opacity: 1, translateY: 0, scale: 1  }, {duration: 500})
+			Velocity(part_text, { opacity: 1, translateY: 0}, {duration: 500})
 			Velocity(points_info, { opacity: 0, translateY: '3rem' }, {duration: 500})
 		}
 
@@ -352,9 +353,158 @@ function loader(){
 			}
 		}
 		info.story = function(){
-			Velocity(part_title, 'stop'); Velocity(part_text, 'stop')
-			Velocity(part_title, {opacity: 0.75, translateY: part_text.offsetHeight, scale: 0.75})
-			Velocity(part_text, {opacity: 0, translateY: ['3rem',0], scale: .9, transformOriginX: ['100%','100%']})
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(whitebox,'stop')
+			Velocity(whitebox, {scaleY: 0.1})
+			Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
+				translateY: [window.innerHeight-parseInt(part_title.style.top),0]})
+			Velocity(part_text, {opacity: 0, translateY: ['3rem',0], transformOriginX: ['100%','100%']})
+		}
+
+		info.next = function(){
+			for(var i = 0; i<4; i++){
+				seseme['plr'+i].remove(info.prev[i])
+			}
+			part+=1
+
+			if(stories[story].parts[part].valueType === 'smallerIsHigher'){
+				var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
+			}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
+				var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
+			}
+			range = Math.abs(bottom-top)
+			stories[story].parts[part].pointValues.forEach(function(ele,i){
+				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
+			})
+
+			part_title.textContent = stories[story].parts[part].name
+			part_text.textContent = stories[story].parts[part].text
+
+			for(var i = 0; i < points.length; i++){
+				points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
+				points[i].name.textContent = stories[story].parts[part].pointNames[i]
+				points[i].text.textContent = stories[story].parts[part].pointText[i]
+			}
+
+			part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
+			points_info.style.top = window.innerHeight - (points[0].text.offsetHeight+points[0].name.offsetHeight)
+
+			whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
+
+
+
+			var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
+			Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
+			]
+			for(var i = 0; i<4; i++){ //pillar-matching infos
+				//PREVIEWS: label(title,caption,pointer) and stat showing facing pillar data
+				info.prev[i] = new THREE.Group()
+					info.prev[i].position.set(seseme['plr'+i].cxlat.sx,0,seseme['plr'+i].cxlat.sz)
+					info.prev[i].rotation.y = rads(seseme['plr'+i].cxlat.pr)
+
+					var label = new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
+					36, 400, 'center')
+					label.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map: label.tex,opacity: 0})
+					label.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(label.cvs.width/60,label.cvs.height/60),label.mtl)
+					label.obj.rotation.x = defaultiso; label.obj.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
+					label.obj.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
+					label.obj.position.y = -seseme['plr'+i].position.y-3.5; label.obj.position.z = 6.5
+					info.prev[i].label = label.obj;
+						var caption = new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center')
+						caption.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map:caption.tex,opacity: 0})
+						caption.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.cvs.width/60,caption.cvs.height/60),caption.mtl)
+						caption.obj.origin={x:0,y:0.5,z:0};caption.obj.expand={x:0,y:2,z:0};
+						caption.obj.position.set(caption.obj.origin.x,caption.obj.origin.y,caption.obj.origin.z)
+						label.obj.caption = caption; label.obj.add(caption.obj);
+						var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.tri.clone())
+						pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
+						pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
+						label.obj.pointer = pointer; label.obj.add(pointer)
+					info.prev[i].labelgroup = new THREE.Group(); info.prev[i].labelgroup.add(label.obj); info.prev[i].add(info.prev[i].labelgroup)
+
+					var stat = new THREE.Group(); stat.stats = []
+					stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
+					stat.origin = {x:0,y:1.5,z:0}; stat.position.set(stat.origin.x,stat.origin.y,stat.origin.z)
+					stat.scale.set(.75,.75,.75)
+					info.prev[i].add(stat); info.prev[i].stat = stat
+					stattype.forEach(function(ele,ite){
+						var which = ite===0? 'normalStat': 'detailStat'
+						if(ele==='nums'){
+							stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
+							13,70,200,'white','Source Serif Pro',36,400,'center')
+							stat.stats[ite].width = stat.stats[ite].cvs.width/60; stat.stats[ite].height = stat.stats[ite].cvs.height/60
+							stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.stats[ite].tex,opacity:0})
+							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),stat.stats[ite].mtl)
+							stat.stats[ite].obj.position.z = 0.1
+						}else if(ele==='numswords'){
+							var words = stories[story].parts[part][which].words
+							var longest = Math.max(words[0].length,words[1].length)
+							stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
+							12.5,longest*28,200,'white','Source Serif Pro',32,400,'start')
+							stat.stats[ite].ctx.font = 'normal 500 14pt Fira Sans'; stat.stats[ite].ctx.textAlign = 'end'
+							stat.stats[ite].ctx.fillText(words[0],stat.stats[ite].cvs.width/3,28)
+							stat.stats[ite].ctx.fillText(words[1],stat.stats[ite].cvs.width/3,52)
+							stat.stats[ite].width = stat.stats[ite].cvs.width/60;stat.stats[ite].height = stat.stats[ite].cvs.height/60
+							stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,opacity:0,map:stat.stats[ite].tex})
+							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),
+							stat.stats[ite].mtl); stat.stats[ite].obj.position.z = 0.2;
+						}
+					})
+					stat.normalStat = stat.stats[0].obj; stat.detailStat = stat.stats[1].obj
+
+
+						var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[0].width*1.2,stat.stats[0].height*1.2),
+						new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
+						var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
+
+						stat.add(triangle); stat.statbox = statbox; stat.add(stat.statbox); stat.add(stat.normalStat)
+
+						//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
+						info.prev[i].show = function(){
+							var label_i = 0
+							this.label.traverse(function(child){
+								fade(child,1,200,label_i*100)
+								move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
+							})
+							this.stat.traverse(function(child){
+								if(!child.disabled){ if(child.material){fade(child,1,200,0)} }})
+							size(this.stat,{x:1,y:1,z:1},400)
+							move(this.stat,this.stat.expand,400,1,'Quadratic','Out',function(){},0)
+						}
+						info.prev[i].hide = function(){
+							var label_i = 0
+							this.label.traverse(function(child){
+								fade(child,0,400-(label_i*150),0);
+								move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
+								label_i++
+							})
+							this.stat.traverse(function(child){if(child.material){fade(child,0,200,0)}})
+							size(this.stat,{x:.75,y:.75,z:.75},400)
+							move(this.stat,this.stat.origin,400,1,'Quadratic','Out',function(){},0)
+						}
+						info.prev[i].detail = function(){
+							var scalefactor = this.stat.stats[1].width / this.stat.stats[0].width
+							size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
+							 this.stat.add(this.stat.detailStat); this.stat.normalStat.disabled = true;
+							this.stat.detailStat.disabled = false
+							fade(this.stat.normalStat,0,300,0)
+							if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
+						}
+						info.prev[i].normal = function(){
+							size(this.stat.statbox,{x:1,y:1,z:1},300)
+							this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
+							this.stat.normalStat.disabled = false
+							fade(this.stat.detailStat,0,300,0)
+							if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
+						}
+					seseme['plr'+i].add(info.prev[i])
+			}
+
+			info.prev[0].show()
+			points[facing].name.style.opacity = 1
+			points[facing].text.style.opacity = 1
+
+
+
 		}
 
 		window.addEventListener('resize', function(){
