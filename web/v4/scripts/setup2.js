@@ -12,8 +12,7 @@ var thresholds = {zoom: [.8,1.15], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
 points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
-white_box = document.getElementById('whitebox')
-
+whitebox = document.getElementById('whitebox')
 function setup(){
 	loader()
 
@@ -138,9 +137,8 @@ function loader(){
 		}
 
 
-
 		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-		points_info.style.top = window.innerHeight - points_info.offsetHeight
+		points_info.style.top = window.innerHeight - (points[0].text.offsetHeight+points[0].name.offsetHeight)
 
 		whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
 
@@ -219,7 +217,8 @@ function loader(){
 							fade(child,1,200,label_i*100)
 							move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
 						})
-						this.stat.traverse(function(child){if(child.material){fade(child,1,200,0)}})
+						this.stat.traverse(function(child){
+							if(!child.disabled){ if(child.material){fade(child,1,200,0)} }})
 						size(this.stat,{x:1,y:1,z:1},400)
 						move(this.stat,this.stat.expand,400,1,'Quadratic','Out',function(){},0)
 					}
@@ -237,13 +236,15 @@ function loader(){
 					info.prev[i].detail = function(){
 						var scalefactor = this.stat.stats[1].width / this.stat.stats[0].width
 						size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
-						this.stat.remove(this.stat.normalStat); this.stat.add(this.stat.detailStat)
+						 this.stat.add(this.stat.detailStat); this.stat.normalStat.disabled = true;
+						this.stat.detailStat.disabled = false
 						fade(this.stat.normalStat,0,300,0)
 						if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
 					}
 					info.prev[i].normal = function(){
 						size(this.stat.statbox,{x:1,y:1,z:1},300)
-						this.stat.remove(this.stat.detailStat); this.stat.add(this.stat.normalStat)
+						this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
+						this.stat.normalStat.disabled = false
 						fade(this.stat.detailStat,0,300,0)
 						if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
 					}
@@ -291,7 +292,7 @@ function loader(){
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
 			addzoom = camera.zoom-thresholds.zoom[1]
-			controls.zoomSpeed = 0.8-(Math.abs(camera.zoom-1)/4)
+			controls.zoomSpeed = 0.7-(Math.abs(camera.zoom-1)/4)
 
 			if(perspective.height!==height){ //on height change
 				perspective.height = height
@@ -302,36 +303,32 @@ function loader(){
 			if(perspective.zoom!==zoom){ //on zoom change
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.part(); info.prev.forEach(function(ele){ ele.normal()})}
 				else if(zoom === 'close'){ info.point(); info.prev.forEach(function(ele){ele.detail()})	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}) }
-				else{	info.prev[facing].show() }
+				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}); info.story() }
+				else{	info.prev[facing].show(); info.part() }
 				perspective.zoom = zoom
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
 				//scene moves up and down at close zoom levels
-				// part_title.style.opacity = 1 - addzoom*0.5
-				// part_title.style.transform = 'translateY(' + (-parseInt(part_title.style.top)*addzoom/.75) + 'px)'
-				// part_text.style.opacity = 1-(addzoom*2)
-				// part_text.style.transform = 'translateY('+ addzoom*(-part_text.offsetHeight/2) + 'px)'
-				// points_info.style.opacity = addzoom*1.5
-				// points_info.style.transform = 'translateY('+(1-(addzoom))*3+'rem)'
 				scene.position.y = -(seseme['plr'+facing].position.y)*addzoom-(addzoom*4)
 				info.prev.forEach(function(ele){
 					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
-					ele.labelgroup.position.y = -addzoom * 15
+					ele.labelgroup.position.y = -addzoom * 25; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 				})
 			}
 		})//end controls 'change' event
 
 		info.point = function(){
+			Velocity(whitebox, {scaleY:  (points[0].text.offsetHeight+points[0].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
 			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
-			Velocity(part_title, { opacity: .7, scale: 0.75, translateY: -parseInt(part_title.style.top)*1/.75 + part_title.offsetHeight}
+			Velocity(part_title, { opacity: .7, scale: 0.75, translateY: -parseInt(part_title.style.top)-part_text.offsetHeight}
 				, {duration: 600}, [.42, .21, .5, 1])
-			Velocity(part_text, { opacity: 0, translateY: -part_text.offsetHeight/2, scale: 0.9  }, {duration: 500})
+			Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight/2, scale: 0.9  }, {duration: 500})
 			Velocity(points_info, { opacity: [1,0], translateY: [ 0,'3rem'] }, {duration: 500})
 		}
 
 		info.part = function(){
+			Velocity(whitebox, {scaleY: 1}, {delay: 200, duration: 600} )
 			Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 			Velocity(part_title, { opacity: 1, scale: 1, translateY: 0}
 				, {duration: 600}, [.42, .21, .5, 1])
@@ -354,12 +351,11 @@ function loader(){
 				Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
 			}
 		}
-
 		info.story = function(){
-			Velocity(part_title, {opacity: 0.75, translateY: [part_text.offsetHeight*.78,0], scale: 0.75})
+			Velocity(part_title, 'stop'); Velocity(part_text, 'stop')
+			Velocity(part_title, {opacity: 0.75, translateY: part_text.offsetHeight, scale: 0.75})
 			Velocity(part_text, {opacity: 0, translateY: ['3rem',0], scale: .9, transformOriginX: ['100%','100%']})
 		}
-
 
 		window.addEventListener('resize', function(){
 			var aspect = window.innerWidth / window.innerHeight; var d = 20

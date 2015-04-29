@@ -24,17 +24,13 @@ var stories = [
 				pointValues: [55,6,39,19], valueType: 'smallerIsHigher', valueRange: [1,60],
 				normalStat: {nums: ['55th','6th','39th','19th'] }, //random num, numwords, numpics, pics
 				detailStat: {nums: ['7000','8000','7100','7900'], words: 'sierra score' }
-				// expandValues: ['700 points','900 points','800 points','850 points'],
-				// pointsText: ['','','',''],
 			},
 			{
 				name: 'Davis: UC Sustainability Whipping Boy',
 				text: 'Within the University of California, Davis is near dead last. The likes of Berkeley, Santa Cruz, Santa Barbara, San Diego, and even Merced are ranked higher, not to mention Irvine, which at #1 occupies our old throne. The only UCs behind us are LA (close at 60) and Riverside (a dubious 90).',
 				pointNames: ['UC Davis','UC Berkeley','UC San Diego','UC Irvine'],
 				pointType: 'numbers', metricName: 'GREEN SCHOOLS RANK', valuePrefix: '#',
-				pointValues: [55,33,17,1], valueType: 'smallerIsHigher', valueRange: [1,60] ,
-				// expandValues: ['700 points','900 points','800 points','850 points'],
-				// pointsText: ['','','',''],
+				pointValues: [55,33,17,1], valueType: 'smallerIsHigher', valueRange: [1,60]
 			},
 			{
 				name: 'How it happened 1: Greenhouse Gas Emissions',

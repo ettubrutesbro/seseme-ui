@@ -17,37 +17,36 @@ html{
 	text-align: center; font-family: 'Fira Sans',sans-serif; font-weight: 600;
 	font-size: 0.8rem; letter-spacing: 0.08rem;
 }
-
-	.title{
-		padding: 0 .75rem; font-family: 'Fira Sans', sans-serif;
-		z-index: 3;
+.title{
+	padding: 0 .75rem; font-family: 'Fira Sans', sans-serif;
+	z-index: 3;
+}
+#part_title{
+		font-family: 'Fira Sans', serif;
+		font-weight: 600; text-transform: uppercase;
+		font-size: 1rem; letter-spacing: 0.2rem;
 	}
-		#part_title{
-			font-family: 'Fira Sans', serif;
-			font-weight: 600; text-transform: uppercase;
-			font-size: 1rem; letter-spacing: 0.2rem;
-		}
-	.text{
-		padding: 1.5rem .75rem .75rem .75rem;
-		font-family: 'Fira Sans', sans-serif;
-		font-weight: 400; font-size: 0.65rem; text-align: justify;
-	}
-
+.text{
+	padding: 1.5rem .75rem .75rem .75rem;
+	font-family: 'Fira Sans', sans-serif;
+	font-weight: 400; font-size: 0.65rem; text-align: justify;
+}
 #points_info{
-	opacity: 0; position: absolute; height: 5rem;
+	padding: 1.2rem 0 0 0;
+	opacity: 0; position: absolute;
 }
-
-.point .title, .point .text{
-	opacity: 0;
+.point .text {
+	padding: 1.8rem .75rem .3rem .75rem; opacity: 0;
 }
-
-#first .title {
-	opacity: 1;
+.point .title {
+	font-size: 1.3rem; font-family: 'Source Serif Pro'; letter-spacing: 0.04rem;
+	font-weight: 400; opacity: 0;
 }
 
 #whitebox {
 	position: absolute; z-index: 1;
 	width: 100%; bottom: 0; left: 0;
-	height: 30px;
-	background-color: red;
+	height: 30px; transform-origin: 50% 100%;
+	background-image: linear-gradient(rgba(237,237,237,0),
+	rgba(237,237,237,0.7) 20%, rgba(237,237,237,0.8) 60%, rgba(237,237,237,1) 100%);
 }
