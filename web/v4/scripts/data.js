@@ -10,7 +10,7 @@ var stories = [
 				pointNames: ['UC Davis','Stanford','UC Irvine','UC Berkeley'], metricName: 'COOL SCHOOLS (2012)',
 				pointValues: [1,3,9,20], valueType: 'smallerIsHigher', valueRange: [1,23],
 				normalStat: {nums: ['1st','3rd','#9','20th'] },
-				detailStat: {nums: ['709','681','628','569'], words: ['sierra club' , 'score']},
+				detailStat: {nums: ['709','681','628','569'], words: ['sierra club' , 'score (2012)']},
 				pointText: ['2 years ago, we drew praise for our \'well-rounded\' environmental efforts, including bicycle infrastructure and waste diversion.”'
 				,'Barely behind us, Stanford earned honors for its commitment to sustainable agriculture in class and cafeteria.'
 				,'Then the closest-ranked UC behind Davis, Irvine was noted for its many extracurricular environmental groups and recycling efforts.'
@@ -18,12 +18,12 @@ var stories = [
 			},
 			{
 				name: 'Fall from Grace',
-				text: 'Since then, we\'ve descended to the bottom of the heap. Old, new, near, or far, all kinds of schools are outperforming UCD on the sustainability front.',
+				text: 'Since then, our sustainability rank has seen a precipitous fall: in their most recent Coolest School report, UC Davis ranked #55, eclipsed by nearly every UC, and a variety of schools near and far, public and private.',
 				pointNames: ['UC Davis','Stanford','UC Irvine','UC Berkeley'],
 				pointType: 'numbers', metricName: 'COOL SCHOOLS 2014',
-				pointValues: [55,6,39,19], valueType: 'smallerIsHigher', valueRange: [1,60],
-				normalStat: {nums: ['now 55th','6th','New #1','33rd'] }, //random num, numwords, numpics, pics
-				detailStat: {nums: ['660','750','813','699'], words: ['sierra club','score'] },
+				pointValues: [55,6,1,33], valueType: 'smallerIsHigher', valueRange: [1,60],
+				normalStat: {nums: [':( 55th','6th','New #1','33rd'] }, //random num, numwords, numpics, pics
+				detailStat: {nums: ['660','750','813','699'], words: ['sierra club','score (2014)'] },
 				pointText: ['2 years ago, we drew praise for our \'well-rounded\' environmental efforts, including bicycle infrastructure and waste diversion.”'
 				,'Barely behind us, Stanford earned honors for its commitment to sustainable agriculture in class and cafeteria.'
 				,'Then the closest-ranked UC behind Davis, Irvine was noted for its many extracurricular environmental groups and recycling efforts.'
