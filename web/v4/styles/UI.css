@@ -50,3 +50,9 @@ html{
 	background-image: linear-gradient(rgba(237,237,237,0),
 	rgba(237,237,237,0.7) 20%, rgba(237,237,237,0.8) 60%, rgba(237,237,237,1) 100%);
 }
+
+#collapser{
+	border: 1px solid black; border-radius: 50%;
+	width: 2rem; height: 2rem; position: absolute;
+	z-index: 3; 
+}

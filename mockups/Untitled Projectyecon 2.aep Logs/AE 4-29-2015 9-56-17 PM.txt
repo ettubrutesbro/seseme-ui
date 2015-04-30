@@ -1,0 +1,153 @@
+Adobe After Effects v11.0.1 (Windows 64) render log for project “Untitled Projectyecon 2.aep”
+
+Rendering started on 4/29/2015 at 9:56:17 PM
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-00).png
+  
+  4/29/2015 9:56:17 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-01).png
+  
+  4/29/2015 9:56:17 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-02).png
+  
+  4/29/2015 9:56:17 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-03).png
+  
+  4/29/2015 9:56:17 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-04).png
+  
+  4/29/2015 9:56:17 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:17 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-05).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-06).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-07).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-08).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-09).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-10).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-11)_1.png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-12).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-13).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-14).png
+  
+  4/29/2015 9:56:18 PM: Finished composition “Comp 2”.
+
+
+
+  4/29/2015 9:56:18 PM: Starting composition “Comp 2”.
+
+
+  Output To: C:\Users\Jank\Documents\Projects\SESEME_UI\seseme_ui\mockups\anims\eyecon_close\Comp 2 (0-00-00-15).png
+  
+  4/29/2015 9:56:19 PM: Finished composition “Comp 2”.
+
+
+
+  Total Time Elapsed: 2 Seconds
+
+Log closed on 4/29/2015 at 9:56:19 PM
+

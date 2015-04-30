@@ -1,4 +1,54 @@
 
+var view = {
+	next: function(){
+		for(var i = 0; i<4; i++){seseme['plr'+i].remove(info.prev[i])}
+		part+=1; view.fill()
+	},
+
+	story: function(){
+		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(whitebox,'stop')
+		Velocity(whitebox, {scaleY: 0.1})
+		Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
+			translateY: [window.innerHeight-parseInt(part_title.style.top),0]})
+		Velocity(part_text, {opacity: 0, translateY: ['3rem',0], transformOriginX: ['100%','100%']})
+	},
+
+	part: function(){
+		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
+		Velocity(whitebox, {scaleY: 1}, {delay: 200, duration: 600} )
+		Velocity(part_title, { opacity: 1, scale: 1, translateY: 0}
+			, {duration: 600}, [.42, .21, .5, 1])
+		Velocity(part_text, { opacity: 1, translateY: 0}, {duration: 500})
+		Velocity(points_info, { opacity: 0, translateY: '3rem' }, {duration: 500})
+	},
+
+	point: function(){
+		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
+		Velocity(whitebox, {scaleY:  (points[0].text.offsetHeight+points[0].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
+		Velocity(part_title, { opacity: .7, scale: [.75,1],
+			translateY: [-parseInt(part_title.style.top)-(part_text.offsetHeight),0]}
+			, {duration: 600}, [.42, .21, .5, 1])
+		Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight/2}, {duration: 500})
+		Velocity(points_info, { opacity: [1,0], translateY: [ 0,'3rem'] }, {duration: 500})
+	},
+
+	cyclePoints: function(show){
+		Velocity(points[show].name, 'stop'); Velocity(points[facing].name, 'stop')
+		Velocity(points[show].text, 'stop'); Velocity(points[facing].text, 'stop')
+		if(show===1&&facing===3 || show > facing){
+			Velocity(points[show].name, {opacity: 1, translateX: ['0', '4rem']}, {duration: 400})
+			Velocity(points[show].text, {opacity: 1, translateX: ['0', '3rem']}, {duration: 300})
+			Velocity(points[facing].name, {opacity: 0, translateX: ['-4rem',0]}, {duration: 300})
+			Velocity(points[facing].text, {opacity: 0, translateX: ['-3rem',0]}, {duration: 200})
+		}else{
+			Velocity(points[show].name, {opacity: 1, translateX: [0, '-4rem']}, {duration: 400})
+			Velocity(points[show].text, {opacity: 1, translateX: [0, '-3rem']}, {duration: 300})
+			Velocity(points[facing].name, {opacity: 0, translateX: ['4rem',0]}, {duration: 300})
+			Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
+		}
+	}
+}
+
 function degs(rads){
 	return rads*(180/Math.PI)
 }
@@ -37,27 +87,6 @@ function size(obj,tgtscale,spd,callback){
 	obj.sizeTween = anim
 }
 
-// function dom_anim(obj,properties,values,dur,twntype,twninout){
-// 		properties.forEach(function(ele,i){
-// 			if(obj[ele+'anim']){ obj[ele+'anim'].stop() }
-// 			var origin = {}; origin[ele] = parseFloat(obj.style[ele])
-// 			var tgt = {}; tgt[ele] = values[i]
-// 			obj[ele+'anim'] = new TWEEN.Tween(origin).to(tgt,dur).onUpdate(function(){
-// 				obj.style[ele] = origin[ele]
-// 				console.log(origin[ele])
-// 			}).easing(TWEEN.Easing[twntype][twninout]).start()
-// 		})
-// }
-//
-// function dom_xform(obj){
-// 		var style = window.getComputedStyle(obj,null)
-// 		var xform = style.getPropertyValue("-webkit-transform") || style.getPropertyValue("-moz-transform") ||
-//          style.getPropertyValue("-ms-transform") || style.getPropertyValue("-o-transform") ||
-//          style.getPropertyValue("transform") ||
-// 		console.log(xform)
-// }
-
-
 function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,align){ //'400 36pt Source Serif Pro'
 	this.cvs = document.createElement('canvas'), this.ctx = this.cvs.getContext('2d')
 	this.tex = new THREE.Texture(this.cvs); this.tex.needsUpdate = true
@@ -68,10 +97,4 @@ function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,alig
 	if(align==='center'){this.ctx.fillText(words,this.cvs.width/6,this.cvs.height/6+fontSize/2.2)
 	}else if(align==='start'){this.ctx.fillText(words,1,this.cvs.height/6+fontSize/2.2)}
 	else{this.ctx.fillText(words,this.cvs.width/3-10,this.cvs.height/6+fontSize/2.2)}
-	}
-
-function traverseDom (array, callback, scope) {
-  for (var i = 0; i < array.length; i++) {
-    callback.call(scope, i, array[i]); // passes back stuff we need
-  }
 }
