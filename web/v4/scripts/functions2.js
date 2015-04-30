@@ -10,26 +10,40 @@ var view = {
 		Velocity(whitebox, {scaleY: 0.1})
 		Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
 			translateY: [window.innerHeight-parseInt(part_title.style.top),0]})
-		Velocity(part_text, {opacity: 0, translateY: ['3rem',0], transformOriginX: ['100%','100%']})
+		Velocity(part_text, {opacity: 0, translateY: [part_text.offsetHeight,0], transformOriginX: ['100%','100%']})
+		Velocity(collapser, {translateX: '-3rem'})
 	},
 
 	part: function(){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
+		Velocity(collapser, {top: ((parseInt(part_title.style.top) - collapser.offsetHeight) / rem) - .5 + 'rem'})
 		Velocity(whitebox, {scaleY: 1}, {delay: 200, duration: 600} )
 		Velocity(part_title, { opacity: 1, scale: 1, translateY: 0}
-			, {duration: 600}, [.42, .21, .5, 1])
+			, [.42, .21, .5, 1])
 		Velocity(part_text, { opacity: 1, translateY: 0}, {duration: 500})
 		Velocity(points_info, { opacity: 0, translateY: '3rem' }, {duration: 500})
+
 	},
 
 	point: function(){
+		if(collapsed){
+			Velocity(collapser, {top: window.innerHeight - points[facing].text.offsetHeight })
+		}else{
+			Velocity(collapser, {translateX: '-3rem'})
+			Velocity(collapser, {top: window.innerHeight - points[facing].text.offsetHeight })
+			Velocity(collapser, {translateX: 0})
+		}
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop'); Velocity(whitebox, 'stop')
 		Velocity(whitebox, {scaleY:  (points[0].text.offsetHeight+points[0].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
 		Velocity(part_title, { opacity: .7, scale: [.75,1],
-			translateY: [-parseInt(part_title.style.top)-(part_text.offsetHeight),0]}
-			, {duration: 600}, [.42, .21, .5, 1])
-		Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight/2}, {duration: 500})
-		Velocity(points_info, { opacity: [1,0], translateY: [ 0,'3rem'] }, {duration: 500})
+			translateY: -parseInt(part_title.style.top)-(part_text.offsetHeight)}
+			, {duration: 800}, [.42, .21, .5, 1])
+		Velocity(part_text, { opacity: -1, translateY: part_text.offsetHeight}, {duration: 500})
+		Velocity(points_info, { translateX: 0, opacity: 1, top: window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight) }, {duration: 500})
+		for(var i = 0; i<4; i++){
+			Velocity(points[i].text, {translateY: 0})
+		}
+
 	},
 
 	cyclePoints: function(show){
@@ -46,6 +60,31 @@ var view = {
 			Velocity(points[facing].name, {opacity: 0, translateX: ['4rem',0]}, {duration: 300})
 			Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
 		}
+	},
+
+	collapse: function(){
+		if(perspective.zoom==='close'){
+			Velocity(points_info, {top: window.innerHeight-(3.5*rem), translateX: '2.5rem'})
+			for(var i = 0; i<4; i++){
+				Velocity(points[i].text, {translateY: points[i].text.offsetHeight})
+			}
+			Velocity(collapser, {top: window.innerHeight - (4.75*rem)})
+		}else if(perspective.zoom==='normal'){
+			Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
+				translateY: [window.innerHeight-parseInt(part_title.style.top),0]})
+			Velocity(part_text, {opacity: 0, translateY: [part_text.offsetHeight,0], transformOriginX: ['100%','100%']})
+			Velocity(collapser, {translateY: window.innerHeight - (parseInt(collapser.style.top)+5)*rem})
+		}
+		Velocity(whitebox, {scaleY: 0})
+
+	},
+
+	expand: function(){
+			if(perspective.zoom==='close'){
+				view.point()
+			}else if(perspective.zoom==='normal'){
+				view.part()
+			}
 	}
 }
 

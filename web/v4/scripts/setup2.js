@@ -12,7 +12,10 @@ var thresholds = {zoom: [.8,1.15], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
 points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
-whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser')
+whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
+rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
+
+collapsed = false
 
 function setup(){
 	loader()
@@ -138,9 +141,9 @@ function loader(){
 		}
 
 		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-		points_info.style.top = window.innerHeight - (points[0].text.offsetHeight+points[0].name.offsetHeight)
+		points_info.style.top = window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight)
 		whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
-		collapser.style.top = parseInt(part_title.style.top) - collapser.offsetHeight
+		collapser.style.top = ((parseInt(part_title.style.top) - collapser.offsetHeight) / rem) - .5 + 'rem'
 
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
@@ -256,6 +259,13 @@ function loader(){
 		window.addEventListener('deviceorientation', function(evt){
 			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
+
+		collapser.addEventListener('click',function(){
+			if(collapsed){view.expand()}else{view.collapse()}
+			collapsed = !collapsed
+		})
+
+
 		controls.addEventListener( 'change', function(){
 
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
@@ -295,6 +305,7 @@ function loader(){
 				}else{info.prev[facing].show()}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
+				collapsed = false
 				if(perspective.zoom==='close' && zoom === 'normal'){ view.part(); info.prev.forEach(function(ele){ ele.normal()})}
 				else if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
 				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}); view.story() }
