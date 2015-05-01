@@ -8,7 +8,7 @@ var info = {prev: [], summ: [], multi: [], detail: []}
 var plrmax = 12, defaultiso
 
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.8,1.15], height: [-12,-60]}
+var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
 points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
@@ -143,7 +143,8 @@ function loader(){
 		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
 		points_info.style.top = window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight)
 		whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
-		collapser.style.top = ((parseInt(part_title.style.top) - collapser.offsetHeight) / rem) - .5 + 'rem'
+		collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
+		collapser.style.right = .75*rem
 
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
