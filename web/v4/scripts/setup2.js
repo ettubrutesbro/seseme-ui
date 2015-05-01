@@ -256,6 +256,8 @@ function loader(){
 
 	} //end view.fill() --------------------
 	function behaviors(){
+
+		Origami.fastclick(document.body) //attaches fastclick to body so shitty iOS doesnt wait 300ms
 		controls = new THREE.OrbitControls(camera)
 		window.addEventListener('deviceorientation', function(evt){
 			gyro.rotation.y = rads(evt.gamma)/1.5
@@ -265,8 +267,6 @@ function loader(){
 			if(collapsed){view.expand()}else{view.collapse()}
 			collapsed = !collapsed
 		})
-
-
 		controls.addEventListener( 'change', function(){
 
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS

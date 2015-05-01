@@ -1,0 +1,27 @@
+Adobe After Effects v11.0.1 (Windows 64) render log for project “v2.aep”
+
+Rendering started on 4/30/2015 at 11:56:52 PM
+
+
+  4/30/2015 11:56:52 PM: Starting composition “open2”.
+
+
+  Output To: D:\Dropbox\Design Projects\seseme-ui\mockups\anims\eyeconv2\open\open2_[#####].png
+  
+  4/30/2015 11:56:52 PM: Finished composition “open2”.
+
+
+
+  4/30/2015 11:56:52 PM: Starting composition “closing”.
+
+
+  Output To: D:\Dropbox\Design Projects\seseme-ui\mockups\anims\eyeconv2\close\closing_[#####].png
+  
+  4/30/2015 11:56:52 PM: Finished composition “closing”.
+
+
+
+  Total Time Elapsed: 0 Seconds
+
+Log closed on 4/30/2015 at 11:56:52 PM
+
