@@ -62,8 +62,32 @@ html{
 	width: 2rem; height: 2rem; position: absolute;
 	z-index: 4;
 	background-size: cover; background-position: center;
-	background-image: url('../assets/eyeclosed.png');
-	background-color: rgba(237,237,237,0.5);
-
-
+	background-position: 0%;
+	background-image: url('../assets/eyesprite.png');
+	background-color: rgba(237,237,237,0);
 }
+
+#collapser.open{
+	-webkit-animation: open .4s steps(15);
+	-moz-animation: open .4s steps(15);
+	animation: open .4s steps(15);
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+	@-webkit-keyframes open {from {background-position: 0%;} to {background-position: 100%;}}
+	@-moz-keyframes open {from {background-position: 0%;} to {background-position: 100%;}}
+	@keyframes open {from {background-position: 0%;} to {background-position: 100%;}}
+
+
+#collapser.close{
+	-webkit-animation: close .4s steps(15);
+	-moz-animation: close .4s steps(15);
+	animation: close .4s steps(15);
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+}
+	@-webkit-keyframes close {from {background-position: 100%;} to {background-position: 0%;}}
+	@-moz-keyframes close {from {background-position: 100%;} to {background-position: 0%;}}
+	@keyframes close {from {background-position: 100%;} to {background-position: 0%;}}

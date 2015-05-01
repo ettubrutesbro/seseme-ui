@@ -2,14 +2,14 @@
 var view = {
 	next: function(){
 		for(var i = 0; i<4; i++){seseme['plr'+i].remove(info.prev[i])}
-		part+=1; view.fill()
+		part+=1; loading = true; view.fill()
 	},
 
 	story: function(){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(whitebox,'stop')
 		Velocity(collapser, 'stop')
 		Velocity(whitebox, {scaleY: 0, opacity: 0})
-		Velocity(part_title, {opacity: 0.75, scale:[0.75,1], top: (window.innerHeight /rem) - 1.75 + 'rem'})
+		Velocity(part_title, {opacity: 0.75, scale:0.75, top: (window.innerHeight /rem) - 1.75 + 'rem'})
 		Velocity(part_text, {opacity: 0, top: window.innerHeight})
 		Velocity(collapser, {translateX: '3rem'})
 	},
@@ -17,7 +17,9 @@ var view = {
 	part: function(){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
-		Velocity(collapser, {translateX: 0, top:( window.innerHeight - part_text.offsetHeight)/rem - .5 + 'rem' })
+		collapser.classList.remove('open')
+		collapser.classList.add('close')
+		Velocity(collapser, {backgroundColorAlpha: 0, translateX: 0, top:( window.innerHeight - part_text.offsetHeight)/rem - .5 + 'rem' })
 		Velocity(whitebox, {scaleY: 1, opacity: 1}, {delay: 200, duration: 600} )
 		Velocity(part_title, { opacity: 1, scale: 1, top: window.innerHeight - part_text.offsetHeight}
 			, [.42, .21, .5, 1])
@@ -29,15 +31,17 @@ var view = {
 	point: function(){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
-
-		Velocity(collapser, {top: (window.innerHeight-points[facing].text.offsetHeight)/rem - .75 + 'rem' })
+		collapser.classList.remove('open')
+		collapser.classList.add('close')
+		Velocity(collapser, {top: (window.innerHeight-points[facing].text.offsetHeight)/rem - .75 + 'rem', backgroundColorAlpha: 0 })
 		Velocity(whitebox, {opacity: 1, scaleY:  (points[facing].text.offsetHeight+points[facing].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
 		Velocity(part_title, { opacity: .7, scale: .75, top: '.75rem' }, {duration: 800}, [.42, .21, .5, 1])
 		Velocity(part_text, { opacity: -1, top: window.innerHeight}, {duration: 500})
 		Velocity(points_info, { translateX: 0, opacity: 1, top: window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight) }, {duration: 500})
 		for(var i = 0; i<4; i++){
-			Velocity(points[i].text, 'stop')
+			Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 			Velocity(points[i].text, {translateY: 0})
+			Velocity(points[i].name, {color: '#000000'})
 		}
 
 	},
@@ -47,7 +51,7 @@ var view = {
 		Velocity(points[show].text, 'stop'); Velocity(points[facing].text, 'stop')
 			if(perspective.zoom==='close'){
 				if(!collapsed){
-					Velocity(collapser, {top: (window.innerHeight-points[show].text.offsetHeight)/rem - 3 + 'rem' })
+					Velocity(collapser, {top: (window.innerHeight-points[show].text.offsetHeight)/rem - .75 + 'rem' })
 				}
 			}
 			if(show===1&&facing===3 || show > facing){
@@ -64,29 +68,30 @@ var view = {
 	},
 
 	collapse: function(){
-		collapser.style.backgroundImage = 'url(assets/eyeopen2.gif)'
+		collapser.classList.remove('close')
+		collapser.classList.add('open')
 		Velocity(whitebox, 'stop')
 		Velocity(whitebox, {scaleY: 0, opacity: 0})
 		if(perspective.zoom==='close'){
 			Velocity(collapser,'stop'); Velocity(points_info, 'stop')
 			Velocity(points_info, {top: window.innerHeight-(3.4*rem)})
-			Velocity(collapser, {top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(collapser, {backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
 			for(var i = 0; i<4; i++){
-				Velocity(points[i].text, 'stop')
+				Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 				Velocity(points[i].text, {translateY: points[i].text.offsetHeight})
+				Velocity(points[i].name, {color: '#ededed'})
 			}
 		}else if(perspective.zoom==='normal'){
 			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(collapser, 'stop')
 			Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
 				top: (window.innerHeight /rem) - 1.75 + 'rem' })
 			Velocity(part_text, {opacity: 0, top: window.innerHeight})
-			Velocity(collapser, {top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(collapser, {backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
 		}
 
 	},
 
 	expand: function(){
-		collapser.style.backgroundImage = 'url(assets/eyeclose2.gif)'
 			if(perspective.zoom==='close'){
 				view.point()
 			}else if(perspective.zoom==='normal'){
@@ -107,7 +112,7 @@ function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	var start = {x: obj.position.x, y: obj.position.y, z: obj.position.z}
 	var dist = multiplier*((Math.abs(obj.position.x-pos.x))+(Math.abs(obj.position.y-pos.y))+(Math.abs(obj.position.z-pos.z)))
 	var translate = new TWEEN.Tween(start).to(pos,spd+dist)
-	.onComplete(function(){if(callback!==undefined){callback()}})
+	.onComplete(function(){if(callback){callback()}})
 	.onUpdate(function(){
 		obj.position.x = start.x; obj.position.y = start.y; obj.position.z = start.z
 	})

@@ -15,7 +15,7 @@ points_info = document.getElementById('points_info'), points = document.getEleme
 whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
 rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
 
-collapsed = false, loading = true
+collapsed = false
 
 function setup(){
 	loader()
@@ -121,24 +121,17 @@ function loader(){
 
 	}//build
 	view.fill = function(){
-		loading = true
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
 	]
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
+			var tallest = stories[story].parts[part].pointValues.indexOf(Math.min.apply(Math, stories[story].parts[part].pointValues))
 		}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
 			var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
+			var tallest = stories[story].parts[part].pointValues.indexOf(Math.max.apply(Math, stories[story].parts[part].pointValues))
 		}
 		range = Math.abs(bottom-top)
-
-		var changes = []
-		stories[story].parts[part].pointValues.forEach(function(ele,i){
-			var current = seseme['plr'+i].position.y; var target = Math.abs(bottom-ele)/range*plrmax
-			changes.push(Math.abs(current-target))
-		})
-		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
-
 		stories[story].parts[part].pointValues.forEach(function(ele,i){
 			// seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 			move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
@@ -263,9 +256,7 @@ function loader(){
 							if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
 						}
 					seseme['plr'+i].add(info.prev[i])
-					if(i===biggestDiff){
-						console.log('show facing now')
-						loading = false
+					if(i===tallest){
 						info.prev[facing].show()
 					}
 
@@ -287,9 +278,9 @@ function loader(){
 		})
 
 		controls.addEventListener( 'change', function(){
-			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			if(!loading){
+
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
+			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
 
 			facingRotations = [-45,45,135,-135]
 			facingRotations.some(function(ele,i){
@@ -341,7 +332,6 @@ function loader(){
 					ele.labelgroup.position.y = -addzoom * 25; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 				})
 			}
-		}
 		})//end controls 'change' event
 
 		window.addEventListener('resize', function(){
