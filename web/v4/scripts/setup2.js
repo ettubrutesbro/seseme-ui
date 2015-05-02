@@ -22,7 +22,7 @@ function setup(){
 
 function loader(){
 	var allModels = ['pedestal','pillarA','pillarB']
-	var allTextures = ['grade_good','grade_ok','grade_bad','grade_awful','tri','shadow'] //names of external imgs (PNG)
+	var allTextures = ['grade_good','grade_ok','grade_bad','chevron','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){
@@ -289,12 +289,12 @@ function loader(){
 					11,240,125,'black','Fira Sans',30,500,'center')
 					var sprmtl = new THREE.SpriteMaterial({transparent:true,map:txt.tex,opacity:0})
 					var sprite = new THREE.Sprite(sprmtl); sprite.scale.set(txt.cvs.width/150,txt.cvs.height/150,1)
-					var sprpointer = new THREE.Mesh(resources.geos.triangleA,
-						new THREE.MeshBasicMaterial({transparent: true, color:0x000000, side: THREE.DoubleSide,opacity:0}))
-					sprpointer.rotation.y = rads(seseme['plr'+i].cxlat.pr); sprpointer.scale.set(0.7,0.7,0.7)
+
+					var sprpointer = new THREE.Sprite(new THREE.SpriteMaterial({transparent: true, map: resources.mtls.chevron.map, opacity:0}))
+
 					sprpointer.ypos=-.75; sprite.ypos=0; info.sprite[i].ypos=1.75
 					sprite.expand = {y: 0, sx: txt.cvs.width/100, sy:txt.cvs.height/100 }
-					sprpointer.expand = {y: -.75}; info.sprite[i].expand = {y: 1.75}
+					sprpointer.expand = {y: -1}; info.sprite[i].expand = {y: 1.75}
 					sprpointer.position.y = -2; info.sprite[i].add(sprpointer); info.sprite[i].obj = sprite
 					info.sprite[i].add(info.sprite[i].obj)
 
@@ -305,7 +305,7 @@ function loader(){
 						var spr_i = 0
 						this.traverse(function(child){
 							if(child.material){fade(child,1,300+(spr_i*100),i*100)}
-							move(child,{x:child.position.x,y:child.expand.y,z:child.position.z},350+(spr_i*100),1,'Quadratic','Out',function(){},i*100)
+							move(child,{x:child.position.x,y:child.expand.y,z:child.position.z},300+(spr_i*125),1,'Quadratic','Out',function(){},i*100)
 							spr_i++
 						})
 					}
@@ -314,7 +314,7 @@ function loader(){
 						var spr_i = 0
 						this.traverse(function(child){if(child.material){
 							fade(child,0,200+(spr_i*50),i*100)}
-							move(child,{x:child.position.x,y:child.expand.y-(spr_i),z:child.position.z},250+(spr_i*75),1,'Quadratic','Out',function(){},i*50)
+							move(child,{x:child.position.x,y:child.expand.y-(spr_i),z:child.position.z},200+(spr_i*100),1,'Quadratic','Out',function(){},i*50)
 							spr_i++
 						})
 					}

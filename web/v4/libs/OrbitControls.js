@@ -35,7 +35,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Limits to how far you can zoom in and out ( OrthographicCamera only )
 	this.minZoom = 0.45;
-	this.maxZoom = 2.25;
+	this.maxZoom = 2.5;
 
 	// Set to true to disable this control
 	this.noRotate = false;
