@@ -2,7 +2,7 @@
 var view = {
 	next: function(){
 		for(var i = 0; i<4; i++){seseme['plr'+i].remove(info.prev[i])}
-		part+=1; loading = true; view.fill()
+		part+=1; view.fill()
 	},
 
 	story: function(){
