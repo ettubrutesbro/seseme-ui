@@ -165,7 +165,7 @@ function loader(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
 
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
-				info.prev[i].disappear()
+				info.prev[i].disappear(); info.sprite[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,3000,35,'Cubic','InOut',function(){projection(i)})
 			})
@@ -284,27 +284,43 @@ function loader(){
 					seseme['plr'+i].add(info.prev[i])
 
 				//SPRITES: objects for height="elevation"
-					info.sprite[i] = new THREE.Group(); info.sprite[i].position.set(seseme['plr'+i].cxlat.sx,1.75,seseme['plr'+i].cxlat.sz)
+					info.sprite[i] = new THREE.Group(); info.sprite[i].position.set(seseme['plr'+i].cxlat.sx,0,seseme['plr'+i].cxlat.sz)
 					var txt = new Text(stories[story].parts[part].pointNames[i],
 					11,240,125,'black','Fira Sans',30,500,'center')
 					var sprmtl = new THREE.SpriteMaterial({transparent:true,map:txt.tex,opacity:0})
-					var sprite = new THREE.Sprite(sprmtl); sprite.scale.set(txt.cvs.width/100,txt.cvs.height/100,1)
+					var sprite = new THREE.Sprite(sprmtl); sprite.scale.set(txt.cvs.width/150,txt.cvs.height/150,1)
 					var sprpointer = new THREE.Mesh(resources.geos.triangleA,
 						new THREE.MeshBasicMaterial({transparent: true, color:0x000000, side: THREE.DoubleSide,opacity:0}))
 					sprpointer.rotation.y = rads(seseme['plr'+i].cxlat.pr); sprpointer.scale.set(0.7,0.7,0.7)
-					sprpointer.position.y = -.75; info.sprite[i].add(sprpointer); info.sprite[i].add(sprite)
+					sprpointer.ypos=-.75; sprite.ypos=0; info.sprite[i].ypos=1.75
+					sprite.expand = {y: 0, sx: txt.cvs.width/100, sy:txt.cvs.height/100 }
+					sprpointer.expand = {y: -.75}; info.sprite[i].expand = {y: 1.75}
+					sprpointer.position.y = -2; info.sprite[i].add(sprpointer); info.sprite[i].obj = sprite
+					info.sprite[i].add(info.sprite[i].obj)
 
 					seseme['plr'+i].add(info.sprite[i])
 
 					info.sprite[i].show = function(){
+						size(this.obj,{x:this.obj.expand.sx,y:this.obj.expand.sy,z:1},300)
 						var spr_i = 0
-						this.traverse(function(child){if(child.material){fade(child,1,300+(spr_i*100),i*100)}; spr_i++})
-						move(this,{x:this.position.x,y:1.75,z:this.position.z},400,1,'Quadratic','Out',function(){},i*100)
+						this.traverse(function(child){
+							if(child.material){fade(child,1,300+(spr_i*100),i*100)}
+							move(child,{x:child.position.x,y:child.expand.y,z:child.position.z},350+(spr_i*100),1,'Quadratic','Out',function(){},i*100)
+							spr_i++
+						})
 					}
 					info.sprite[i].hide = function(){
+						size(this.obj,{x:this.obj.expand.sx/1.5,y:this.obj.expand.sy/1.5,z:1},300)
 						var spr_i = 0
-						this.traverse(function(child){if(child.material){fade(child,0,300+(spr_i*100),i*100)}; spr_i++})
-						move(this,{x:this.position.x,y:0,z:this.position.z},400,1,'Quadratic','Out',function(){},i*100)
+						this.traverse(function(child){if(child.material){
+							fade(child,0,200+(spr_i*50),i*100)}
+							move(child,{x:child.position.x,y:child.expand.y-(spr_i),z:child.position.z},250+(spr_i*75),1,'Quadratic','Out',function(){},i*50)
+							spr_i++
+						})
+					}
+					info.sprite[i].disappear = function(){
+						size(this,{x:0.75,y:0.75,z:1},500, function() {seseme['plr'+i].remove(info.sprite[i]) })
+						this.traverse(function(child){if(child.material){ fade(child,0,200,i*50,function(){}) }})
 					}
 				//BIRDVIEW: objects for height='plan'
 
@@ -314,7 +330,7 @@ function loader(){
 						loading = false
 						controls.noZoom = false
 						if(perspective.height==='isometric'){ info.prev[facing].show() }
-						else if(perspective.height==='elevation'){ console.log('show sprites') }
+						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
 						else if(perspective.height==='plan'){ console.log('show birdview') }
 
 					}
