@@ -387,16 +387,16 @@ function loader(){
 			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
 			addzoom = camera.zoom-thresholds.zoom[1]
-			controls.zoomSpeed = 0.7-(Math.abs(camera.zoom-1)/4)
+			controls.zoomSpeed = 0.7-(Math.abs(camera.zoom-1)/3)
 
 			if(perspective.height!==height){ //on height change
 				perspective.height = height
 				if(perspective.height!=='isometric'){
 					for(var i = 0; i<4; i++){
 						info.prev[i].hide()
-						if(perspective.height==='elevation'){info.sprite[i].show()}
+						if(perspective.height==='elevation'&&perspective.zoom!=='far'){info.sprite[i].show()}
 					}
-				}else if(!loading){
+				}else if(!loading&&zoom!=='far'){
 					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
 				}
 			}
@@ -404,17 +404,19 @@ function loader(){
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
 				perspective.zoom = zoom
 				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}); view.story() }
-				else{	if(perspective.height==='isometric'){info.prev[facing].show();} view.part() }
+				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); view.story() }
+				else{	if(perspective.height==='isometric'){info.prev[facing].show();}
+				else if(perspective.height==='elevation'){for(var i =0;i<4;i++){info.sprite[i].show()}} view.part() }
 			}
 
-			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
-				//scene moves up and down at close zoom levels
+			if(perspective.zoom==='close'){
+				info.sprite.forEach(function(ele){ele.scale.set(1-addzoom/4,1-addzoom/4,1-addzoom/4)})
+				if(perspective.zoomswitch===false){//scene moves up and down at close zoom levels
 				scene.position.y = -(seseme['plr'+facing].position.y)*addzoom-(addzoom*4)
 				info.prev.forEach(function(ele){
 					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 					ele.labelgroup.position.y = -addzoom * 25; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
-				})
+				})}
 			}
 
 		})//end controls 'change' event

@@ -92,7 +92,7 @@ var view = {
 			}
 		}else if(perspective.zoom==='normal'){
 			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop')
-			Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
+			Velocity(part_title, {opacity: 0.75, scale:0.75,
 				top: (window.innerHeight /rem) - 1.75 + 'rem' })
 			Velocity(part_text, {opacity: 0, top: window.innerHeight})
 			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})

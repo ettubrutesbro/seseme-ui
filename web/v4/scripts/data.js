@@ -18,7 +18,7 @@ var stories = [
 			},
 			{
 				name: 'Fall from Grace',
-				text: 'Since then, our sustainability rank has seen a precipitous fall: in their most recent Coolest School report, UC Davis ranked #55, eclipsed by nearly every UC, and a variety of schools near and far, public and private.',
+				text: 'Since then, our sustainability rank has seen a precipitous fall: in their most recent Coolest School report, UC Davis ranked #55, eclipsed by nearly every UC, and all kinds of schools: near and far, public and private.',
 				pointNames: ['UC Davis','Stanford','UC Irvine','UC Berkeley'],
 				pointType: 'numbers', metricName: 'COOL SCHOOLS 2014',
 				pointValues: [55,6,1,33], valueType: 'smallerIsHigher', valueRange: [1,60],
