@@ -15,6 +15,8 @@ var view = {
 	},
 
 	part: function(){
+		console.log(collapsed)
+		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
 		collapser.classList.remove('open')
@@ -25,10 +27,14 @@ var view = {
 			, [.42, .21, .5, 1])
 		Velocity(part_text, { opacity: 1, top: window.innerHeight - part_text.offsetHeight}, {delay: 50})
 		Velocity(points_info, { opacity: 0, top: window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight) }, {duration: 500})
-
+		}else{
+			view.collapse()
+		}
 	},
 
 	point: function(){
+		console.log(collapsed)
+		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
 		collapser.classList.remove('open')
@@ -41,9 +47,11 @@ var view = {
 		for(var i = 0; i<4; i++){
 			Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 			Velocity(points[i].text, {translateY: 0})
-			Velocity(points[i].name, {color: '#000000'})
+			Velocity(points[i].name, {color: '#000000', translateY: 0})
 		}
-
+		}else{
+			view.collapse()
+		}
 	},
 
 	cyclePoints: function(show){
@@ -70,25 +78,36 @@ var view = {
 	collapse: function(){
 		collapser.classList.remove('close')
 		collapser.classList.add('open')
-		Velocity(whitebox, 'stop')
+		Velocity(collapser,'stop'); Velocity(whitebox, 'stop')
 		Velocity(whitebox, {scaleY: 0, opacity: 0})
 		if(perspective.zoom==='close'){
-			Velocity(collapser,'stop'); Velocity(points_info, 'stop')
-			Velocity(points_info, {top: window.innerHeight-(3.4*rem)})
-			Velocity(collapser, {backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			 Velocity(points_info, 'stop'); Velocity(part_title,'stop')
+			Velocity(part_title, { opacity: .7, scale: .75, top: '.75rem' }, {duration: 800}, [.42, .21, .5, 1])
+			Velocity(points_info, {top: window.innerHeight-(3.4*rem), opacity: 1})
+			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
 			for(var i = 0; i<4; i++){
 				Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 				Velocity(points[i].text, {translateY: points[i].text.offsetHeight})
 				Velocity(points[i].name, {color: '#ededed'})
+				if(collapsed){
+					Velocity(points[i].name, {translateY: [0,'2.5rem']},{queue: false})
+				}
 			}
 		}else if(perspective.zoom==='normal'){
-			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(collapser, 'stop')
+			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop')
 			Velocity(part_title, {opacity: 0.75, scale:[0.75,1],
 				top: (window.innerHeight /rem) - 1.75 + 'rem' })
 			Velocity(part_text, {opacity: 0, top: window.innerHeight})
-			Velocity(collapser, {backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(points_info, {opacity: 0})
+			if(collapsed){
+				for(var i = 0; i<4; i++){
+					Velocity(points[i].name, 'stop')
+					Velocity(points[i].name, {translateY: ['2.5rem','0']},{queue: false})
+				}
+			}
 		}
-
+		collapsed = true
 	},
 
 	expand: function(){

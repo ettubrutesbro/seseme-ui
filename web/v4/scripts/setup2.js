@@ -8,14 +8,14 @@ var info = {prev: [], summ: [], multi: [], detail: []}
 var plrmax = 12, defaultiso
 
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.8,1.3], height: [-12,-60]}
+var thresholds = {zoom: [.7,1.3], height: [-12,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
 points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
 whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
 rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
 
-collapsed = false, loading = true
+init = true, collapsed = false, loading = true
 
 function setup(){
 	loader()
@@ -29,7 +29,7 @@ function loader(){
 		console.log('all resources done')
 		//////////////////////////////////////////////////////////////////////////////////
 		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
-		query(); build(); view.fill(); behaviors(); display()
+		query(); build(); view.fill(); init = false; behaviors(); display()
 		//-----------------------END CORE FUNCTIONS FOR INIT---------------------------//
 		//////////////////////////////////////////////////////////////////////////////////
 	}
@@ -69,13 +69,14 @@ function loader(){
 		var aspect = window.innerWidth / window.innerHeight; var d = 20
 		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 		camera.position.set( -d, 10, d ); camera.rotation.order = 'YXZ'
-		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) ); camera.zoom = 0.9
+		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
 		camera.updateProjectionMatrix(); defaultiso = camera.rotation.x
 		var containerSESEME = document.getElementById("containerSESEME")
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
 		// renderer.setClearColor(0xbbbbbb)
 		renderer.setSize( window.innerWidth, window.innerHeight)
 		containerSESEME.appendChild( renderer.domElement )
+		controls = new THREE.OrbitControls(camera); controls.noZoom = true
 		//materials
 		resources.mtls.seseme = new THREE.MeshPhongMaterial({color: 0x80848e,shininess:21,specular:0x9e6f49,emissive: 0x101011})
 		resources.mtls.orb = new THREE.MeshPhongMaterial({color:0xff6666,emissive:0x771100,shininess:1,specular:0x272727})
@@ -122,6 +123,7 @@ function loader(){
 	}//build
 	view.fill = function(){
 		loading = true
+
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
 	]
@@ -139,27 +141,29 @@ function loader(){
 		})
 		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
 
-		stories[story].parts[part].pointValues.forEach(function(ele,i){
-			// seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
-			move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
-			,3000,35,'Cubic','InOut',function(){projection(i)})
-		})
-
-		part_title.textContent = stories[story].parts[part].name
-		part_text.textContent = stories[story].parts[part].text
-
-		for(var i = 0; i < points.length; i++){
-			points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
-			points[i].name.textContent = stories[story].parts[part].pointNames[i]
-			points[i].text.textContent = stories[story].parts[part].pointText[i]
+		if(init){ //snap in stuff (no transitions) for first load
+			part_title.textContent = stories[story].parts[part].name
+			part_text.textContent = stories[story].parts[part].text
+			part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
+			points_info.style.top = window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight)
+			whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
+			collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
+			collapser.style.right = .75*rem
+			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
+			stories[story].parts[part].pointValues.forEach(function(ele,i){
+				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
+				projection(i)
+				points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
+				points[i].name.textContent = stories[story].parts[part].pointNames[i]
+				points[i].text.textContent = stories[story].parts[part].pointText[i]
+			})
+		}else{ // every time but the first
+			if(!collapsed){ view.collapse() }
+			stories[story].parts[part].pointValues.forEach(function(ele,i){
+				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
+				,3000,35,'Cubic','InOut',function(){projection(i)})
+			})
 		}
-
-		part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-		points_info.style.top = window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight)
-		whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
-		collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
-		collapser.style.right = .75*rem
-
 
 		function projection(i){
 			 //pillar-matching infos
@@ -214,6 +218,8 @@ function loader(){
 							stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,opacity:0,map:stat.stats[ite].tex})
 							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),
 							stat.stats[ite].mtl); stat.stats[ite].obj.position.z = 0.2;
+						}else if(ele==='picswords'){
+							//WIP
 						}
 					})
 					stat.normalStat = stat.stats[0].obj; stat.detailStat = stat.stats[1].obj
@@ -222,7 +228,8 @@ function loader(){
 						new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
 						var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
 
-						stat.add(triangle); stat.statbox = statbox; stat.add(stat.statbox); stat.add(stat.normalStat)
+						stat.add(triangle); stat.statbox = statbox; stat.add(stat.statbox);
+						stat.add(stat.normalStat)
 
 						//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
 						info.prev[i].show = function(){
@@ -256,6 +263,7 @@ function loader(){
 							if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
 						}
 						info.prev[i].normal = function(){
+							console.log(i + ' normal')
 							size(this.stat.statbox,{x:1,y:1,z:1},300)
 							this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
 							this.stat.normalStat.disabled = false
@@ -263,32 +271,39 @@ function loader(){
 							if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
 						}
 					seseme['plr'+i].add(info.prev[i])
-					if(i===biggestDiff){
+
+					if(i===biggestDiff){ //is this pillar the last one to finish?
 						console.log('show facing now')
 						loading = false
+						controls.noZoom = false
 						info.prev[facing].show()
 					}
 
 		} // end projection
-		points[facing].name.style.opacity = points[facing].text.style.opacity = 1
+
+
+		//experimental testing - take random # and apply UI configurations
+			//collapse or no?
+			//starting zoom amount?
+			//tutorial or no?
+
 
 	} //end view.fill() --------------------
 	function behaviors(){
 
 		Origami.fastclick(document.body) //attaches fastclick to body so shitty iOS doesnt wait 300ms
-		controls = new THREE.OrbitControls(camera)
 		window.addEventListener('deviceorientation', function(evt){
 			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
 
 		collapser.addEventListener('click',function(){
-			if(collapsed){view.expand()}else{view.collapse()}
-			collapsed = !collapsed
+			if(!loading){
+				if(collapsed){collapsed=false;view.expand()}else{view.collapse()}
+			}
 		})
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			if(!loading){
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
 			facingRotations = [-45,45,135,-135]
@@ -296,11 +311,11 @@ function loader(){
 				if(Math.abs(degs(camera.rotation.y)-ele)<45){
 
 					if(facing!==i){
-						view.cyclePoints(i)
 						console.log('facing diff plr')
-						if(perspective.height==='isometric'&&perspective.zoom!=='far'){
+						if(perspective.height==='isometric'&&perspective.zoom!=='far'&&!loading){
 							info.prev[facing].hide();	info.prev[i].show()
 						}
+						view.cyclePoints(i)
 						facing = i
 
 						if(perspective.zoom==='close'){
@@ -322,15 +337,14 @@ function loader(){
 				perspective.height = height
 				if(perspective.height!=='isometric'){
 					info.prev.forEach(function(ele){ele.hide()})
-				}else{info.prev[facing].show()}
+				}else if(!loading){info.prev[facing].show()}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
-				collapsed = false
-				if(perspective.zoom==='close' && zoom === 'normal'){ view.part(); info.prev.forEach(function(ele){ ele.normal()})}
-				else if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
+				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
+				perspective.zoom = zoom
+				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
 				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}); view.story() }
 				else{	info.prev[facing].show(); view.part() }
-				perspective.zoom = zoom
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
@@ -341,7 +355,7 @@ function loader(){
 					ele.labelgroup.position.y = -addzoom * 25; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 				})
 			}
-		}
+
 		})//end controls 'change' event
 
 		window.addEventListener('resize', function(){
