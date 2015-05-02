@@ -76,7 +76,7 @@ function loader(){
 		// renderer.setClearColor(0xbbbbbb)
 		renderer.setSize( window.innerWidth, window.innerHeight)
 		containerSESEME.appendChild( renderer.domElement )
-		controls = new THREE.OrbitControls(camera); controls.noZoom = true
+		controls = new THREE.OrbitControls(camera)
 		//materials
 		resources.mtls.seseme = new THREE.MeshPhongMaterial({color: 0x80848e,shininess:21,specular:0x9e6f49,emissive: 0x101011})
 		resources.mtls.orb = new THREE.MeshPhongMaterial({color:0xff6666,emissive:0x771100,shininess:1,specular:0x272727})
@@ -122,7 +122,7 @@ function loader(){
 
 	}//build
 	view.fill = function(){
-		loading = true
+		loading = true; controls.noZoom = true
 
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
@@ -142,6 +142,13 @@ function loader(){
 		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
 
 		if(init){ //snap in stuff (no transitions) for first load
+			stories[story].parts[part].pointValues.forEach(function(ele,i){
+				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
+				projection(i)
+				points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
+				points[i].name.textContent = stories[story].parts[part].pointNames[i]
+				points[i].text.textContent = stories[story].parts[part].pointText[i]
+			})
 			part_title.textContent = stories[story].parts[part].name
 			part_text.textContent = stories[story].parts[part].text
 			part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
@@ -150,20 +157,19 @@ function loader(){
 			collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
 			collapser.style.right = .75*rem
 			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
+		}
+		else{ // EVERY TIME BUT THE FIRST  --------------------
+			if(!collapsed){ perspective.zoom = 'normal'; view.collapse() }
+
+			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
+			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
+
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
-				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
-				projection(i)
-				points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
-				points[i].name.textContent = stories[story].parts[part].pointNames[i]
-				points[i].text.textContent = stories[story].parts[part].pointText[i]
-			})
-		}else{ // every time but the first
-			if(!collapsed){ view.collapse() }
-			stories[story].parts[part].pointValues.forEach(function(ele,i){
+				info.prev[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,3000,35,'Cubic','InOut',function(){projection(i)})
 			})
-		}
+		}//end init check
 
 		function projection(i){
 			 //pillar-matching infos
@@ -263,14 +269,24 @@ function loader(){
 							if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
 						}
 						info.prev[i].normal = function(){
-							console.log(i + ' normal')
 							size(this.stat.statbox,{x:1,y:1,z:1},300)
 							this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
 							this.stat.normalStat.disabled = false
 							fade(this.stat.detailStat,0,300,0)
 							if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
 						}
+						info.prev[i].disappear = function(){
+							this.traverse(function(child){if(child.material){fade(child,0,500,0)}})
+							size(this,{x:0.1,y:0.1,z:0.1},800,function(){
+								seseme['plr'+i].remove(info.prev[i])
+							})
+						}
 					seseme['plr'+i].add(info.prev[i])
+
+				//SPRITES: objects for height="elevation"
+
+				//BIRDVIEW: objects for height='plan'
+
 
 					if(i===biggestDiff){ //is this pillar the last one to finish?
 						console.log('show facing now')
