@@ -1,7 +1,6 @@
 
 var view = {
 	next: function(){
-		for(var i = 0; i<4; i++){seseme['plr'+i].remove(info.prev[i])}
 		part+=1; view.fill()
 	},
 
@@ -89,9 +88,7 @@ var view = {
 				Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 				Velocity(points[i].text, {translateY: points[i].text.offsetHeight})
 				Velocity(points[i].name, {color: '#ededed'})
-				if(collapsed){
-					Velocity(points[i].name, {translateY: [0,'2.5rem']},{queue: false})
-				}
+				if(collapsed){Velocity(points[i].name, {translateY: [0,'2.5rem']},{queue: false})}
 			}
 		}else if(perspective.zoom==='normal'){
 			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop')
@@ -111,11 +108,15 @@ var view = {
 	},
 
 	expand: function(){
-			if(perspective.zoom==='close'){
-				view.point()
-			}else if(perspective.zoom==='normal'){
-				view.part()
-			}
+		if(perspective.zoom==='close'){
+			view.point()
+		}else if(perspective.zoom==='normal'){
+			view.part()
+		}
+	},
+
+	newInfo: function(){
+
 	}
 }
 
