@@ -116,7 +116,15 @@ var view = {
 	},
 
 	newInfo: function(){
-
+		Velocity(part_title, {opacity: 0, translateX: '-3.5rem'}, {delay: 50, complete: function(){
+			part_title.textContent = stories[story].parts[part].name
+			part_text.textContent = stories[story].parts[part].text
+			for(var i = 0; i<4; i++){
+				points[i].name.textContent = stories[story].parts[part].pointNames[i]
+				points[i].text.textContent = stories[story].parts[part].pointText[i]
+			}
+		}})
+		Velocity(part_title, {opacity: 1, translateX: [0,'3.5rem']})
 	}
 }
 

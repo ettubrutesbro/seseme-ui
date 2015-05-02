@@ -160,7 +160,7 @@ function loader(){
 		}
 		else{ // EVERY TIME BUT THE FIRST  --------------------
 			if(!collapsed){ perspective.zoom = 'normal'; view.collapse() }
-
+			view.newInfo()
 			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
 
@@ -292,7 +292,10 @@ function loader(){
 						console.log('show facing now')
 						loading = false
 						controls.noZoom = false
-						info.prev[facing].show()
+						if(perspective.height==='isometric'){ info.prev[facing].show() }
+						else if(perspective.height==='elevation'){ console.log('show sprites') }
+						else if(perspective.height==='plan'){ console.log('show birdview') }
+
 					}
 
 		} // end projection
