@@ -3,7 +3,7 @@ var story = 0, part = 0
 var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { prev: {} }}
 var seseme = new THREE.Group(), ground, lights, gyro
-var info = {prev: [], summ: [], multi: [], detail: []}
+var info = {prev: [], sprite: []}
 
 var plrmax = 12, defaultiso
 
@@ -266,14 +266,14 @@ function loader(){
 							this.stat.add(this.stat.detailStat); this.stat.normalStat.disabled = true;
 							this.stat.detailStat.disabled = false
 							fade(this.stat.normalStat,0,300,0)
-							if(info.prev[facing] === this){	fade(this.stat.detailStat,1,300,0)}
+							if(info.prev[facing] === this && perspective.height==='isometric'){	fade(this.stat.detailStat,1,300,0)}
 						}
 						info.prev[i].normal = function(){
 							size(this.stat.statbox,{x:1,y:1,z:1},300)
 							this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
 							this.stat.normalStat.disabled = false
 							fade(this.stat.detailStat,0,300,0)
-							if(info.prev[facing] === this){	fade(this.stat.normalStat,1,300,0)}
+							if(info.prev[facing] === this && perspective.height==='isometric'){	fade(this.stat.normalStat,1,300,0)}
 						}
 						info.prev[i].disappear = function(){
 							this.traverse(function(child){if(child.material){fade(child,0,500,0)}})
@@ -284,7 +284,28 @@ function loader(){
 					seseme['plr'+i].add(info.prev[i])
 
 				//SPRITES: objects for height="elevation"
+					info.sprite[i] = new THREE.Group(); info.sprite[i].position.set(seseme['plr'+i].cxlat.sx,1.75,seseme['plr'+i].cxlat.sz)
+					var txt = new Text(stories[story].parts[part].pointNames[i],
+					11,240,125,'black','Fira Sans',30,500,'center')
+					var sprmtl = new THREE.SpriteMaterial({transparent:true,map:txt.tex,opacity:0})
+					var sprite = new THREE.Sprite(sprmtl); sprite.scale.set(txt.cvs.width/100,txt.cvs.height/100,1)
+					var sprpointer = new THREE.Mesh(resources.geos.triangleA,
+						new THREE.MeshBasicMaterial({transparent: true, color:0x000000, side: THREE.DoubleSide,opacity:0}))
+					sprpointer.rotation.y = rads(seseme['plr'+i].cxlat.pr); sprpointer.scale.set(0.7,0.7,0.7)
+					sprpointer.position.y = -.75; info.sprite[i].add(sprpointer); info.sprite[i].add(sprite)
 
+					seseme['plr'+i].add(info.sprite[i])
+
+					info.sprite[i].show = function(){
+						var spr_i = 0
+						this.traverse(function(child){if(child.material){fade(child,1,300+(spr_i*100),i*100)}; spr_i++})
+						move(this,{x:this.position.x,y:1.75,z:this.position.z},400,1,'Quadratic','Out',function(){},i*100)
+					}
+					info.sprite[i].hide = function(){
+						var spr_i = 0
+						this.traverse(function(child){if(child.material){fade(child,0,300+(spr_i*100),i*100)}; spr_i++})
+						move(this,{x:this.position.x,y:0,z:this.position.z},400,1,'Quadratic','Out',function(){},i*100)
+					}
 				//BIRDVIEW: objects for height='plan'
 
 
@@ -355,15 +376,20 @@ function loader(){
 			if(perspective.height!==height){ //on height change
 				perspective.height = height
 				if(perspective.height!=='isometric'){
-					info.prev.forEach(function(ele){ele.hide()})
-				}else if(!loading){info.prev[facing].show()}
+					for(var i = 0; i<4; i++){
+						info.prev[i].hide()
+						if(perspective.height==='elevation'){info.sprite[i].show()}
+					}
+				}else if(!loading){
+					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
+				}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
 				perspective.zoom = zoom
 				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
 				else if(zoom === 'far'){ info.prev.forEach(function(ele){ele.hide()}); view.story() }
-				else{	info.prev[facing].show(); view.part() }
+				else{	if(perspective.height==='isometric'){info.prev[facing].show();} view.part() }
 			}
 
 			if(perspective.zoom==='close'&&perspective.zoomswitch===false){
