@@ -18,7 +18,7 @@ var view = {
 		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
-		collapser.classList.remove('open')
+		collapser.classList.remove('open'); collapser.classList.remove('doneload')
 		collapser.classList.add('close')
 		Velocity(collapser, {backgroundColorAlpha: 0, translateX: 0, top:( window.innerHeight - part_text.offsetHeight)/rem - .5 + 'rem' })
 		Velocity(whitebox, {scaleY: 1, opacity: 1}, {delay: 200, duration: 600} )
@@ -36,7 +36,7 @@ var view = {
 		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
-		collapser.classList.remove('open')
+		collapser.classList.remove('open'); collapser.classList.remove('doneload')
 		collapser.classList.add('close')
 		Velocity(collapser, {top: (window.innerHeight-points[facing].text.offsetHeight)/rem - .75 + 'rem', backgroundColorAlpha: 0 })
 		Velocity(whitebox, {opacity: 1, scaleY:  (points[facing].text.offsetHeight+points[facing].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )

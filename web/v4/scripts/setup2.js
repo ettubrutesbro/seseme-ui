@@ -97,7 +97,6 @@ function loader(){
 			seseme['plr'+i] = new THREE.Mesh(resources.geos['pillar'+ele.type],resources.mtls.seseme)
 			seseme['plr'+i].position.set(ele.pos.x,0,ele.pos.z)
 			seseme['plr'+i].rotation.y = rads(ele.ry)
-			// seseme['plr'+i].cpos = ele.pos; seseme['plr'+i].crot = rads(ele.ry)
 			seseme['plr'+i].cxlat = ele.type==='A'? {sx:3,sz:7,px:-1.5,pz:11.5,pr:-45} : {sx:7,sz:7,px:11.5,pz:11.5,pr:45}
 			seseme.pillars.add(seseme['plr'+i])
 		})
@@ -159,7 +158,11 @@ function loader(){
 			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
 		}
 		else{ // EVERY TIME BUT THE FIRST  --------------------
-			if(!collapsed){ perspective.zoom = 'normal'; view.collapse() }
+			if(!collapsed){ perspective.zoom = 'normal'; view.collapse()
+			setTimeout(function(){collapser.classList.remove('open'); collapser.classList.add('loading')},500)}else{
+				collapser.classList.remove('open'); collapser.classList.add('loading')}
+			Velocity(collapser, {opacity: 0.75},{queue:false})
+
 			view.newInfo()
 			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
@@ -167,7 +170,7 @@ function loader(){
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
 				info.prev[i].disappear(); info.sprite[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
-				,3000,35,'Cubic','InOut',function(){projection(i)})
+				,4000,45,'Cubic','InOut',function(){projection(i)})
 			})
 		}//end init check
 
@@ -332,7 +335,10 @@ function loader(){
 						if(perspective.height==='isometric'){ info.prev[facing].show() }
 						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
 						else if(perspective.height==='plan'){ console.log('show birdview') }
-
+						if(!init){
+							Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
+							collapser.classList.remove('loading'); collapser.classList.add('doneload')
+						}
 					}
 
 		} // end projection
@@ -353,10 +359,13 @@ function loader(){
 		})
 
 		collapser.addEventListener('click',function(){
-			if(!loading){
-				if(collapsed){collapsed=false;view.expand()}else{view.collapse()}
-			}
+			if(!loading){if(collapsed){collapsed=false;view.expand()}else{view.collapse()}}
 		})
+		collapser.addEventListener('animationend',function(){
+			if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}
+		})
+			collapser.addEventListener('webkitAnimationEnd',function(){if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}})
+			collapser.addEventListener('mozAnimationEnd',function(){if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}})
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
