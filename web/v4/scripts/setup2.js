@@ -298,7 +298,6 @@ function loader(){
 
 					var sprpointer = new THREE.Sprite(new THREE.SpriteMaterial({transparent: true, map: resources.mtls.chevron.map, opacity:0}))
 
-					sprpointer.ypos=-.75; sprite.ypos=0; info.sprite[i].ypos=1.75
 					sprite.expand = {y: 0, sx: txt.cvs.width/100, sy:txt.cvs.height/100 }
 					sprpointer.expand = {y: -1}; info.sprite[i].expand = {y: 1.75}
 					sprpointer.position.y = -2; info.sprite[i].add(sprpointer); info.sprite[i].obj = sprite
@@ -328,7 +327,6 @@ function loader(){
 						size(this,{x:0.75,y:0.75,z:1},500, function() {seseme['plr'+i].remove(info.sprite[i]) })
 						this.traverse(function(child){if(child.material){ fade(child,0,200,i*50,function(){}) }})
 					}
-				//BIRDVIEW: objects for height='plan'
 
 
 				//EVENT: last projection = initialize controls, take off 'loading' boolean
@@ -343,6 +341,29 @@ function loader(){
 							Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
 							collapser.classList.remove('loading'); collapser.classList.add('doneload')
 						}
+						//create a single BIRDVIEW: object for height='plan'
+							info.bird = new THREE.Group()
+							var birdstory = new Text(stories[story].title,14,120,200,'black','Source Serif Pro',36,400,'center')
+							var birdmtl = new THREE.MeshBasicMaterial({transparent: true, color: 0xffffff, map: birdstory.tex})
+							info.bird.title = new THREE.Mesh(new THREE.PlaneBufferGeometry(birdstory.cvs.width/100,birdstory.cvs.height/100),
+							birdmtl)
+							var whiteback = new THREE.Mesh(new THREE.PlaneBufferGeometry(birdstory.cvs.width/100 + .75, birdstory.cvs.height/100 + .5),
+							new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true}))
+
+							if(part!==stories[story].parts.length){
+								var nextpart = new Text(stories[story].parts[part+1])
+							}
+
+
+							info.bird.title.add(whiteback); whiteback.position.z = -0.25
+							info.bird.add(info.bird.title); seseme.add(info.bird)
+
+							// info.bird.rotation.x = rads(-90)
+							info.bird.position.y = 13
+							info.bird.rotation.y = camera.rotation.y
+							info.bird.title.rotation.x = rads(-90)
+
+
 					}
 
 		} // end projection
@@ -373,6 +394,7 @@ function loader(){
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
+			info.bird.rotation.y = camera.rotation.y
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
 			facingRotations = [-45,45,135,-135]

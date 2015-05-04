@@ -31,7 +31,7 @@ var stories = [
 				,'After 10th place, schools don\'t get writeups, but Davis (1st) was trouncing Berkeley (20th) in the sustainability department in 2012.']
 			},
 			{
-				name: 'Princeton Piles On',
+				name: 'Eastern Shade',
 				text: 'Within the University of California, Davis is near dead last. The likes of Berkeley, Santa Cruz, Santa Barbara, San Diego, and even Merced are ranked higher, not to mention Irvine, which at #1 occupies our old throne. The only UCs behind us are LA (close at 60) and Riverside (a dubious 90).',
 				pointNames: ['UC Davis','UC Berkeley','UC San Diego','UC Irvine'],
 				pointType: 'numbers', metricName: 'GREEN SCHOOLS RANK', valuePrefix: '#',
