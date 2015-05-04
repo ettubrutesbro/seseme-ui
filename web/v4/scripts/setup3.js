@@ -260,7 +260,7 @@ function loader(){
 				size(storypointer,{x:0.25,y:0.25,z:0.25},300)
 			}
 			info.storyring.pulse = function(){
-
+				size(diamond, {x: 0.7,y:0.7,z:0.7})
 			}
 			info.storyring.change = function(){
 				var rotate = new TWEEN.Tween({rz: storypointer.rotation.z}).to({rz: rads(-45 + (story*45))},300+(story*200)).
