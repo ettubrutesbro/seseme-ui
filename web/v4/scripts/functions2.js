@@ -3,8 +3,8 @@ var view = {
 	next: function(){
 		part+=1; view.fill()
 	},
-
 	story: function(){
+		info.storyring.show()
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(whitebox,'stop')
 		Velocity(collapser, 'stop')
 		Velocity(whitebox, {scaleY: 0, opacity: 0})
@@ -12,8 +12,8 @@ var view = {
 		Velocity(part_text, {opacity: 0, top: window.innerHeight})
 		Velocity(collapser, {translateX: '3rem'})
 	},
-
 	part: function(){
+		info.storyring.hide()
 		console.log(collapsed)
 		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
@@ -30,7 +30,6 @@ var view = {
 			view.collapse()
 		}
 	},
-
 	point: function(){
 		console.log(collapsed)
 		if(!collapsed){
@@ -52,7 +51,6 @@ var view = {
 			view.collapse()
 		}
 	},
-
 	cyclePoints: function(show){
 		Velocity(points[show].name, 'stop'); Velocity(points[facing].name, 'stop')
 		Velocity(points[show].text, 'stop'); Velocity(points[facing].text, 'stop')
@@ -73,7 +71,6 @@ var view = {
 			Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
 		}
 	},
-
 	collapse: function(){
 		collapser.classList.remove('close')
 		collapser.classList.add('open')
@@ -91,6 +88,7 @@ var view = {
 				if(collapsed){Velocity(points[i].name, {translateY: [0,'2.5rem']},{queue: false})}
 			}
 		}else if(perspective.zoom==='normal'){
+			info.storyring.hide()
 			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop'); Velocity(toppartinfo, 'stop')
 			Velocity(toppartinfo, {opacity: 0, translateX: '-3rem'})
 			Velocity(part_title, {opacity: 0.75, scale:0.75, translateX: 0,
@@ -107,7 +105,6 @@ var view = {
 		}
 		collapsed = true
 	},
-
 	expand: function(){
 		if(perspective.zoom==='close'){
 			view.point()
@@ -115,7 +112,6 @@ var view = {
 			view.part()
 		}
 	},
-
 	newInfo: function(){
 		Velocity(part_title, {opacity: 0, translateX: '-3.5rem'}, {delay: 50, complete: function(){
 			part_title.textContent = stories[story].parts[part].name
@@ -129,23 +125,21 @@ var view = {
 		}})
 		Velocity(part_title, {opacity: 1, translateX: [0,'3.5rem']})
 	},
-
 	newStory: function(){
 
 	}
 }
 
-function degs(rads){
-	return rads*(180/Math.PI)
-}
-function rads(degs){
-	return degs*(Math.PI/180)
-}
+function degs(rads){return rads*(180/Math.PI)}
+function rads(degs){return degs*(Math.PI/180)}
+
 function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	// console.log('move operation')
 	if(obj.moveTween){obj.moveTween.stop()}
+	var diffs = [Math.abs(obj.position.x-pos.x), Math.abs(obj.position.y-pos.y), Math.abs(obj.position.z-pos.z)]
+	, biggest = diffs.indexOf(Math.max.apply(Math, diffs))
 	var start = {x: obj.position.x, y: obj.position.y, z: obj.position.z}
-	var dist = multiplier*((Math.abs(obj.position.x-pos.x))+(Math.abs(obj.position.y-pos.y))+(Math.abs(obj.position.z-pos.z)))
+	var dist = multiplier*diffs[biggest]
 	var translate = new TWEEN.Tween(start).to(pos,spd+dist)
 	.onComplete(function(){if(callback){callback()}})
 	.onUpdate(function(){
@@ -164,12 +158,14 @@ function fade(obj,tgtopacity,spd,delay,callback){
 	.onUpdate(function(){obj.material.opacity = start.opacity}).delay(delay)
 	.easing(TWEEN.Easing.Quadratic.Out).start(); obj.fadeTween = transition
 }
-function size(obj,tgtscale,spd,callback){
+function size(obj,tgtscale,spd,callback,delay){
 	if(obj.sizeTween){obj.sizeTween.stop()}
 	var start = {x: obj.scale.x, y: obj.scale.y, z: obj.scale.z}
 	var anim = new TWEEN.Tween(start).to(tgtscale,spd).onComplete(function(){
 	if(callback!==undefined){callback()}}).onUpdate(function(){obj.scale.x = start.x
-	obj.scale.y= start.y; obj.scale.z = start.z}).easing(TWEEN.Easing.Quadratic.Out).start()
+	obj.scale.y= start.y; obj.scale.z = start.z}).easing(TWEEN.Easing.Quadratic.Out)
+	if(delay){anim.delay(delay)}else{}
+	anim.start()
 	obj.sizeTween = anim
 }
 
@@ -186,14 +182,14 @@ function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,alig
 }
 
 function meshify(target){ //takes Text objects and turns them into mesh/mat, storing them as attributes in the original obj
-	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, depthWrite:false, map: target.tex})
+	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, depthWrite:false, map: target.tex})
 	var obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.cvs.width/60,target.cvs.height/60), mtl)
 	obj.canvas = target
 	return obj
 }
 
 function backer(target, hex, margins){
-	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, color: hex})
+	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, color: hex})
 	target.backing = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.canvas.cvs.width/60 + margins[0],
 	target.canvas.cvs.height/60 + margins[1]), mtl); target.backing.position.z -= 0.1
 	target.add(target.backing)

@@ -2,7 +2,7 @@ var story = 0, part = 0
 
 var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { prev: {} }}
-var seseme = new THREE.Group(), ground, lights, gyro
+var seseme = new THREE.Group(), ground, lights, gyro, orbitpointer
 var info = {prev: [], sprite: []}
 
 var plrmax = 12, defaultiso
@@ -23,7 +23,7 @@ function setup(){
 
 function loader(){
 	var allModels = ['pedestal','pillarA','pillarB']
-	var allTextures = ['grade_good','grade_ok','grade_bad','chevron','tri','shadow'] //names of external imgs (PNG)
+	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){
@@ -162,47 +162,123 @@ function loader(){
 
 			//create a single BIRDVIEW: object for height='plan'
 				info.birdview = new THREE.Group()
-				var birdstory = meshify(new Text(stories[story].title,12,120,180,'black','Source Serif Pro',32,400,'center'))
-				info.birdview.position.set(0,0,plrmax+.1); info.birdview.rotation.y = camera.rotation.y
-				birdstory.rotation.x = rads(-90); birdstory.position.z = -1.5
-				info.birdview.position.origin = {x: 0, y: 0, z: plrmax+.25}
-				info.birdview.position.expand = {x: 0, y: 0, z: plrmax+1.5}
+				var birdstory = meshify(new Text(stories[story].title,12,140,180,'black','Source Serif Pro',32,400,'center'))
+				info.birdview.position.y = plrmax+1; info.birdview.rotation.y = camera.rotation.y
+				birdstory.rotation.x = rads(-90); birdstory.position.set(0,-3,-2)
+				birdstory.origin = {x: 0, y: 2.5, z: -1.5}; birdstory.expand = {x: 0, y: 0, z: -1.5}
 				backer(birdstory, 0xffffff, [.75,.25])
 
 				var nextlabel = meshify(new Text('NEXT'.split('').join(String.fromCharCode(8202)),7.5,40,100,'white','Fira Sans',18,600,'center'))
-
 				var nextpart = part!==stories[story].parts.length?
 				meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
 				meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
 
-				nextpart.position.set( birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, -birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, -.5)
+				nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
+				nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
+				nextpart.position.set(nextpart.origin.x, nextpart.origin.y, nextpart.origin.z)
 				backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
 				nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
-
 				nextlabel.position.x -= nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120)
 
 				nextpart.add(nextlabel); birdstory.add(nextpart); info.birdview.add(birdstory)
 				seseme.add(info.birdview)
 
-
 				info.birdview.show = function(){
-
+					var bird_i = 0
+					this.traverse(function(child){if(child.material){fade(child,1,300,50*bird_i)};bird_i++})
+					move(birdstory,birdstory.expand,500,1,'Quadratic','Out',function(){},60)
+					move(nextpart,nextpart.expand,500,1,'Quadratic','Out',function(){},0)
+					size(birdstory,{x:1,y:1,z:1},400)
 				}
-				info.birdview.hide = function(){}
+				info.birdview.hide = function(){
+					var bird_i = 0
+					this.traverse(function(child){if(child.material){fade(child,0,300,0)};bird_i++})
+					move(birdstory,birdstory.origin,500,1,'Quadratic','Out',function(){},0)
+					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){},0)
+					size(birdstory,{x:0.8,y:0.8,z:0.8},400)
+				}
 				info.birdview.cycle = function(){
+					size(nextpart,{x:1,y:0.5,z:1},470)
+					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){
+						birdstory.remove(nextpart)
+						nextpart = ''; nextpart = part!==stories[story].parts.length?
+						meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
+						meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
+						nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
+						nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
+						backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
+						nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
+						nextlabel.position.x = -(nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120))
+						nextpart.position.set(nextpart.expand.x*5,nextpart.expand.y,0)
+						birdstory.add(nextpart); nextpart.add(nextlabel)
+						size(nextpart,{x:1,y:1,z:1},500)
+						if(perspective.height==='plan'){
+							nextpart.traverse(function(child){fade(child,1,500,0)})
+							move(nextpart,nextpart.expand,500,1,'Cubic','Out',function(){})
+						}
+					},0)
+				}
+				info.birdview.change = function(){
 
 				}
-				info.birdview.newStory = function(){
-
-				}
-
 			//end birdview creation code
-		}
-		else{ // EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
+
+			//STORY RING: when zoomed out, users can see/preview all stories (just not access them)
+
+			info.storyring = new THREE.Group(); info.storyring.rotation.x = rads(-90); info.storyring.position.y = -8
+			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(43,43), resources.mtls.circle)
+			var diamond = new THREE.Mesh(new THREE.PlaneBufferGeometry(25,25), resources.mtls.diamond)
+			orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
+			var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
+			circle.rotation.z = rads(-45); diamond.rotation.z = rads (-45)
+			orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
+			storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
+			orbitpointer.material.opacity = storypointer.material.opacity = 0
+
+			orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
+
+			info.storyring.add(circle); info.storyring.add(diamond); info.storyring.add(orbitpointer); info.storyring.add(storypointer)
+			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
+			seseme.add(info.storyring)
+
+			info.storyring.show = function(){
+				fade(storypointer,1,300,0); fade(orbitpointer,1,300,0)
+				size(circle, {x: 1, y: 1, z: 1}, 400)
+				fade(circle, 1, 400, 0)
+				size(diamond, {x: 1, y: 1, z: 1}, 300)
+				fade(diamond, 1, 300, 0)
+				size(orbitpointer,{x:1,y:1,z:1},300)
+				size(storypointer,{x:1,y:1,z:1},300)
+			}
+			info.storyring.hide = function(){
+				fade(storypointer,0,300,0); fade(orbitpointer,0,300,0)
+				size(circle, {x: 0.2, y: 0.2, z: 0.2}, 450)
+				fade(circle, 0, 450, 0)
+				size(diamond, {x: 0.4, y: 0.4, z: 0.4}, 350, function(){}, 30)
+				fade(diamond, 0, 350, 40)
+				size(orbitpointer,{x:0.25,y:0.25,z:0.25},300)
+				size(storypointer,{x:0.25,y:0.25,z:0.25},300)
+			}
+			info.storyring.pulse = function(){
+
+			}
+			info.storyring.change = function(){
+				var rotate = new TWEEN.Tween({rz: storypointer.rotation.z}).to({rz: rads(-45 + (story*45))},300+(story*200)).
+				onUpdate(function(){ storypointer.rotation.z = this.rz }).
+				easing(TWEEN.Easing.Quadratic.Out).start()
+			}
+
+
+		}// end INITIAL 3D FILL
+
+		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
+		else{
 			if(!collapsed){ perspective.zoom = 'normal'; view.collapse()
 			setTimeout(function(){collapser.classList.remove('open'); collapser.classList.add('loading')},500)}else{
 				collapser.classList.remove('open'); collapser.classList.add('loading')}
 			Velocity(collapser, {opacity: 0.75},{queue:false})
+
+			info.birdview.cycle()
 
 			view.newInfo()
 
@@ -214,7 +290,7 @@ function loader(){
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,4000,45,'Cubic','InOut',function(){projection(i)})
 			})
-		}//end init check
+		}//end init check of 3d FILL ----------------------------
 
 		function projection(i){
 			 //pillar-matching infos
@@ -225,13 +301,9 @@ function loader(){
 
 					var label = meshify(new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
 					36, 400, 'center'))
-
-
 					label.rotation.x = defaultiso; label.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
 					label.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
 					label.position.set(0,-seseme['plr'+i].position.y-3.5,6.5)
-
-
 						var caption = meshify(new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center'))
 						caption.origin={x:0,y:0.5,z:0};caption.expand={x:0,y:2,z:0};
 						caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
@@ -240,7 +312,6 @@ function loader(){
 						pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
 						pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
 						label.add(pointer)
-
 					info.prev[i].labelgroup = new THREE.Group()
 					info.prev[i].label = label
 					info.prev[i].labelgroup.add(label)
@@ -381,12 +452,10 @@ function loader(){
 
 		} // end projection
 
-
 		//experimental testing - take random # and apply UI configurations
 			//collapse or no?
 			//starting zoom amount?
 			//tutorial or no?
-
 
 	} //end view.fill() --------------------
 	function behaviors(){
@@ -407,7 +476,7 @@ function loader(){
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			info.birdview.rotation.y = camera.rotation.y
+			info.birdview.rotation.y = camera.rotation.y; orbitpointer.rotation.z = camera.rotation.y
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
 			facingRotations = [-45,45,135,-135]
@@ -443,16 +512,17 @@ function loader(){
 					for(var i = 0; i<4; i++){
 						info.prev[i].hide()
 						if(perspective.height==='elevation'&&perspective.zoom!=='far'){info.sprite[i].show()}
+						else if(perspective.height==='plan'&&perspective.zoom!=='far'){ info.birdview.show() }
 					}
 				}else if(!loading&&zoom!=='far'){
-					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
+					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}; info.birdview.hide()
 				}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
 				perspective.zoom = zoom
 				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); view.story() }
+				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); info.birdview.hide(); view.story(); }
 				else{	if(perspective.height==='isometric'){info.prev[facing].show();}
 				else if(perspective.height==='elevation'){for(var i =0;i<4;i++){info.sprite[i].show()}} view.part() }
 			}
