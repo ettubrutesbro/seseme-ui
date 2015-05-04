@@ -159,14 +159,55 @@ function loader(){
 			toppartinfo.querySelector('#top_title').textContent = stories[story].parts[part].name
 			toppartinfo.querySelector('#top_counter').textContent = part+1 + '/' + stories[story].parts.length
 			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
+
+			//create a single BIRDVIEW: object for height='plan'
+				info.bird = new THREE.Group()
+				var birdstory = meshify(new Text(stories[story].title,14,120,180,'black','Source Serif Pro',36,400,'center'))
+				info.bird.position.y = 13.5; info.bird.rotation.y = camera.rotation.y
+				birdstory.rotation.x = rads(-90)
+
+				backer(birdstory, 0xffffff, [.75,.25])
+
+
+
+				var nextlabel = meshify(new Text('NEXT'.split('').join(String.fromCharCode(8202)),9,50,100,'white','Fira Sans',20,600,'center'))
+
+				var birdnext
+
+				if(part!==stories[story].parts.length){
+					birdnext = meshify(new Text(stories[story].parts[part+1].name,10,100,120,'white','Fira Sans',26,300,'center'))
+
+					birdnext.position.set( birdstory.canvas.cvs.width/200 - birdnext.canvas.cvs.width/200, -birdstory.canvas.cvs.height/200 - birdnext.canvas.cvs.height/100, -.5)
+					backer(birdnext, 0x000000, [nextlabel.canvas.cvs.width/100+.75,.5])
+					birdnext.backing.position.x = (birdnext.canvas.cvs.width/100 - (birdnext.canvas.cvs.width/100 + nextlabel.canvas.cvs.width/100))/2
+
+				}
+				nextlabel.position.x -= birdnext.canvas.cvs.width/200 + (nextlabel.canvas.cvs.width/200)
+
+				birdnext.add(nextlabel); birdstory.add(birdnext); info.bird.add(birdstory)
+				seseme.add(info.bird)
+
+
+
+				info.bird.show = function(){}
+				info.bird.hide = function(){}
+				info.bird.cycle = function(){
+
+				}
+				info.bird.newStory = function(){
+
+				}
+
+			//end birdview creation code
 		}
-		else{ // EVERY TIME BUT THE FIRST  --------------------
+		else{ // EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 			if(!collapsed){ perspective.zoom = 'normal'; view.collapse()
 			setTimeout(function(){collapser.classList.remove('open'); collapser.classList.add('loading')},500)}else{
 				collapser.classList.remove('open'); collapser.classList.add('loading')}
 			Velocity(collapser, {opacity: 0.75},{queue:false})
 
 			view.newInfo()
+
 			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
 
@@ -341,27 +382,7 @@ function loader(){
 							Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
 							collapser.classList.remove('loading'); collapser.classList.add('doneload')
 						}
-						//create a single BIRDVIEW: object for height='plan'
-							info.bird = new THREE.Group()
-							var birdstory = new Text(stories[story].title,14,120,200,'black','Source Serif Pro',36,400,'center')
-							var birdmtl = new THREE.MeshBasicMaterial({transparent: true, color: 0xffffff, map: birdstory.tex})
-							info.bird.title = new THREE.Mesh(new THREE.PlaneBufferGeometry(birdstory.cvs.width/100,birdstory.cvs.height/100),
-							birdmtl)
-							var whiteback = new THREE.Mesh(new THREE.PlaneBufferGeometry(birdstory.cvs.width/100 + .75, birdstory.cvs.height/100 + .5),
-							new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true}))
 
-							if(part!==stories[story].parts.length){
-								var nextpart = new Text(stories[story].parts[part+1])
-							}
-
-
-							info.bird.title.add(whiteback); whiteback.position.z = -0.25
-							info.bird.add(info.bird.title); seseme.add(info.bird)
-
-							// info.bird.rotation.x = rads(-90)
-							info.bird.position.y = 13
-							info.bird.rotation.y = camera.rotation.y
-							info.bird.title.rotation.x = rads(-90)
 
 
 					}
