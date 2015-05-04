@@ -1,8 +1,9 @@
 var stories = [
 	{
-		title: 'Fall from Grace',
-		topic: 'UCD & SUSTAINABILITY', tagline: '',
-		summary: 'UC Davis used to be thought of as the national leader in college sustainability. We\'ve slacked off considerably since then - let the data explain how.',
+		title: 'UCD vs. The World',
+		topic: 'school sustainability ratings',
+		taglines: ['If environmental stewardship is a competition, we\'re losing.',
+		'The biggest green movement happening here is from your bank to Mrak.'],
 		parts: [
 			{
 				name: 'Glory Days',
@@ -18,7 +19,7 @@ var stories = [
 			},
 			{
 				name: 'Fall from Grace',
-				text: 'Since then, our sustainability rank has seen a precipitous fall: in their most recent Coolest School report, UC Davis ranked #55, eclipsed by nearly every UC, and all kinds of schools: near and far, public and private.',
+				text: 'Since then, our sustainability rank has fallen precipitously: in their most recent Coolest School report, UC Davis ranked #55 - eclipsed by nearly every UC, and many schools near, far, public or private.',
 				pointNames: ['UC Davis','Stanford','UC Irvine','UC Berkeley'],
 				pointType: 'numbers', metricName: 'COOL SCHOOLS 2014',
 				pointValues: [55,6,1,33], valueType: 'smallerIsHigher', valueRange: [1,60],
@@ -30,16 +31,13 @@ var stories = [
 				,'After 10th place, schools don\'t get writeups, but Davis (1st) was trouncing Berkeley (20th) in the sustainability department in 2012.']
 			},
 			{
-				name: 'Davis: UC Sustainability Whipping Boy',
+				name: 'Princeton Piles On',
 				text: 'Within the University of California, Davis is near dead last. The likes of Berkeley, Santa Cruz, Santa Barbara, San Diego, and even Merced are ranked higher, not to mention Irvine, which at #1 occupies our old throne. The only UCs behind us are LA (close at 60) and Riverside (a dubious 90).',
 				pointNames: ['UC Davis','UC Berkeley','UC San Diego','UC Irvine'],
 				pointType: 'numbers', metricName: 'GREEN SCHOOLS RANK', valuePrefix: '#',
 				pointValues: [55,33,17,1], valueType: 'smallerIsHigher', valueRange: [1,60]
 			},
-			{
-				name: 'How it happened 1: Greenhouse Gas Emissions',
-				text: 'The criteria the Sierra Club uses has changed some over time, but UC Davis appears to have regressed while other universities have performed better in the last 2 years. One area where we need to make progress '
-			}
+
 		]
 
 	},

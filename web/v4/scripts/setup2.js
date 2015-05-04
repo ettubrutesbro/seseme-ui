@@ -8,11 +8,12 @@ var info = {prev: [], sprite: []}
 var plrmax = 12, defaultiso
 
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.7,1.3], height: [-12,-60]}
+var thresholds = {zoom: [.7,1.3], height: [-3,-60]}
 
 var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
 points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
 whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
+toppartinfo = document.getElementById('partinfo'),
 rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
 
 init = true, collapsed = false, loading = true
@@ -155,6 +156,8 @@ function loader(){
 			whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
 			collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
 			collapser.style.right = .75*rem
+			toppartinfo.querySelector('#top_title').textContent = stories[story].parts[part].name
+			toppartinfo.querySelector('#top_counter').textContent = part+1 + '/' + stories[story].parts.length
 			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
 		}
 		else{ // EVERY TIME BUT THE FIRST  --------------------
@@ -228,7 +231,7 @@ function loader(){
 							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),
 							stat.stats[ite].mtl); stat.stats[ite].obj.position.z = 0.2;
 						}else if(ele==='picswords'){
-							//WIP
+							//WIP: also, pics only? nums pics? nums pics words?
 						}
 					})
 					stat.normalStat = stat.stats[0].obj; stat.detailStat = stat.stats[1].obj
@@ -328,6 +331,7 @@ function loader(){
 				//BIRDVIEW: objects for height='plan'
 
 
+				//EVENT: last projection = initialize controls, take off 'loading' boolean
 					if(i===biggestDiff){ //is this pillar the last one to finish?
 						console.log('show facing now')
 						loading = false
@@ -423,8 +427,8 @@ function loader(){
 				if(perspective.zoomswitch===false){//scene moves up and down at close zoom levels
 				scene.position.y = -(seseme['plr'+facing].position.y)*addzoom-(addzoom*4)
 				info.prev.forEach(function(ele){
-					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
-					ele.labelgroup.position.y = -addzoom * 25; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
+					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/2.5,1-addzoom/2.5,1+addzoom/2.5)
+					ele.labelgroup.position.y = -addzoom * 20; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
 				})}
 			}
 

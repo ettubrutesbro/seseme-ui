@@ -17,13 +17,13 @@ var view = {
 		console.log(collapsed)
 		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
-		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
+		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop'); Velocity(toppartinfo, 'stop')
 		collapser.classList.remove('open'); collapser.classList.remove('doneload')
 		collapser.classList.add('close')
 		Velocity(collapser, {backgroundColorAlpha: 0, translateX: 0, top:( window.innerHeight - part_text.offsetHeight)/rem - .5 + 'rem' })
-		Velocity(whitebox, {scaleY: 1, opacity: 1}, {delay: 200, duration: 600} )
-		Velocity(part_title, { opacity: 1, scale: 1, top: window.innerHeight - part_text.offsetHeight}
-			, [.42, .21, .5, 1])
+		Velocity(whitebox, {scaleY: 1, opacity: 1} )
+		Velocity(toppartinfo, {opacity: 0, translateX: '-3rem'})
+		Velocity(part_title, { opacity: 1, translateX: 0, top: window.innerHeight - part_text.offsetHeight, scale: 1})
 		Velocity(part_text, { opacity: 1, top: window.innerHeight - part_text.offsetHeight}, {delay: 50})
 		Velocity(points_info, { opacity: 0, top: window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight) }, {duration: 500})
 		}else{
@@ -35,18 +35,18 @@ var view = {
 		console.log(collapsed)
 		if(!collapsed){
 		Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
-		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop')
+		Velocity(whitebox, 'stop'); Velocity(collapser, 'stop'); Velocity(toppartinfo, 'stop')
 		collapser.classList.remove('open'); collapser.classList.remove('doneload')
 		collapser.classList.add('close')
 		Velocity(collapser, {top: (window.innerHeight-points[facing].text.offsetHeight)/rem - .75 + 'rem', backgroundColorAlpha: 0 })
 		Velocity(whitebox, {opacity: 1, scaleY:  (points[facing].text.offsetHeight+points[facing].name.offsetHeight)/(part_title.offsetHeight + part_text.offsetHeight)} )
-		Velocity(part_title, { opacity: .7, scale: .75, top: '.75rem' }, {duration: 800}, [.42, .21, .5, 1])
+		Velocity(part_title, { opacity: 0, translateX: '-6rem' })
+		Velocity(toppartinfo, {translateX: 0, opacity: 1})
 		Velocity(part_text, { opacity: -1, top: window.innerHeight}, {duration: 500})
 		Velocity(points_info, { translateX: 0, opacity: 1, top: window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight) }, {duration: 500})
 		for(var i = 0; i<4; i++){
 			Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
-			Velocity(points[i].text, {translateY: 0})
-			Velocity(points[i].name, {color: '#000000', translateY: 0})
+			Velocity(points[i].text, {translateY: 0}); Velocity(points[i].name, {translateY: 0})
 		}
 		}else{
 			view.collapse()
@@ -80,22 +80,23 @@ var view = {
 		Velocity(collapser,'stop'); Velocity(whitebox, 'stop')
 		Velocity(whitebox, {scaleY: 0, opacity: 0})
 		if(perspective.zoom==='close'){
-			 Velocity(points_info, 'stop'); Velocity(part_title,'stop')
-			Velocity(part_title, { opacity: .7, scale: .75, top: '.75rem' }, {duration: 800}, [.42, .21, .5, 1])
+			 Velocity(points_info, 'stop'); Velocity(part_title,'stop');Velocity(toppartinfo, 'stop')
+			Velocity(toppartinfo, {opacity: 1, translateX: 0})
+			Velocity(part_title, { opacity: 0, translateX: '-6rem' })
 			Velocity(points_info, {top: window.innerHeight-(3.4*rem), opacity: 1})
-			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.4, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
 			for(var i = 0; i<4; i++){
 				Velocity(points[i].text, 'stop'); Velocity(points[i].name, 'stop')
 				Velocity(points[i].text, {translateY: points[i].text.offsetHeight})
-				Velocity(points[i].name, {color: '#ededed'})
 				if(collapsed){Velocity(points[i].name, {translateY: [0,'2.5rem']},{queue: false})}
 			}
 		}else if(perspective.zoom==='normal'){
-			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop')
-			Velocity(part_title, {opacity: 0.75, scale:0.75,
+			Velocity(part_text, 'stop'); Velocity(part_title, 'stop'); Velocity(points_info, 'stop'); Velocity(toppartinfo, 'stop')
+			Velocity(toppartinfo, {opacity: 0, translateX: '-3rem'})
+			Velocity(part_title, {opacity: 0.75, scale:0.75, translateX: 0,
 				top: (window.innerHeight /rem) - 1.75 + 'rem' })
 			Velocity(part_text, {opacity: 0, top: window.innerHeight})
-			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.8, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
+			Velocity(collapser, {translateX: 0, backgroundColorAlpha: 0.4, top: window.innerHeight/rem - 2.5 + 'rem', opacity: 1})
 			Velocity(points_info, {opacity: 0})
 			if(collapsed){
 				for(var i = 0; i<4; i++){
@@ -119,6 +120,8 @@ var view = {
 		Velocity(part_title, {opacity: 0, translateX: '-3.5rem'}, {delay: 50, complete: function(){
 			part_title.textContent = stories[story].parts[part].name
 			part_text.textContent = stories[story].parts[part].text
+			toppartinfo.querySelector('#top_title').textContent = stories[story].parts[part].name
+			toppartinfo.querySelector('#top_counter').textContent = part+1 + '/' + stories[story].parts.length
 			for(var i = 0; i<4; i++){
 				points[i].name.textContent = stories[story].parts[part].pointNames[i]
 				points[i].text.textContent = stories[story].parts[part].pointText[i]
