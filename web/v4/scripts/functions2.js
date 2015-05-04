@@ -187,14 +187,21 @@ function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,alig
 
 function meshify(target){ //takes Text objects and turns them into mesh/mat, storing them as attributes in the original obj
 	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, depthWrite:false, map: target.tex})
-	var obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.cvs.width/100,target.cvs.height/100), mtl)
+	var obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.cvs.width/60,target.cvs.height/60), mtl)
 	obj.canvas = target
 	return obj
 }
 
 function backer(target, hex, margins){
 	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, color: hex})
-	target.backing = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.canvas.cvs.width/100 + margins[0],
-	target.canvas.cvs.height/100 + margins[1]), mtl); target.backing.position.z -= 0.1
+	target.backing = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.canvas.cvs.width/60 + margins[0],
+	target.canvas.cvs.height/60 + margins[1]), mtl); target.backing.position.z -= 0.1
 	target.add(target.backing)
 }
+
+
+// function showSprites()
+// function hideSprites()
+//
+// function showPreview(i)
+// function hidePreview(i)
