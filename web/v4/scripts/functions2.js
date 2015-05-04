@@ -128,6 +128,10 @@ var view = {
 			}
 		}})
 		Velocity(part_title, {opacity: 1, translateX: [0,'3.5rem']})
+	},
+
+	newStory: function(){
+
 	}
 }
 
@@ -179,4 +183,18 @@ function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,alig
 	if(align==='center'){this.ctx.fillText(words,this.cvs.width/6,this.cvs.height/6+fontSize/2.2)
 	}else if(align==='start'){this.ctx.fillText(words,1,this.cvs.height/6+fontSize/2.2)}
 	else{this.ctx.fillText(words,this.cvs.width/3-10,this.cvs.height/6+fontSize/2.2)}
+}
+
+function meshify(target){ //takes Text objects and turns them into mesh/mat, storing them as attributes in the original obj
+	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, depthWrite:false, map: target.tex})
+	var obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.cvs.width/100,target.cvs.height/100), mtl)
+	obj.canvas = target
+	return obj
+}
+
+function backer(target, hex, margins){
+	var mtl = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, color: hex})
+	target.backing = new THREE.Mesh(new THREE.PlaneBufferGeometry(target.canvas.cvs.width/100 + margins[0],
+	target.canvas.cvs.height/100 + margins[1]), mtl); target.backing.position.z -= 0.1
+	target.add(target.backing)
 }
