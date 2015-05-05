@@ -22,7 +22,7 @@ function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB']
+	var allModels = ['pedestal','pillarA','pillarB','cow']
 	var allTextures = ['grade_good','grade_ok','grade_bad','chevron','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')

@@ -22,7 +22,7 @@ function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB']
+	var allModels = ['pedestal','pillarA','pillarB','cow']
 	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
@@ -234,10 +234,13 @@ function loader(){
 			orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
 			storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
 			orbitpointer.material.opacity = storypointer.material.opacity = 0
-
 			orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
 
+			var cow = new THREE.Mesh(resources.geos.cow, new THREE.MeshPhongMaterial({color:0xffffff, emissive: 0x222222}))
+			cow.scale.set(.35,.35,.35); cow.rotation.x = rads(90); cow.position.y = -22
+
 			info.storyring.add(circle); info.storyring.add(diamond); info.storyring.add(orbitpointer); info.storyring.add(storypointer)
+			circle.add(cow)
 			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
 			seseme.add(info.storyring)
 
