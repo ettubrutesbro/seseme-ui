@@ -22,8 +22,8 @@ function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB','cow']
-	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
+	var allModels = ['pedestal','pillarA','pillarB','simplecow2']
+	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow','simplecow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){
@@ -225,19 +225,22 @@ function loader(){
 
 			//STORY RING: when zoomed out, users can see/preview all stories (just not access them)
 
-			info.storyring = new THREE.Group(); info.storyring.rotation.x = rads(-90); info.storyring.position.y = -8
-			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(43,43), resources.mtls.circle)
+			info.storyring = new THREE.Group(); info.storyring.rotation.x = rads(-90);
+			// info.storyring.position.y = -17.7
+			info.storyring.position.y = -8
+			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(46,46), resources.mtls.circle)
 			var diamond = new THREE.Mesh(new THREE.PlaneBufferGeometry(25,25), resources.mtls.diamond)
 			orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
 			var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
 			circle.rotation.z = rads(-45); diamond.rotation.z = rads (-45)
-			orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
-			storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-16,0))
+			orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
+			storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
 			orbitpointer.material.opacity = storypointer.material.opacity = 0
 			orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
 
-			var cow = new THREE.Mesh(resources.geos.cow, new THREE.MeshPhongMaterial({color:0xffffff, emissive: 0x222222}))
-			cow.scale.set(.35,.35,.35); cow.rotation.x = rads(90); cow.position.y = -22
+			var cow = new THREE.Mesh(resources.geos.simplecow2,resources.mtls.simplecow)
+			cow.material.depthWrite = true
+			 cow.rotation.x = rads(90); cow.position.y = -24
 
 			info.storyring.add(circle); info.storyring.add(diamond); info.storyring.add(orbitpointer); info.storyring.add(storypointer)
 			circle.add(cow)
