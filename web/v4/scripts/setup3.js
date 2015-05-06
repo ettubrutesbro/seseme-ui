@@ -22,8 +22,9 @@ function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB','simplecow2']
-	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow','simplecow'] //names of external imgs (PNG)
+	var allModels = ['pedestal','pillarA','pillarB']
+	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
+	stories.forEach(function(ele){ allModels.push(ele.geo); allTextures.push(ele.geo) })
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){
@@ -231,41 +232,44 @@ function loader(){
 			info.storyring.position.y = -8
 			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(46,46), resources.mtls.circle)
 			var diamond = new THREE.Mesh(new THREE.PlaneBufferGeometry(25,25), resources.mtls.diamond)
-			orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
-			var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
+			// orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
+			// var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
 			circle.rotation.z = rads(-45); diamond.rotation.z = rads (-45)
-			orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			orbitpointer.material.opacity = storypointer.material.opacity = 0
-			orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
+			// orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
+			// storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
+			// orbitpointer.material.opacity = storypointer.material.opacity = 0
+			// orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
 
-			var cow = new THREE.Mesh(resources.geos.simplecow2,
-				new THREE.MeshLambertMaterial({map:resources.mtls.simplecow.map,emissive: 0xAAAAAA}))
-			cow.material.depthWrite = true
-			 cow.rotation.x = rads(90); cow.position.y = -24
+			info.storyring.add(circle); info.storyring.add(diamond);
 
-			info.storyring.add(circle); info.storyring.add(diamond); info.storyring.add(orbitpointer); info.storyring.add(storypointer)
-			circle.add(cow)
+			stories.forEach(function(ele){
+				var storygeo = new THREE.Mesh(resources.geos[ele.geo], new THREE.MeshLambertMaterial({
+					map: resources.mtls[ele.geo].map, emissive: 0x9A9A9A, depthWrite: true}))
+					storygeo.rotation.x = rads(90); storygeo.position.y = -24
+					circle.add(storygeo)
+			})
+
+			// info.storyring.add(orbitpointer); info.storyring.add(storypointer)
 			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
 			seseme.add(info.storyring)
 
 			info.storyring.show = function(){
-				fade(storypointer,1,300,0); fade(orbitpointer,1,300,0)
+				// fade(storypointer,1,300,0); fade(orbitpointer,1,300,0)
 				size(circle, {x: 1, y: 1, z: 1}, 400)
 				fade(circle, 1, 400, 0)
 				size(diamond, {x: 1, y: 1, z: 1}, 300)
 				fade(diamond, 1, 300, 0)
-				size(orbitpointer,{x:1,y:1,z:1},300)
-				size(storypointer,{x:1,y:1,z:1},300)
+				// size(orbitpointer,{x:1,y:1,z:1},300)
+				// size(storypointer,{x:1,y:1,z:1},300)
 			}
 			info.storyring.hide = function(){
-				fade(storypointer,0,300,0); fade(orbitpointer,0,300,0)
+				// fade(storypointer,0,300,0); fade(orbitpointer,0,300,0)
 				size(circle, {x: 0.2, y: 0.2, z: 0.2}, 450)
 				fade(circle, 0, 450, 0)
 				size(diamond, {x: 0.4, y: 0.4, z: 0.4}, 350, function(){}, 30)
 				fade(diamond, 0, 350, 40)
-				size(orbitpointer,{x:0.25,y:0.25,z:0.25},300)
-				size(storypointer,{x:0.25,y:0.25,z:0.25},300)
+				// size(orbitpointer,{x:0.25,y:0.25,z:0.25},300)
+				// size(storypointer,{x:0.25,y:0.25,z:0.25},300)
 			}
 			info.storyring.pulse = function(){
 				size(diamond, {x: 0.7,y:0.7,z:0.7})
@@ -484,7 +488,8 @@ function loader(){
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			info.birdview.rotation.y = camera.rotation.y; orbitpointer.rotation.z = camera.rotation.y
+			info.birdview.rotation.y = camera.rotation.y
+			// orbitpointer.rotation.z = camera.rotation.y
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
 			facingRotations = [-45,45,135,-135]

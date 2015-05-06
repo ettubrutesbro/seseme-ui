@@ -3,7 +3,7 @@
 @media (max-device-width: 600px)
   and (-webkit-min-device-pixel-ratio: 2) {
 		html{ font-size: 21px;}
-		#ui{position: absolute; 	width: 100%; height: 100%; left:0; right:0; margin: 0 auto; bottom: 0.1rem;}
+		#ui{position: absolute; 	width: 100%; height: 100%; left:0; right:0; margin: 0 auto; bottom: 0.05rem;}
 		#containerSESEME{ position: absolute; top:0; width:100%; height: 100%;
 			margin: 0 auto; left: 0; right: 0;}
 }
@@ -42,7 +42,7 @@ html { background-color: #ededed; overflow: hidden;}
 	transform-origin: 10% 0%;
 }
 #top{
-	top: 0; padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+	top: 0; padding: 0.6rem 0.75rem 0.5rem 0.75rem;
 }
 	#partinfo{
 		opacity: 0; text-transform: uppercase;
@@ -78,8 +78,8 @@ html { background-color: #ededed; overflow: hidden;}
 }
 #whitebox {
 	position: absolute;
-	z-index: 1; padding-top: .5rem;
-	width: 100%; bottom: -.5rem; left: 0;
+	z-index: 1; padding-top: .1rem;
+	width: 100%; bottom: -.1rem; left: 0;
 	height: 30px; transform-origin: 50% 100%; -webkit-transform-origin: 50% 100%; -moz-transform-origin: 50% 100%;
 	background-image: linear-gradient(rgba(237,237,237,0),
 	rgba(237,237,237,0.7) 20%, rgba(244,244,244,0.8) 60%, rgba(255,255,255,1) 100%);

@@ -4,6 +4,7 @@ var stories = [
 		topic: 'school sustainability ratings',
 		taglines: ['If environmental stewardship is a competition, we\'re losing.',
 		'The biggest green movement happening here is from your bank to Mrak.'],
+		geo: 'simplecow',
 		parts: [
 			{
 				name: 'Glory Days',
@@ -40,7 +41,9 @@ var stories = [
 
 		]
 
-	},
-
+	}, //end story 0
+	// {
+	//
+	// }
 
 ]
