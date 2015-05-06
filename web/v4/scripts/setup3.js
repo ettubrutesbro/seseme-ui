@@ -67,15 +67,16 @@ function loader(){
 	}
 	function build(){
 		//camera/renderer/dom
-		var aspect = window.innerWidth / window.innerHeight; var d = 20
+		var containerSESEME = document.getElementById("containerSESEME")
+		var aspect = containerSESEME.offsetWidth / containerSESEME.offsetHeight; var d = 20
 		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 		camera.position.set( -d, 10, d ); camera.rotation.order = 'YXZ'
 		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
 		camera.updateProjectionMatrix(); defaultiso = camera.rotation.x
-		var containerSESEME = document.getElementById("containerSESEME")
+
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
 		// renderer.setClearColor(0xbbbbbb)
-		renderer.setSize( window.innerWidth, window.innerHeight)
+		renderer.setSize( containerSESEME.offsetWidth, containerSESEME.offsetHeight)
 		containerSESEME.appendChild( renderer.domElement )
 		controls = new THREE.OrbitControls(camera)
 		//materials
@@ -238,7 +239,8 @@ function loader(){
 			orbitpointer.material.opacity = storypointer.material.opacity = 0
 			orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
 
-			var cow = new THREE.Mesh(resources.geos.simplecow2,resources.mtls.simplecow)
+			var cow = new THREE.Mesh(resources.geos.simplecow2,
+				new THREE.MeshLambertMaterial({map:resources.mtls.simplecow.map,emissive: 0xAAAAAA}))
 			cow.material.depthWrite = true
 			 cow.rotation.x = rads(90); cow.position.y = -24
 
