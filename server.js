@@ -33,3 +33,6 @@ app.get('/v4', function (req, res) {
 	res.sendFile(__dirname + '/web/v4/index.html')
 })
 
+app.get('/v5', function (req, res) {
+	res.sendFile(__dirname + '/web/v5/index.html')
+})

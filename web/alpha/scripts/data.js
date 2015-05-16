@@ -1,6 +1,6 @@
 
 var data = {
-	'UC Davis': 
+	'UC Davis':
 	[
 		{
 			name: 'The SCC',
@@ -12,7 +12,7 @@ var data = {
 			//markers are interacted with, the magnitude is listed
 			classPlanations: ['open until 2am', '3 labs, 60 iMacs', '100 lbs of food served / day', 'est. 900 visits / day'],
 			//potentially add a "class multiplier" that multiplies
-			//class weighting magnitude based on proportion and 
+			//class weighting magnitude based on proportion and
 			//scale of specialized facilities,
 			reasons: ['','','']
 			//reasons: an array of strings that offers detail facts
@@ -41,7 +41,7 @@ var data = {
 		 {
 			name: 'Plant & Env. Sci',
 			constructed: 2002,
-			'Energy Use Intensity': {elec: 156, cool: 9, heat: 88},
+			'Energy Use Intensity': {elec: 166, cool: 59, heat: 98},
 			'Gallons Per Minute': { galm: 0.6, galh: 20},
 			classes: ['Science Lab','Large Scale Refrigeration'],
 			classPlanations: ['50% of ANS. ECO, and AGR classes are in PES', '300 cubic feet of crop refrigeration'],

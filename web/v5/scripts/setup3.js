@@ -10,11 +10,11 @@ var plrmax = 12, defaultiso
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.7,1.3], height: [-3,-60]}
 
-var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
-points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
-whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
-toppartinfo = document.getElementById('partinfo'),
-rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
+// var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
+// points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
+// whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
+// toppartinfo = document.getElementById('partinfo'),
+// rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
 
 init = true, collapsed = false, loading = true
 
@@ -147,20 +147,8 @@ function loader(){
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
 				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
 				projection(i)
-				points[i].name = points[i].querySelector('.title'); points[i].text = points[i].querySelector('.text')
-				points[i].name.textContent = stories[story].parts[part].pointNames[i]
-				points[i].text.textContent = stories[story].parts[part].pointText[i]
+
 			})
-			part_title.textContent = stories[story].parts[part].name
-			part_text.textContent = stories[story].parts[part].text
-			part_title.style.top = part_text.style.top = window.innerHeight - part_text.offsetHeight
-			points_info.style.top = window.innerHeight - (points[facing].text.offsetHeight+points[facing].name.offsetHeight)
-			whitebox.style.height = part_title.offsetHeight + part_text.offsetHeight
-			collapser.style.top = parseInt(part_title.style.top)/rem - .5 + 'rem'
-			collapser.style.right = .75*rem
-			toppartinfo.querySelector('#top_title').textContent = stories[story].parts[part].name
-			toppartinfo.querySelector('#top_counter').textContent = part+1 + '/' + stories[story].parts.length
-			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
 
 			//create a single BIRDVIEW: object for height='plan'
 				info.birdview = new THREE.Group()
@@ -288,10 +276,6 @@ function loader(){
 
 		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 		else{
-			if(!collapsed){ perspective.zoom = 'normal'; view.collapse()
-			setTimeout(function(){collapser.classList.remove('open'); collapser.classList.add('loading')},500)}else{
-				collapser.classList.remove('open'); collapser.classList.add('loading')}
-			Velocity(collapser, {opacity: 0.75},{queue:false})
 
 			info.birdview.cycle()
 
@@ -459,8 +443,8 @@ function loader(){
 						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
 						else if(perspective.height==='plan'){ console.log('show birdview') }
 						if(!init){
-							Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
-							collapser.classList.remove('loading'); collapser.classList.add('doneload')
+							// Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
+							// collapser.classList.remove('loading'); collapser.classList.add('doneload')
 						}
 
 					} // end if last projection (biggestDiff)
@@ -480,15 +464,6 @@ function loader(){
 			gyro.rotation.y = rads(evt.gamma)/1.5
 		})
 
-		collapser.addEventListener('click',function(){
-			if(!loading){if(collapsed){collapsed=false;view.expand()}else{view.collapse()}}
-		})
-		collapser.addEventListener('animationend',function(){
-			if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}
-		})
-			collapser.addEventListener('webkitAnimationEnd',function(){if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}})
-			collapser.addEventListener('mozAnimationEnd',function(){if(collapser.classList.contains('loading')){Velocity(collapser,{rotateZ: '360deg'},{loop:true, easing:'linear'})}})
-
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
 			info.birdview.rotation.y = camera.rotation.y
@@ -506,7 +481,7 @@ function loader(){
 						if(perspective.height==='isometric'&&perspective.zoom!=='far'&&!loading){
 							info.prev[facing].hide();	info.prev[i].show()
 						}
-						view.cyclePoints(i)
+
 						facing = i
 
 						if(perspective.zoom==='close'){

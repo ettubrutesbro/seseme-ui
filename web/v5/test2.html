@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <style>
+    section{
+      position: absolute;
+      transform-origin: top left 50px;
+      transform: translateX(300px) rotateY(0deg) rotateZ(0deg) rotateX(5deg);
+      transform-style: preserve-3d;
+      perspective: 100;
+      /*perspective: 1200;
+      -webkit-perspective: 1200;*/
+
+    }
+      div{
+        position: absolute;
+        width: 320px;
+        height: 100px;
+        background-color: red; opacity: 0.5;
+        border: 2px black solid;
+      }
+
+      #f2{
+        transform: translateX(100px) rotateY(90deg);
+        transform-origin: top left;
+      }
+      #f3{
+        transform: translateZ(-100px);
+      }
+      #f4{
+        transform: translateX(-100px) rotateY(270deg);
+        transform-origin: top right;
+      }
+    </style>
+
+    <script src = "libs/velocity.min.js"></script>
+
+  </head>
+  <body>
+  <section>
+  <div id = "f1">1</div>
+  <div id = "f2">2</div>
+  <div id = "f3">3</div>
+  <div id = "f4">4</div>
+</section>
+
+<script>
+function go(){
+  var tgt = document.querySelector('section')
+  Velocity(tgt, {rotateY: '-=90', translateX: 300}, {duration: 1400})
+}
+</script>

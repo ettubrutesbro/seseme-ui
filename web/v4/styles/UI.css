@@ -63,7 +63,7 @@ html { background-color: #ededed; overflow: hidden;}
 .text{
 	padding: 1.5rem .75rem .75rem .75rem;
 	font-family: 'Fira Sans', sans-serif;
-	font-weight: 400; font-size: 0.65rem; text-align: justify;
+	font-weight: 400; font-size: 0.65rem; text-align: justify; hyphens: auto;
 }
 #points_info{
 	padding: 1.2rem 0 0 0;

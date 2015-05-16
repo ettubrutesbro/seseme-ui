@@ -2,7 +2,7 @@ var story = 0, part = 0
 
 var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { prev: {} }}
-var seseme = new THREE.Group(), ground, lights, gyro, orbitpointer
+var seseme = new THREE.Group(), ground, lights, gyro
 var info = {prev: [], sprite: []}
 
 var plrmax = 12, defaultiso
@@ -22,9 +22,8 @@ function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB']
-	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
-	stories.forEach(function(ele){ allModels.push(ele.geo); allTextures.push(ele.geo) })
+	var allModels = ['pedestal','pillarA','pillarB','cow']
+	var allTextures = ['grade_good','grade_ok','grade_bad','chevron','tri','shadow'] //names of external imgs (PNG)
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
 	resourceMgr.onLoad = function(){
@@ -68,16 +67,15 @@ function loader(){
 	}
 	function build(){
 		//camera/renderer/dom
-		var containerSESEME = document.getElementById("containerSESEME")
-		var aspect = containerSESEME.offsetWidth / containerSESEME.offsetHeight; var d = 20
+		var aspect = window.innerWidth / window.innerHeight; var d = 20
 		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 		camera.position.set( -d, 10, d ); camera.rotation.order = 'YXZ'
 		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
 		camera.updateProjectionMatrix(); defaultiso = camera.rotation.x
-
+		var containerSESEME = document.getElementById("containerSESEME")
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
 		// renderer.setClearColor(0xbbbbbb)
-		renderer.setSize( containerSESEME.offsetWidth, containerSESEME.offsetHeight)
+		renderer.setSize( window.innerWidth, window.innerHeight)
 		containerSESEME.appendChild( renderer.domElement )
 		controls = new THREE.OrbitControls(camera)
 		//materials
@@ -163,137 +161,50 @@ function loader(){
 			points[facing].name.style.opacity = points[facing].text.style.opacity = 1
 
 			//create a single BIRDVIEW: object for height='plan'
-				info.birdview = new THREE.Group()
-				var birdstory = meshify(new Text(stories[story].title,12,140,180,'black','Source Serif Pro',32,400,'center'))
-				info.birdview.position.y = plrmax+1; info.birdview.rotation.y = camera.rotation.y
-				birdstory.rotation.x = rads(-90); birdstory.position.set(0,-3,-2)
-				birdstory.origin = {x: 0, y: 2.5, z: -1.5}; birdstory.expand = {x: 0, y: 0, z: -1.5}
+				info.bird = new THREE.Group()
+				var birdstory = meshify(new Text(stories[story].title,14,120,180,'black','Source Serif Pro',36,400,'center'))
+				info.bird.position.y = 13.5; info.bird.rotation.y = camera.rotation.y
+				birdstory.rotation.x = rads(-90)
+
 				backer(birdstory, 0xffffff, [.75,.25])
 
-				var nextlabel = meshify(new Text('NEXT'.split('').join(String.fromCharCode(8202)),7.5,40,100,'white','Fira Sans',18,600,'center'))
-				var nextpart = part!==stories[story].parts.length?
-				meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
-				meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
 
-				nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
-				nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
-				nextpart.position.set(nextpart.origin.x, nextpart.origin.y, nextpart.origin.z)
-				backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
-				nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
-				nextlabel.position.x -= nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120)
 
-				nextpart.add(nextlabel); birdstory.add(nextpart); info.birdview.add(birdstory)
-				seseme.add(info.birdview)
+				var nextlabel = meshify(new Text('NEXT'.split('').join(String.fromCharCode(8202)),9,50,100,'white','Fira Sans',20,600,'center'))
 
-				info.birdview.show = function(){
-					var bird_i = 0
-					this.traverse(function(child){if(child.material){fade(child,1,300,50*bird_i)};bird_i++})
-					move(birdstory,birdstory.expand,500,1,'Quadratic','Out',function(){},60)
-					move(nextpart,nextpart.expand,500,1,'Quadratic','Out',function(){},0)
-					size(birdstory,{x:1,y:1,z:1},400)
-				}
-				info.birdview.hide = function(){
-					var bird_i = 0
-					this.traverse(function(child){if(child.material){fade(child,0,300,0)};bird_i++})
-					move(birdstory,birdstory.origin,500,1,'Quadratic','Out',function(){},0)
-					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){},0)
-					size(birdstory,{x:0.8,y:0.8,z:0.8},400)
-				}
-				info.birdview.cycle = function(){
-					size(nextpart,{x:1,y:0.5,z:1},470)
-					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){
-						birdstory.remove(nextpart)
-						nextpart = ''; nextpart = part!==stories[story].parts.length?
-						meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
-						meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
-						nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
-						nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
-						backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
-						nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
-						nextlabel.position.x = -(nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120))
-						nextpart.position.set(nextpart.expand.x*5,nextpart.expand.y,0)
-						birdstory.add(nextpart); nextpart.add(nextlabel)
-						size(nextpart,{x:1,y:1,z:1},500)
-						if(perspective.height==='plan'){
-							nextpart.traverse(function(child){fade(child,1,500,0)})
-							move(nextpart,nextpart.expand,500,1,'Cubic','Out',function(){})
-						}
-					},0)
-				}
-				info.birdview.change = function(){
+				var birdnext
+
+				if(part!==stories[story].parts.length){
+					birdnext = meshify(new Text(stories[story].parts[part+1].name,10,100,120,'white','Fira Sans',26,300,'center'))
+
+					birdnext.position.set( birdstory.canvas.cvs.width/200 - birdnext.canvas.cvs.width/200, -birdstory.canvas.cvs.height/200 - birdnext.canvas.cvs.height/100, -.5)
+					backer(birdnext, 0x000000, [nextlabel.canvas.cvs.width/100+.75,.5])
+					birdnext.backing.position.x = (birdnext.canvas.cvs.width/100 - (birdnext.canvas.cvs.width/100 + nextlabel.canvas.cvs.width/100))/2
 
 				}
+				nextlabel.position.x -= birdnext.canvas.cvs.width/200 + (nextlabel.canvas.cvs.width/200)
+
+				birdnext.add(nextlabel); birdstory.add(birdnext); info.bird.add(birdstory)
+				seseme.add(info.bird)
+
+
+
+				info.bird.show = function(){}
+				info.bird.hide = function(){}
+				info.bird.cycle = function(){
+
+				}
+				info.bird.newStory = function(){
+
+				}
+
 			//end birdview creation code
-
-			//STORY RING: when zoomed out, users can see/preview all stories (just not access them)
-
-			info.storyring = new THREE.Group(); info.storyring.rotation.x = rads(-90);
-			// info.storyring.position.y = -17.7
-			info.storyring.position.y = -8
-			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(46,46), resources.mtls.circle)
-			var diamond = new THREE.Mesh(new THREE.PlaneBufferGeometry(25,25), resources.mtls.diamond)
-			// orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
-			// var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
-			// circle.rotation.z = rads(-45);
-			diamond.rotation.z = rads (-45)
-			// orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			// storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			// orbitpointer.material.opacity = storypointer.material.opacity = 0
-			// orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
-			info.storyring.circle = circle; circle.position.z -=9.5
-			info.storyring.add(circle); info.storyring.add(diamond);
-
-			stories.forEach(function(ele){
-				var storygeo = new THREE.Mesh(resources.geos[ele.geo], new THREE.MeshLambertMaterial({
-					map: resources.mtls[ele.geo].map, emissive: 0x9A9A9A, depthWrite: true}))
-					storygeo.rotation.x = rads(90);
-					storygeo.position.y = -24
-					storygeo.position.z = -10
-					info.storyring.add(storygeo)
-			})
-
-			// info.storyring.add(orbitpointer); info.storyring.add(storypointer)
-			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
-			seseme.add(info.storyring)
-
-			info.storyring.show = function(){
-				// fade(storypointer,1,300,0); fade(orbitpointer,1,300,0)
-				size(circle, {x: 1, y: 1, z: 1}, 400)
-				fade(circle, 1, 400, 0)
-				size(diamond, {x: 1, y: 1, z: 1}, 300)
-				fade(diamond, 1, 300, 0)
-				// size(orbitpointer,{x:1,y:1,z:1},300)
-				// size(storypointer,{x:1,y:1,z:1},300)
-			}
-			info.storyring.hide = function(){
-				// fade(storypointer,0,300,0); fade(orbitpointer,0,300,0)
-				size(circle, {x: 0.2, y: 0.2, z: 0.2}, 450)
-				fade(circle, 0, 450, 0)
-				size(diamond, {x: 0.4, y: 0.4, z: 0.4}, 350, function(){}, 30)
-				fade(diamond, 0, 350, 40)
-				// size(orbitpointer,{x:0.25,y:0.25,z:0.25},300)
-				// size(storypointer,{x:0.25,y:0.25,z:0.25},300)
-			}
-			info.storyring.pulse = function(){
-				size(diamond, {x: 0.7,y:0.7,z:0.7})
-			}
-			info.storyring.change = function(){
-				var rotate = new TWEEN.Tween({rz: storypointer.rotation.z}).to({rz: rads(-45 + (story*45))},300+(story*200)).
-				onUpdate(function(){ storypointer.rotation.z = this.rz }).
-				easing(TWEEN.Easing.Quadratic.Out).start()
-			}
-
-
-		}// end INITIAL 3D FILL
-
-		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
-		else{
+		}
+		else{ // EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 			if(!collapsed){ perspective.zoom = 'normal'; view.collapse()
 			setTimeout(function(){collapser.classList.remove('open'); collapser.classList.add('loading')},500)}else{
 				collapser.classList.remove('open'); collapser.classList.add('loading')}
 			Velocity(collapser, {opacity: 0.75},{queue:false})
-
-			info.birdview.cycle()
 
 			view.newInfo()
 
@@ -305,7 +216,7 @@ function loader(){
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,4000,45,'Cubic','InOut',function(){projection(i)})
 			})
-		}//end init check of 3d FILL ----------------------------
+		}//end init check
 
 		function projection(i){
 			 //pillar-matching infos
@@ -314,23 +225,25 @@ function loader(){
 					info.prev[i].position.set(seseme['plr'+i].cxlat.sx,0,seseme['plr'+i].cxlat.sz)
 					info.prev[i].rotation.y = rads(seseme['plr'+i].cxlat.pr)
 
-					var label = meshify(new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
-					36, 400, 'center'))
-					label.rotation.x = defaultiso; label.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
-					label.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
-					label.position.set(0,-seseme['plr'+i].position.y-3.5,6.5)
-						var caption = meshify(new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center'))
-						caption.origin={x:0,y:0.5,z:0};caption.expand={x:0,y:2,z:0};
-						caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
-						label.add(caption);
+					var label = new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
+					36, 400, 'center')
+					label.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map: label.tex,opacity: 0})
+					label.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(label.cvs.width/60,label.cvs.height/60),label.mtl)
+					label.obj.rotation.x = defaultiso; label.obj.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
+					label.obj.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
+					label.obj.position.y = -seseme['plr'+i].position.y-3.5; label.obj.position.z = 6.5
+					info.prev[i].label = label.obj;
+						var caption = new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center')
+						caption.mtl = new THREE.MeshBasicMaterial({depthWrite: false, transparent: true, map:caption.tex,opacity: 0})
+						caption.obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(caption.cvs.width/60,caption.cvs.height/60),caption.mtl)
+						caption.obj.origin={x:0,y:0.5,z:0};caption.obj.expand={x:0,y:2,z:0};
+						caption.obj.position.set(caption.obj.origin.x,caption.obj.origin.y,caption.obj.origin.z)
+						label.obj.caption = caption; label.obj.add(caption.obj);
 						var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.tri.clone())
 						pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
 						pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
-						label.add(pointer)
-					info.prev[i].labelgroup = new THREE.Group()
-					info.prev[i].label = label
-					info.prev[i].labelgroup.add(label)
-					info.prev[i].add(info.prev[i].labelgroup)
+						label.obj.pointer = pointer; label.obj.add(pointer)
+					info.prev[i].labelgroup = new THREE.Group(); info.prev[i].labelgroup.add(label.obj); info.prev[i].add(info.prev[i].labelgroup)
 
 					var stat = new THREE.Group(); stat.stats = []
 					stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
@@ -340,25 +253,31 @@ function loader(){
 					stattype.forEach(function(ele,ite){
 						var which = ite===0? 'normalStat': 'detailStat'
 						if(ele==='nums'){
-							stat.stats[ite] = meshify(new Text(stories[story].parts[part][which].nums[i],
-							13,70,200,'white','Source Serif Pro',36,400,'center'))
-							stat.stats[ite].position.z = 0.1
+							stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
+							13,70,200,'white','Source Serif Pro',36,400,'center')
+							stat.stats[ite].width = stat.stats[ite].cvs.width/60; stat.stats[ite].height = stat.stats[ite].cvs.height/60
+							stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,map:stat.stats[ite].tex,opacity:0})
+							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),stat.stats[ite].mtl)
+							stat.stats[ite].obj.position.z = 0.1
 						}else if(ele==='numswords'){
 							var words = stories[story].parts[part][which].words
 							var longest = Math.max(words[0].length,words[1].length)
-							stat.stats[ite] = meshify(new Text(stories[story].parts[part][which].nums[i],
-							12.5,longest*28,200,'white','Source Serif Pro',32,400,'start'))
-							stat.stats[ite].canvas.ctx.font = 'normal 500 14pt Fira Sans'; stat.stats[ite].canvas.ctx.textAlign = 'end'
-							stat.stats[ite].canvas.ctx.fillText(words[0],stat.stats[ite].canvas.cvs.width/3,28)
-							stat.stats[ite].canvas.ctx.fillText(words[1],stat.stats[ite].canvas.cvs.width/3,52)
-							stat.stats[ite].position.z = 0.2;
+							stat.stats[ite] = new Text(stories[story].parts[part][which].nums[i],
+							12.5,longest*28,200,'white','Source Serif Pro',32,400,'start')
+							stat.stats[ite].ctx.font = 'normal 500 14pt Fira Sans'; stat.stats[ite].ctx.textAlign = 'end'
+							stat.stats[ite].ctx.fillText(words[0],stat.stats[ite].cvs.width/3,28)
+							stat.stats[ite].ctx.fillText(words[1],stat.stats[ite].cvs.width/3,52)
+							stat.stats[ite].width = stat.stats[ite].cvs.width/60;stat.stats[ite].height = stat.stats[ite].cvs.height/60
+							stat.stats[ite].mtl = new THREE.MeshBasicMaterial({depthWrite:false,transparent:true,opacity:0,map:stat.stats[ite].tex})
+							stat.stats[ite].obj = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[ite].width,stat.stats[ite].height),
+							stat.stats[ite].mtl); stat.stats[ite].obj.position.z = 0.2;
 						}else if(ele==='picswords'){
 							//WIP: also, pics only? nums pics? nums pics words?
 						}
 					})
-					stat.normalStat = stat.stats[0]; stat.detailStat = stat.stats[1]
+					stat.normalStat = stat.stats[0].obj; stat.detailStat = stat.stats[1].obj
 
-						var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry((stat.stats[0].canvas.cvs.width*1.2)/60,(stat.stats[0].canvas.cvs.height*1.2)/60),
+						var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry(stat.stats[0].width*1.2,stat.stats[0].height*1.2),
 						new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
 						var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
 
@@ -389,7 +308,7 @@ function loader(){
 							move(this.stat,this.stat.origin,400,1,'Quadratic','Out',function(){},0)
 						}
 						info.prev[i].detail = function(){
-							var scalefactor = this.stat.stats[1].canvas.cvs.width / this.stat.stats[0].canvas.cvs.width
+							var scalefactor = this.stat.stats[1].width / this.stat.stats[0].width
 							size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
 							this.stat.add(this.stat.detailStat); this.stat.normalStat.disabled = true;
 							this.stat.detailStat.disabled = false
@@ -450,6 +369,7 @@ function loader(){
 						this.traverse(function(child){if(child.material){ fade(child,0,200,i*50,function(){}) }})
 					}
 
+
 				//EVENT: last projection = initialize controls, take off 'loading' boolean
 					if(i===biggestDiff){ //is this pillar the last one to finish?
 						console.log('show facing now')
@@ -463,14 +383,18 @@ function loader(){
 							collapser.classList.remove('loading'); collapser.classList.add('doneload')
 						}
 
-					} // end if last projection (biggestDiff)
+
+
+					}
 
 		} // end projection
+
 
 		//experimental testing - take random # and apply UI configurations
 			//collapse or no?
 			//starting zoom amount?
 			//tutorial or no?
+
 
 	} //end view.fill() --------------------
 	function behaviors(){
@@ -491,10 +415,7 @@ function loader(){
 
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			info.birdview.rotation.y = camera.rotation.y
-			// orbitpointer.rotation.z = camera.rotation.y
-			info.storyring.circle.rotation.z = camera.rotation.y
-
+			info.bird.rotation.y = camera.rotation.y
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
 			facingRotations = [-45,45,135,-135]
@@ -530,17 +451,16 @@ function loader(){
 					for(var i = 0; i<4; i++){
 						info.prev[i].hide()
 						if(perspective.height==='elevation'&&perspective.zoom!=='far'){info.sprite[i].show()}
-						else if(perspective.height==='plan'&&perspective.zoom!=='far'){ info.birdview.show() }
 					}
 				}else if(!loading&&zoom!=='far'){
-					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}; info.birdview.hide()
+					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
 				}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
 				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
 				perspective.zoom = zoom
 				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); info.birdview.hide(); view.story(); }
+				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); view.story() }
 				else{	if(perspective.height==='isometric'){info.prev[facing].show();}
 				else if(perspective.height==='elevation'){for(var i =0;i<4;i++){info.sprite[i].show()}} view.part() }
 			}
