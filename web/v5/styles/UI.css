@@ -35,7 +35,8 @@ html { background-color: #ededed; overflow: hidden;}
 #all_ui {
   border: 2px red solid;
   position: absolute; overflow: hidden;
-  width: 100%; height: 100%;
+  width: 95%; height: 95%;
+  margin: 0 auto; left: 0; right: 0;
 }
 #top_ui{
   position: absolute; top: 0;
@@ -44,6 +45,17 @@ html { background-color: #ededed; overflow: hidden;}
  }
 #bottom_ui{
   position: absolute; bottom: 0;
-  width: 100%; height: 100px;
-  background-color: green;
+  width: 100%; height: 50px;
+  border: 2px green solid;
+  overflow: hidden;
 }
+  #openbutton{
+    width: 50px; height: 50px;
+    border-radius: 50%; background-color: green;
+    position: absolute; left: 0; right: 0; margin: 0 auto;
+  }
+  #textbox{
+    position: absolute;
+    top: 25px; left: 0; right: 0; margin: 0 auto;
+    width: 100%; height: 25px; background-color: red;
+  }

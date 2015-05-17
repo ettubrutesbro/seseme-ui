@@ -231,14 +231,14 @@ function loader(){
 			info.storyring.circle = circle; circle.position.z -=9.5
 			info.storyring.add(circle); info.storyring.add(diamond);
 
-			stories.forEach(function(ele){
-				var storygeo = new THREE.Mesh(resources.geos[ele.geo], new THREE.MeshLambertMaterial({
-					map: resources.mtls[ele.geo].map, emissive: 0x9A9A9A, depthWrite: true}))
-					storygeo.rotation.x = rads(90);
-					storygeo.position.y = -24
-					storygeo.position.z = -10
-					info.storyring.add(storygeo)
-			})
+			// stories.forEach(function(ele){
+			// 	var storygeo = new THREE.Mesh(resources.geos[ele.geo], new THREE.MeshLambertMaterial({
+			// 		map: resources.mtls[ele.geo].map, emissive: 0x9A9A9A, depthWrite: true}))
+			// 		storygeo.rotation.x = rads(90);
+			// 		storygeo.position.y = -24
+			// 		storygeo.position.z = -10
+			// 		info.storyring.add(storygeo)
+			// })
 
 			// info.storyring.add(orbitpointer); info.storyring.add(storypointer)
 			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
@@ -270,20 +270,14 @@ function loader(){
 				onUpdate(function(){ storypointer.rotation.z = this.rz }).
 				easing(TWEEN.Easing.Quadratic.Out).start()
 			}
-
-
 		}// end INITIAL 3D FILL
 
 		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 		else{
-
 			info.birdview.cycle()
-
 			view.newInfo()
-
 			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
-
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
 				info.prev[i].disappear(); info.sprite[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
@@ -450,11 +444,6 @@ function loader(){
 					} // end if last projection (biggestDiff)
 
 		} // end projection
-
-		//experimental testing - take random # and apply UI configurations
-			//collapse or no?
-			//starting zoom amount?
-			//tutorial or no?
 
 	} //end view.fill() --------------------
 	function behaviors(){
