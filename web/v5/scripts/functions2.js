@@ -1,5 +1,43 @@
 
 var view = {
+	enableUI: function(){
+		var bottomUi = document.querySelector('#bottom_ui')
+		Velocity(bottomUi, {translateY: [0,bottomUi.offsetHeight]},'easeOutCubic', {duration: 300})
+
+		// Velocity(nav, {translateY: [0, '-2.25rem']},'easeOutCubic', {duration: 300})
+		// Velocity(helpbutton, {translateX: [0,help.offsetWidth*1.5]},'easeOutCubic',{delay: 200, duration: 400})
+		uiEnabled = true
+	},
+	disableUI: function(){
+		Velocity(bottomUi, {translateY: [bottomUi.offsetHeight,0]})
+		Velocity(nav, {translateY: [-nav.offsetHeight*1.5,0]})
+		Velocity(helpbutton, {translateX: [help.offsetWidth*1.5,0]},{delay: 200})
+		uiEnabled = false
+	},
+	switchUI: function(){
+		//color changes to all UIs
+	},
+
+	expandnav: function(){
+		Velocity(nav.stuff, {height: '8rem'})
+		Velocity(nav, {height: '8rem'})
+		Velocity(document.querySelector('#nav_list'), {translateY: '2.25rem'})
+		Velocity(document.querySelector('#nav_icons'), {translateY: '2rem', height: '6rem'})
+	},
+	expandhelp: function(){
+		console.log('expand help')
+	},
+	expandtext: function(){
+		Velocity(text, {translateY: [-text.stuff.offsetHeight + rem,0]})
+		Velocity(text.openbtn, {translateY: ['4rem',0]})
+		Velocity(text.closebtn, {translateY: ['-4rem',0]})
+	},
+	collapsetext: function(){
+		Velocity(text, {translateY: 0})
+		Velocity(text.openbtn, {translateY: 0})
+		Velocity(text.closebtn, {translateY: 0})
+	},
+
 	next: function(){
 		part+=1; view.fill()
 	},
@@ -127,11 +165,16 @@ var view = {
 	},
 	newStory: function(){
 
+	},
+
+	splash: function(){ //splash screen tells user what they're viewing
+
 	}
 }
 
 function degs(rads){return rads*(180/Math.PI)}
 function rads(degs){return degs*(Math.PI/180)}
+function dice(possibilities){return Math.floor(Math.random()*possibilities)}
 
 function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	// console.log('move operation')
@@ -167,6 +210,21 @@ function size(obj,tgtscale,spd,callback,delay){
 	if(delay){anim.delay(delay)}else{}
 	anim.start()
 	obj.sizeTween = anim
+}
+function rotate(obj,tgtrotation,spd,delay,callback){
+	if(obj.rotateTween){obj.rotateTween.stop()}
+	var start = {x: obj.rotation.x, y: obj.rotation.y, z: obj.rotation.z}
+	obj.rotateTween = new TWEEN.Tween(start).to(tgtrotation,spd).delay(delay).onComplete(
+		function(){ if(callback!==undefined){callback()} }).onUpdate(function(){obj.rotation.x = start.x
+		obj.rotation.y = start.y; obj.rotation.z = start.z}).easing(TWEEN.Easing.Quadratic.Out)
+	.start()
+}
+function recolor(obj,tgt,spd){
+	if(obj.colorTween){obj.colorTween.stop()}
+	var start = {r: obj.material.r, g: obj.material.g, b: obj.material.b}
+	obj.colorTween = new TWEEN.Tween(start).to({r: tgt.r/255, g: tgt.g/255, b: tgt.b/255},spd).onUpdate(function(){
+		obj.material.r = start.r; obj.material.g = start.g; obj.material.b = start.b
+	}).start()
 }
 
 function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,align){ //'400 36pt Source Serif Pro'

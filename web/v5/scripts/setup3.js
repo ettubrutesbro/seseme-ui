@@ -2,7 +2,7 @@ var story = 0, part = 0
 
 var scene = new THREE.Scene(), camera, renderer, controls,
 resources = {geos: {}, mtls: { prev: {} }}
-var seseme = new THREE.Group(), ground, lights, gyro, orbitpointer
+var seseme = new THREE.Group(), ground, lights, shadow, orbitpointer
 var info = {prev: [], sprite: []}
 
 var plrmax = 12, defaultiso
@@ -10,19 +10,32 @@ var plrmax = 12, defaultiso
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.7,1.3], height: [-3,-60]}
 
-// var part_title = document.getElementById('part_title'),part_text = document.getElementById('part_text'),
-// points_info = document.getElementById('points_info'), points = document.getElementsByClassName('point'),
-// whitebox = document.getElementById('whitebox'), collapser = document.getElementById('collapser'),
-// toppartinfo = document.getElementById('partinfo'),
-// rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
+var socket = io('http://169.237.123.19:5000')
+// var socket = require('socket.io-client')(IP)
 
-init = true, collapsed = false, loading = true
+var rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
+
+var nav = document.querySelector('#nav'), help = document.querySelector('#help'),
+text = document.querySelector('#text')
+
+var ui = [nav, help, text]
+ui.forEach(function(ele){
+	ele.isOpen = false
+	ele.openbtn = ele.querySelector('.open')
+	ele.closebtn = ele.querySelector('.close')
+	ele.stuff = ele.querySelector('.stuff')
+})
+
+//consider moving many of these global vars to inside the loader function, which includes
+//basically all setup functions
+
+var init = true, collapsed = false, loading = true, uiEnabled = false
 
 function setup(){
 	loader()
 
 function loader(){
-	var allModels = ['pedestal','pillarA','pillarB']
+	var allModels = ['quaped','pillarA','pillarB','pillarA_outline','pillarB_outline'] //symbolgeos?
 	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
 	stories.forEach(function(ele){ allModels.push(ele.geo); allTextures.push(ele.geo) })
 	var resourceMgr = new THREE.LoadingManager()
@@ -31,7 +44,7 @@ function loader(){
 		console.log('all resources done')
 		//////////////////////////////////////////////////////////////////////////////////
 		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
-		query(); build(); view.fill(); init = false; behaviors(); display()
+		query(); build(); view.fill(); behaviors(); display()
 		//-----------------------END CORE FUNCTIONS FOR INIT---------------------------//
 		//////////////////////////////////////////////////////////////////////////////////
 	}
@@ -45,6 +58,14 @@ function loader(){
 			resources.geos[ele] = geo; mdlMgr.itemEnd('assets/'+ele+'.js')
 		})
 	})
+	//shapes for geo resources
+	triangleA = new THREE.Shape() //normal triangle
+	triangleA.moveTo(-0.75,0);triangleA.lineTo(0.75,0);triangleA.lineTo(0,-1);triangleA.lineTo(-0.75,0)
+	resources.geos.triangleA = new THREE.ShapeGeometry(triangleA)
+	rightTri = new THREE.Shape() //right triangle
+	rightTri.moveTo(-1,-1);rightTri.lineTo(1,1);rightTri.lineTo(-1,1);rightTri.lineTo(-1,-1)
+	resources.geos.rightTri = new THREE.ShapeGeometry(rightTri)
+
 	var mtlMgr = new THREE.LoadingManager()
 	mtlMgr.onProgress = function(item,loaded,total){console.log(item,loaded,total)}
 	mtlMgr.onLoad = function(){console.log('textures done'); resourceMgr.itemEnd('mtlMgr')}
@@ -60,6 +81,7 @@ function loader(){
 		active: function(){ console.log('fonts loaded'); resourceMgr.itemEnd('fonts') }
 	}
 
+
 	function query(){
 		//socket.emit('get')
 		//socket.on('data',function(d){
@@ -73,6 +95,7 @@ function loader(){
 		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0, 100 )
 		camera.position.set( -d, 10, d ); camera.rotation.order = 'YXZ'
 		camera.rotation.y = - Math.PI / 4 ; camera.rotation.x = Math.atan( - 1 / Math.sqrt( 2 ) );
+		camera.zoom = .875
 		camera.updateProjectionMatrix(); defaultiso = camera.rotation.x
 
 		renderer = new THREE.WebGLRenderer({antialias: true, alpha: true})
@@ -87,194 +110,140 @@ function loader(){
 		//meshes
 		ground = new THREE.Mesh(new THREE.PlaneBufferGeometry( 150, 150 ), resources.mtls.ground)
 		ground.rotation.x = rads(-90); ground.position.set(0,-18,0)
-		seseme.pedestal = new THREE.Mesh(resources.geos.pedestal,resources.mtls.seseme)
-		seseme.pedestal.position.set(1.5,0,1)
-		seseme.pillars = new THREE.Group()
-		plrXlats = [
-			{type:'A',ry:0,pos:{x:-5,z:-5}},
-			{type:'B',ry:0, pos:{x:-5,z:-5}},
-			{type:'B',ry:90, pos:{x:-5,z:5}},
-			{type:'A',ry:-90, pos:{x:5,z:-5}}
+
+		xlats = [
+			{type:'A', qua: {x:1.5,z:1, r: 0}},
+			{type:'B', qua: {x:1,z:-1.5, r: 90}},
+			{type:'B', qua: {x:-1.5,z:-1, r: 180}},
+			{type:'A', qua: {x:-1,z:1.5, r: -90}}
 		]
-		plrXlats.forEach(function(ele,i){
+		var pillarStartY = dice(2)===1? 0: 72
+		xlats.forEach(function(ele,i){
+			seseme['quad'+i] = new THREE.Mesh(resources.geos.quaped,resources.mtls.seseme)
+			seseme['quad'+i].end = {x:ele.qua.x, y:0, z:ele.qua.z}
+			seseme.add(seseme['quad'+i])
 			seseme['plr'+i] = new THREE.Mesh(resources.geos['pillar'+ele.type],resources.mtls.seseme)
-			seseme['plr'+i].position.set(ele.pos.x,0,ele.pos.z)
-			seseme['plr'+i].rotation.y = rads(ele.ry)
-			seseme['plr'+i].cxlat = ele.type==='A'? {sx:3,sz:7,px:-1.5,pz:11.5,pr:-45} : {sx:7,sz:7,px:11.5,pz:11.5,pr:45}
-			seseme.pillars.add(seseme['plr'+i])
+			seseme['plr'+i].position.set(-3.5,pillarStartY,1)
+			seseme['plr'+i].geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-4,0))
+			seseme['plr'+i].rotation.y = ele.type==='B'?rads(-90) : 0
+			seseme['plr'+i].prevrot = ele.type==='B'? rads(45) : rads(-	45)
+			//outline addition
+			var outline, outlineColor = stories[story].parts[part].color
+			if(ele.type==='A'){
+				outline = new THREE.Mesh(resources.geos.pillarA_outline, new THREE.MeshBasicMaterial({color: outlineColor}))
+			}else{
+				outline = new THREE.Mesh(resources.geos.pillarB_outline, new THREE.MeshBasicMaterial({color: outlineColor}))
+			}
+			outline.material.side = THREE.BackSide
+			outline.material.transparent = true; outline.material.depthWrite = false
+			outline.material.opacity = 0
+			outline.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-4,0))
+
+			seseme['plr'+i].outline = outline; seseme['plr'+i].add(outline)
+
+			var outcap = new THREE.Mesh(resources.geos.rightTri, new THREE.MeshBasicMaterial({color: outlineColor, transparent: true, opacity: 0}))
+			outcap.rotation.x=rads(-90); outcap.rotation.z=rads(90)
+			outcap.scale.set(1.9,1.9,1.9); outcap.position.set(-4,-0.6,1.5)
+			seseme['plr'+i].outcap = outcap; seseme['quad'+i].add(outcap)
+
+			seseme['quad'+i].add(seseme['plr'+i])
 		})
-		seseme.add(seseme.pedestal)
-		seseme.add(seseme.pillars)
+
 		//lighting
-		lights = new THREE.Group(); gyro = new THREE.Group(); amblight = new THREE.AmbientLight( 0x232330 )
+		lights = new THREE.Group(); amblight = new THREE.AmbientLight( 0x232330 )
 		backlight = new THREE.SpotLight(0xeaddb9, 1.2); camlight = new THREE.PointLight(0xffffff, .35)
 	  	backlight.position.set(-7,25,-4); camlight.position.set(-40,-7,-24)
-	  	lights.add(backlight); lights.add(amblight); lights.add(camlight);
-	  	gyro.add(lights)
+	  	lights.add(backlight); lights.add(amblight); lights.add(camlight)
 	  	//other FX
 	  	shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(16,16), resources.mtls.shadow)
 	  	shadow.rotation.x = rads(-90); shadow.position.set(-0.1,-17.99,0.1)
-	  	// scene.fog = new THREE.FogExp2( 0xbbbbbb, 1.2 )
-		//misc one-time setups: one-off geos and mtls
-			var triangleA = new THREE.Shape()
-			triangleA.moveTo(-0.75,0);triangleA.lineTo(0.75,0);triangleA.lineTo(0,-1);triangleA.lineTo(-0.75,0)
-	  	resources.geos.triangleA = new THREE.ShapeGeometry(triangleA)
-			 //adding to scene
-		scene.add(ground); seseme.add(shadow); scene.add(seseme); scene.add(gyro)
+			shadow.material.opacity = 0
+			//adding to scene
+		scene.add(ground); scene.add(seseme); scene.add(lights); scene.add(shadow)
 
 	}//build
 	view.fill = function(){
+//booleans lock down user input when we are filling w/ new data
 		loading = true; controls.noZoom = true
-
+// stat type: how to fill statbox??? [0] = normal, [1] = detail
+		var uiColor = stories[story].parts[part].color
 		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
 		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
-	]
+		]
+//values-to-heights handling
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
 		}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
 			var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
 		}
 		range = Math.abs(bottom-top)
-
+// deducing largest change, so callback can be assigned to that one
 		var changes = []
 		stories[story].parts[part].pointValues.forEach(function(ele,i){
-			var current = seseme['plr'+i].position.y; var target = Math.abs(bottom-ele)/range*plrmax
-			changes.push(Math.abs(current-target))
+			changes.push(Math.abs(seseme['plr'+i].position.y-Math.abs(bottom-ele)/range*plrmax))
 		})
 		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
 
-		if(init){ //snap in stuff (no transitions) for first load
-			stories[story].parts[part].pointValues.forEach(function(ele,i){
-				seseme['plr'+i].position.y = Math.abs(bottom-ele)/range * plrmax
-				projection(i)
-
-			})
-
-			//create a single BIRDVIEW: object for height='plan'
-				info.birdview = new THREE.Group()
-				var birdstory = meshify(new Text(stories[story].title,12,140,180,'black','Source Serif Pro',32,400,'center'))
-				info.birdview.position.y = plrmax+1; info.birdview.rotation.y = camera.rotation.y
-				birdstory.rotation.x = rads(-90); birdstory.position.set(0,-3,-2)
-				birdstory.origin = {x: 0, y: 2.5, z: -1.5}; birdstory.expand = {x: 0, y: 0, z: -1.5}
-				backer(birdstory, 0xffffff, [.75,.25])
-
-				var nextlabel = meshify(new Text('NEXT'.split('').join(String.fromCharCode(8202)),7.5,40,100,'white','Fira Sans',18,600,'center'))
-				var nextpart = part!==stories[story].parts.length?
-				meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
-				meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
-
-				nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
-				nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
-				nextpart.position.set(nextpart.origin.x, nextpart.origin.y, nextpart.origin.z)
-				backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
-				nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
-				nextlabel.position.x -= nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120)
-
-				nextpart.add(nextlabel); birdstory.add(nextpart); info.birdview.add(birdstory)
-				seseme.add(info.birdview)
-
-				info.birdview.show = function(){
-					var bird_i = 0
-					this.traverse(function(child){if(child.material){fade(child,1,300,50*bird_i)};bird_i++})
-					move(birdstory,birdstory.expand,500,1,'Quadratic','Out',function(){},60)
-					move(nextpart,nextpart.expand,500,1,'Quadratic','Out',function(){},0)
-					size(birdstory,{x:1,y:1,z:1},400)
+// FILLING ACTIONS: FIRST TIME (ON RUN): INIT ANIMATION
+		if(init){
+			var initAnim = dice(3) //2=flyin, 1=riseup, 0/other= flower
+			var pillarAnim = function(which){
+				move(seseme['plr'+which],{x: seseme['plr'+which].position.x,
+				y: Math.abs(bottom-stories[story].parts[part].pointValues[which])/range * plrmax,
+				z: seseme['plr'+which].position.z}, 1500, 5, 'Quadratic', 'Out', function(){
+					projection(which)
+				}, which*200)
+			}
+			//init anim: set position and rotation of quads, then animate them to correct position
+			if(initAnim === 2){ //fly in (sides) animation
+				console.log('flyin')
+				for(var i = 0; i<4; i++){
+					var q = seseme['quad'+i]
+					q.position.set(q.end.x*-13, 0, q.end.z*-13)
+					q.rotation.y = rads(i*90)
+					move(q,{x:q.end.x,y:q.end.y,z:q.end.z},1700,1,'Quadratic','Out',pillarAnim(i),0)
 				}
-				info.birdview.hide = function(){
-					var bird_i = 0
-					this.traverse(function(child){if(child.material){fade(child,0,300,0)};bird_i++})
-					move(birdstory,birdstory.origin,500,1,'Quadratic','Out',function(){},0)
-					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){},0)
-					size(birdstory,{x:0.8,y:0.8,z:0.8},400)
+				fade(shadow, 1, 800, 1200)
+			} else if (initAnim === 1){ // rise up animation
+				console.log('riseup')
+				for(var i = 0; i<4; i++){
+					var q = seseme['quad'+i]
+					q.position.set(q.end.x, -31, q.end.z)
+					q.rotation.y = rads(i*90)
+					move(q,{x:q.end.x,y:q.end.y,z:q.end.z},1700,1,'Quadratic','Out',pillarAnim(i),i*250)
 				}
-				info.birdview.cycle = function(){
-					size(nextpart,{x:1,y:0.5,z:1},470)
-					move(nextpart,nextpart.origin,500,1,'Quadratic','Out',function(){
-						birdstory.remove(nextpart)
-						nextpart = ''; nextpart = part!==stories[story].parts.length?
-						meshify(new Text(stories[story].parts[part+1].name,8,70,120,'white','Fira Sans',21,300,'center')) :
-						meshify(new Text('(back to start)',8,70,120,'white','Fira Sans',21,300,'center'))
-						nextpart.expand = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:-birdstory.canvas.cvs.height/120 - nextpart.canvas.cvs.height/60, z:-.5}
-						nextpart.origin = {x:birdstory.canvas.cvs.width/120 - nextpart.canvas.cvs.width/120, y:0, z:-1}
-						backer(nextpart, 0x000000, [nextlabel.canvas.cvs.width/60+.75,.5])
-						nextpart.backing.position.x = (nextpart.canvas.cvs.width/60 - (nextpart.canvas.cvs.width/60 + nextlabel.canvas.cvs.width/60))/2
-						nextlabel.position.x = -(nextpart.canvas.cvs.width/120 + (nextlabel.canvas.cvs.width/120))
-						nextpart.position.set(nextpart.expand.x*5,nextpart.expand.y,0)
-						birdstory.add(nextpart); nextpart.add(nextlabel)
-						size(nextpart,{x:1,y:1,z:1},500)
-						if(perspective.height==='plan'){
-							nextpart.traverse(function(child){fade(child,1,500,0)})
-							move(nextpart,nextpart.expand,500,1,'Cubic','Out',function(){})
-						}
-					},0)
+				fade(shadow, 1, 800, 1200)
+			} else { //flower animation
+				console.log('flower')
+				for(var i = 0; i<4; i++){
+					var q = seseme['quad'+i]
+					q.position.set(q.end.x*-1.5,q.end.y,q.end.z*-1.5)
+					q.rotation.y = rads((i*90)-30)
+					move(q,{x:q.end.x,y:q.end.y,z:q.end.z},1700,1,'Quadratic','Out',pillarAnim(i),0)
+					rotate(q,{x:0,y:rads(i*90),z:0},1700,0)
 				}
-				info.birdview.change = function(){
+				fade(shadow, 1, 800, 1200)
+			}
 
-				}
-			//end birdview creation code
+	//DOM manipulations to get sizing, textContent, color info during fill()
 
-			//STORY RING: when zoomed out, users can see/preview all stories (just not access them)
+			var part_text = document.querySelector('#part')
+			nav.style.width = nav.stuff.offsetWidth
+			part_text.textContent = stories[story].parts[part].text
+			text.stuff.style.height = part_text.offsetHeight
+			// navclose.style.borderLeftColor = outlineColor
+			// navclose.style.borderTopColor = outlineColor
+			// helpcontent.style.height = window.innerHeight
 
-			info.storyring = new THREE.Group(); info.storyring.rotation.x = rads(-90);
-			// info.storyring.position.y = -17.7
-			info.storyring.position.y = -8
-			var circle = new THREE.Mesh(new THREE.PlaneBufferGeometry(46,46), resources.mtls.circle)
-			var diamond = new THREE.Mesh(new THREE.PlaneBufferGeometry(25,25), resources.mtls.diamond)
-			// orbitpointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.orbitpointer)
-			// var storypointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(4.5,4.5), resources.mtls.storypointer)
-			// circle.rotation.z = rads(-45);
-			diamond.rotation.z = rads (-45)
-			// orbitpointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			// storypointer.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-15,0))
-			// orbitpointer.material.opacity = storypointer.material.opacity = 0
-			// orbitpointer.rotation.z = camera.rotation.y; storypointer.rotation.z = camera.rotation.y
-			info.storyring.circle = circle; circle.position.z -=9.5
-			info.storyring.add(circle); info.storyring.add(diamond);
-
-			// stories.forEach(function(ele){
-			// 	var storygeo = new THREE.Mesh(resources.geos[ele.geo], new THREE.MeshLambertMaterial({
-			// 		map: resources.mtls[ele.geo].map, emissive: 0x9A9A9A, depthWrite: true}))
-			// 		storygeo.rotation.x = rads(90);
-			// 		storygeo.position.y = -24
-			// 		storygeo.position.z = -10
-			// 		info.storyring.add(storygeo)
+			// colorUi.forEach(function(ele,i){
+			// 	document.getElementById(ele).style.backgroundColor = outlineColor
 			// })
 
-			// info.storyring.add(orbitpointer); info.storyring.add(storypointer)
-			circle.scale.set(.2,.2,.2); diamond.scale.set(.4,.4,.4)
-			seseme.add(info.storyring)
 
-			info.storyring.show = function(){
-				// fade(storypointer,1,300,0); fade(orbitpointer,1,300,0)
-				size(circle, {x: 1, y: 1, z: 1}, 400)
-				fade(circle, 1, 400, 0)
-				size(diamond, {x: 1, y: 1, z: 1}, 300)
-				fade(diamond, 1, 300, 0)
-				// size(orbitpointer,{x:1,y:1,z:1},300)
-				// size(storypointer,{x:1,y:1,z:1},300)
-			}
-			info.storyring.hide = function(){
-				// fade(storypointer,0,300,0); fade(orbitpointer,0,300,0)
-				size(circle, {x: 0.2, y: 0.2, z: 0.2}, 450)
-				fade(circle, 0, 450, 0)
-				size(diamond, {x: 0.4, y: 0.4, z: 0.4}, 350, function(){}, 30)
-				fade(diamond, 0, 350, 40)
-				// size(orbitpointer,{x:0.25,y:0.25,z:0.25},300)
-				// size(storypointer,{x:0.25,y:0.25,z:0.25},300)
-			}
-			info.storyring.pulse = function(){
-				size(diamond, {x: 0.7,y:0.7,z:0.7})
-			}
-			info.storyring.change = function(){
-				var rotate = new TWEEN.Tween({rz: storypointer.rotation.z}).to({rz: rads(-45 + (story*45))},300+(story*200)).
-				onUpdate(function(){ storypointer.rotation.z = this.rz }).
-				easing(TWEEN.Easing.Quadratic.Out).start()
-			}
 		}// end INITIAL 3D FILL
 
 		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 		else{
-			info.birdview.cycle()
 			view.newInfo()
 			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
@@ -283,21 +252,21 @@ function loader(){
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,4000,45,'Cubic','InOut',function(){projection(i)})
 			})
-		}//end init check of 3d FILL ----------------------------
+		}//end after first timeL ----------------------------
 
 		function projection(i){
 			 //pillar-matching infos
 				//PREVIEWS: label(title,caption,pointer) and stat showing facing pillar data
 				info.prev[i] = new THREE.Group()
-					info.prev[i].position.set(seseme['plr'+i].cxlat.sx,0,seseme['plr'+i].cxlat.sz)
-					info.prev[i].rotation.y = rads(seseme['plr'+i].cxlat.pr)
+					info.prev[i].position.set(0,0,0)
+					info.prev[i].rotation.y = seseme['plr'+i].prevrot
 
 					var label = meshify(new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
 					36, 400, 'center'))
 					label.rotation.x = defaultiso; label.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
 					label.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
 					label.position.set(0,-seseme['plr'+i].position.y-3.5,6.5)
-						var caption = meshify(new Text(stories[story].parts[part].metricName,11.5,200,80,'white','Fira Sans',16,500,'center'))
+						var caption = meshify(new Text(stories[story].parts[part].pointTitles[i],11.5,200,80,'white','Fira Sans',16,500,'center'))
 						caption.origin={x:0,y:0.5,z:0};caption.expand={x:0,y:2,z:0};
 						caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
 						label.add(caption);
@@ -314,7 +283,8 @@ function loader(){
 					stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
 					stat.origin = {x:0,y:1.5,z:0}; stat.position.set(stat.origin.x,stat.origin.y,stat.origin.z)
 					stat.scale.set(.75,.75,.75)
-					info.prev[i].add(stat); info.prev[i].stat = stat
+					// info.prev[i].add(stat) // removed...this should be added to a closer view
+					info.prev[i].stat = stat
 					stattype.forEach(function(ele,ite){
 						var which = ite===0? 'normalStat': 'detailStat'
 						if(ele==='nums'){
@@ -390,7 +360,7 @@ function loader(){
 					seseme['plr'+i].add(info.prev[i])
 
 				//SPRITES: objects for height="elevation"
-					info.sprite[i] = new THREE.Group(); info.sprite[i].position.set(seseme['plr'+i].cxlat.sx,0,seseme['plr'+i].cxlat.sz)
+					info.sprite[i] = new THREE.Group();
 					var txt = new Text(stories[story].parts[part].pointNames[i],
 					11,240,125,'black','Fira Sans',30,500,'center')
 					var sprmtl = new THREE.SpriteMaterial({transparent:true,map:txt.tex,opacity:0})
@@ -430,12 +400,18 @@ function loader(){
 
 				//EVENT: last projection = initialize controls, take off 'loading' boolean
 					if(i===biggestDiff){ //is this pillar the last one to finish?
-						console.log('show facing now')
+						if(init){
+							setTimeout(function(){view.enableUI()},100)
+							init = false
+						}//init finish: display UI, whereas normally we just collapse it?
+						//(nav stays in normal load)
+						console.log('enable controls and UI')
+
 						loading = false
 						controls.noZoom = false
 						if(perspective.height==='isometric'){ info.prev[facing].show() }
 						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
-						else if(perspective.height==='plan'){ console.log('show birdview') }
+						else if(perspective.height==='plan'){  }
 						if(!init){
 							// Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
 							// collapser.classList.remove('loading'); collapser.classList.add('doneload')
@@ -448,16 +424,42 @@ function loader(){
 	} //end view.fill() --------------------
 	function behaviors(){
 
-		Origami.fastclick(document.body) //attaches fastclick to body so shitty iOS doesnt wait 300ms
+		Origami.fastclick(document.body) //attaches fastclick so iOS doesnt wait 300ms
 		window.addEventListener('deviceorientation', function(evt){
-			gyro.rotation.y = rads(evt.gamma)/1.5
+
+
 		})
 
+		//dom UI element interactions
+
+		ui.forEach(function(ele){
+			ele.openbtn.addEventListener('click',view['expand'+ele.getAttribute('id')])
+			ele.closebtn.addEventListener('click',view['collapse'+ele.getAttribute('id')])
+		})
+
+		nav.addEventListener('click',function(){
+			if(nav.isOpen){ //nav is open, close it
+				view.collapsenav()
+			}else{ //nav is closed, open it
+				view.expandnav()
+			}
+		})
+
+		// var domUis = document.querySelectorAll('.ui-element')
+		// for(var i = 0; i<domUis.length; i++){
+		// 	domUis[i].isOpen = false
+		// 	domUis[i].expand = view['expand'+domUis[i].getAttribute('id')]
+		// 	domUis[i].collapse = view['collapse'+domUis[i].getAttribute('id')]
+		//
+		// 	domUis[i].querySelector('.open').addEventListener('click',domUis[i].expand)
+		// 	domUis[i].querySelector('.open').addEventListener('click',domUis[i].collapse)
+		// }
+		// document.querySelector('#nav').addEventListener('click',view.expandnav)
+
+
+		//3d controls manipulation
 		controls.addEventListener( 'change', function(){
 			lights.rotation.set(-camera.rotation.x/2, camera.rotation.y + rads(45), -camera.rotation.z/2)
-			info.birdview.rotation.y = camera.rotation.y
-			// orbitpointer.rotation.z = camera.rotation.y
-			info.storyring.circle.rotation.z = camera.rotation.y
 
 			//ROTATING: WHAT IS FACING PILLAR? WHAT INFO? + MOVE LIGHTS
 
@@ -470,6 +472,11 @@ function loader(){
 						if(perspective.height==='isometric'&&perspective.zoom!=='far'&&!loading){
 							info.prev[facing].hide();	info.prev[i].show()
 						}
+
+						fade(seseme['plr'+i].outline,1,250,0)
+						fade(seseme['plr'+i].outcap,1,250,0)
+						fade(seseme['plr'+facing].outline,0,300,0)
+						fade(seseme['plr'+facing].outcap,0,300,0)
 
 						facing = i
 
@@ -512,7 +519,7 @@ function loader(){
 			if(perspective.zoom==='close'){
 				info.sprite.forEach(function(ele){ele.scale.set(1-addzoom/4,1-addzoom/4,1-addzoom/4)})
 				if(perspective.zoomswitch===false){//scene moves up and down at close zoom levels
-				scene.position.y = -(seseme['plr'+facing].position.y)*addzoom-(addzoom*4)
+				scene.position.y = -(seseme['plr'+facing].position.y)*(addzoom/1.5)-(addzoom*4)
 				info.prev.forEach(function(ele){
 					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/2.5,1-addzoom/2.5,1+addzoom/2.5)
 					ele.labelgroup.position.y = -addzoom * 20; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
