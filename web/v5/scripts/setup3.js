@@ -8,23 +8,16 @@ var info = {prev: [], sprite: []}
 var plrmax = 12, defaultiso
 
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.7,1.3], height: [-3,-60]}
+var thresholds = {zoom: [.7,1], height: [-3,-60]}
 
 var socket = io('http://169.237.123.19:5000')
-// var socket = require('socket.io-client')(IP)
 
 var rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
 
 var nav = document.querySelector('#nav'), help = document.querySelector('#help'),
 text = document.querySelector('#text')
 
-var ui = [nav, help, text]
-ui.forEach(function(ele){
-	ele.isOpen = false
-	ele.openbtn = ele.querySelector('.open')
-	ele.closebtn = ele.querySelector('.close')
-	ele.stuff = ele.querySelector('.stuff')
-})
+
 
 //consider moving many of these global vars to inside the loader function, which includes
 //basically all setup functions
@@ -44,7 +37,7 @@ function loader(){
 		console.log('all resources done')
 		//////////////////////////////////////////////////////////////////////////////////
 		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
-		query(); build(); view.fill(); behaviors(); display()
+		query(); build(); display()
 		//-----------------------END CORE FUNCTIONS FOR INIT---------------------------//
 		//////////////////////////////////////////////////////////////////////////////////
 	}
@@ -83,6 +76,39 @@ function loader(){
 
 
 	function query(){
+		socket.emit('whereWeAt')
+		socket.on('hereWeAt',function(d){
+			part = d.page
+			view.fill()
+
+			if(stories[story].parts[part].valueType === 'smallerIsHigher'){
+				var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
+			}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
+				var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
+			}
+			range = Math.abs(bottom-top)
+
+			var delayMotor = function(i){
+				setTimeout(function(){
+					var mpos = Math.abs(bottom-stories[story].parts[part].pointValues[i-1])/range * 100
+					socket.emit('moveMotorJack',{name: 'm'+i, position: mpos})
+				}, i*500 )
+			}
+			var unisonMotor = function(i){
+				var mpos = Math.abs(bottom-stories[story].parts[part].pointValues[i-1])/range * 100
+				socket.emit('moveMotorJack',{name: 'm'+i, position: mpos})
+			}
+
+				// for(var i=1; i<5; i++){delayMotor(i)}
+				for(var i=1; i<5; i++){unisonMotor(i)}
+
+			socket.emit('setHSL',stories[story].parts[part].fakeHueVal)
+		})
+
+		socket.on('buttonPressed',function(){
+			socket.emit('whereWeAt')
+		})
+
 		//socket.emit('get')
 		//socket.on('data',function(d){
 			// story = d.story ; part = d.part
@@ -167,9 +193,7 @@ function loader(){
 		loading = true; controls.noZoom = true
 // stat type: how to fill statbox??? [0] = normal, [1] = detail
 		var uiColor = stories[story].parts[part].color
-		var stattype = [Object.keys(stories[story].parts[part].normalStat).toString().replace(',',''),
-		Object.keys(stories[story].parts[part].detailStat).toString().replace(',','')
-		]
+
 //values-to-heights handling
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
@@ -190,7 +214,7 @@ function loader(){
 			var pillarAnim = function(which){
 				move(seseme['plr'+which],{x: seseme['plr'+which].position.x,
 				y: Math.abs(bottom-stories[story].parts[part].pointValues[which])/range * plrmax,
-				z: seseme['plr'+which].position.z}, 1500, 5, 'Quadratic', 'Out', function(){
+				z: seseme['plr'+which].position.z}, 3500, 5, 'Quadratic', 'Out', function(){
 					projection(which)
 				}, which*200)
 			}
@@ -224,13 +248,38 @@ function loader(){
 				}
 				fade(shadow, 1, 800, 1200)
 			}
+	// defining DOM relationships
+			var ui = [nav, help, text]
+			ui.forEach(function(ele){
+				ele.isOpen = false
+				ele.openbtn = ele.querySelector('.open')
+				ele.closebtn = ele.querySelector('.close')
+				ele.stuff = ele.querySelector('.stuff')
+			})
+
+			text.part = text.querySelector('#part')
+			text.points = text.querySelectorAll('.point')
 
 	//DOM manipulations to get sizing, textContent, color info during fill()
 
-			var part_text = document.querySelector('#part')
-			nav.style.width = nav.stuff.offsetWidth
-			part_text.textContent = stories[story].parts[part].text
-			text.stuff.style.height = part_text.offsetHeight
+
+	var rgb = hexToRgb(stories[story].parts[part].color)
+	console.log(rgb)
+
+			text.part.textContent = stories[story].parts[part].text
+			for(var i = 0; i < 4; i++){
+				text.points[i].textContent = stories[story].parts[part].pointText[i]
+				recolor(seseme['plr'+i].outline, {r: rgb.r, g: rgb.g, b: rgb.b}, 100)
+				recolor(seseme['plr'+i].outcap, {r: rgb.r, g: rgb.g, b: rgb.b}, 100)
+			}
+			text.targetHeight = text.part.offsetHeight + rem
+			text.stuff.style.height = text.targetHeight
+
+			text.openbtn.style.backgroundColor = text.stuff.style.backgroundColor =
+			 stories[story].parts[part].color
+
+
+
 			// navclose.style.borderLeftColor = outlineColor
 			// navclose.style.borderTopColor = outlineColor
 			// helpcontent.style.height = window.innerHeight
@@ -239,18 +288,19 @@ function loader(){
 			// 	document.getElementById(ele).style.backgroundColor = outlineColor
 			// })
 
+			behaviors()
 
 		}// end INITIAL 3D FILL
 
 		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
 		else{
 			view.newInfo()
-			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: 1, sceneY: 0},500).onUpdate(function(){
+			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: .875, sceneY: 0},500).onUpdate(function(){
 			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
 				info.prev[i].disappear(); info.sprite[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
-				,4000,45,'Cubic','InOut',function(){projection(i)})
+				,6000,45,'Cubic','InOut',function(){projection(i)})
 			})
 		}//end after first timeL ----------------------------
 
@@ -264,54 +314,17 @@ function loader(){
 					var label = meshify(new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
 					36, 400, 'center'))
 					label.rotation.x = defaultiso; label.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
-					label.expand = {x: 0, y: -seseme['plr'+i].position.y-3.5, z:6.5}
+					label.expand = {x: 0, y: -seseme['plr'+i].position.y-4, z:6.5}
 					label.position.set(0,-seseme['plr'+i].position.y-3.5,6.5)
 						var caption = meshify(new Text(stories[story].parts[part].pointTitles[i],11.5,200,80,'white','Fira Sans',16,500,'center'))
-						caption.origin={x:0,y:0.5,z:0};caption.expand={x:0,y:2,z:0};
+						caption.origin={x:0,y:3,z:0};caption.expand={x:0,y:2,z:0};
 						caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
 						label.add(caption);
-						var pointer = new THREE.Mesh(new THREE.PlaneBufferGeometry(.75,.75), resources.mtls.tri.clone())
-						pointer.material.opacity = 0; pointer.expand={x:0,y:3.4,z:.1};pointer.origin={x:0,y:1,z:.1}
-						pointer.position.set(pointer.origin.x,pointer.origin.y,pointer.origin.z)
-						label.add(pointer)
 					info.prev[i].labelgroup = new THREE.Group()
 					info.prev[i].label = label
 					info.prev[i].labelgroup.add(label)
 					info.prev[i].add(info.prev[i].labelgroup)
 
-					var stat = new THREE.Group(); stat.stats = []
-					stat.expand = {x:0,y:3.1+((plrmax-seseme['plr'+i].position.y)/6),z:0}
-					stat.origin = {x:0,y:1.5,z:0}; stat.position.set(stat.origin.x,stat.origin.y,stat.origin.z)
-					stat.scale.set(.75,.75,.75)
-					// info.prev[i].add(stat) // removed...this should be added to a closer view
-					info.prev[i].stat = stat
-					stattype.forEach(function(ele,ite){
-						var which = ite===0? 'normalStat': 'detailStat'
-						if(ele==='nums'){
-							stat.stats[ite] = meshify(new Text(stories[story].parts[part][which].nums[i],
-							13,70,200,'white','Source Serif Pro',36,400,'center'))
-							stat.stats[ite].position.z = 0.1
-						}else if(ele==='numswords'){
-							var words = stories[story].parts[part][which].words
-							var longest = Math.max(words[0].length,words[1].length)
-							stat.stats[ite] = meshify(new Text(stories[story].parts[part][which].nums[i],
-							12.5,longest*28,200,'white','Source Serif Pro',32,400,'start'))
-							stat.stats[ite].canvas.ctx.font = 'normal 500 14pt Fira Sans'; stat.stats[ite].canvas.ctx.textAlign = 'end'
-							stat.stats[ite].canvas.ctx.fillText(words[0],stat.stats[ite].canvas.cvs.width/3,28)
-							stat.stats[ite].canvas.ctx.fillText(words[1],stat.stats[ite].canvas.cvs.width/3,52)
-							stat.stats[ite].position.z = 0.2;
-						}else if(ele==='picswords'){
-							//WIP: also, pics only? nums pics? nums pics words?
-						}
-					})
-					stat.normalStat = stat.stats[0]; stat.detailStat = stat.stats[1]
-
-						var statbox = new THREE.Mesh(new THREE.PlaneBufferGeometry((stat.stats[0].canvas.cvs.width*1.2)/60,(stat.stats[0].canvas.cvs.height*1.2)/60),
-						new THREE.MeshBasicMaterial({depthWrite: false, color: 0x000000, transparent: true, opacity: 0 }))
-						var triangle = new THREE.Mesh(resources.geos.triangleA,statbox.material); triangle.position.y=-2
-
-						stat.add(triangle); stat.statbox = statbox; stat.add(stat.statbox);
-						stat.add(stat.normalStat)
 
 						//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
 						info.prev[i].show = function(){
@@ -320,10 +333,7 @@ function loader(){
 								fade(child,1,200,label_i*100)
 								move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
 							})
-							this.stat.traverse(function(child){
-								if(!child.disabled){ if(child.material){fade(child,1,200,0)} }})
-							size(this.stat,{x:1,y:1,z:1},400)
-							move(this.stat,this.stat.expand,400,1,'Quadratic','Out',function(){},0)
+
 						}
 						info.prev[i].hide = function(){
 							var label_i = 0
@@ -332,25 +342,8 @@ function loader(){
 								move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
 								label_i++
 							})
-							this.stat.traverse(function(child){if(child.material){fade(child,0,200,0)}})
-							size(this.stat,{x:.75,y:.75,z:.75},400)
-							move(this.stat,this.stat.origin,400,1,'Quadratic','Out',function(){},0)
 						}
-						info.prev[i].detail = function(){
-							var scalefactor = this.stat.stats[1].canvas.cvs.width / this.stat.stats[0].canvas.cvs.width
-							size(this.stat.statbox,{x:scalefactor,y:1,z:1},300)
-							this.stat.add(this.stat.detailStat); this.stat.normalStat.disabled = true;
-							this.stat.detailStat.disabled = false
-							fade(this.stat.normalStat,0,300,0)
-							if(info.prev[facing] === this && perspective.height==='isometric'){	fade(this.stat.detailStat,1,300,0)}
-						}
-						info.prev[i].normal = function(){
-							size(this.stat.statbox,{x:1,y:1,z:1},300)
-							this.stat.add(this.stat.normalStat); this.stat.detailStat.disabled = true;
-							this.stat.normalStat.disabled = false
-							fade(this.stat.detailStat,0,300,0)
-							if(info.prev[facing] === this && perspective.height==='isometric'){	fade(this.stat.normalStat,1,300,0)}
-						}
+
 						info.prev[i].disappear = function(){
 							this.traverse(function(child){if(child.material){fade(child,0,500,0)}})
 							size(this,{x:0.1,y:0.1,z:0.1},800,function(){
@@ -369,7 +362,7 @@ function loader(){
 					var sprpointer = new THREE.Sprite(new THREE.SpriteMaterial({transparent: true, map: resources.mtls.chevron.map, opacity:0}))
 
 					sprite.expand = {y: 0, sx: txt.cvs.width/100, sy:txt.cvs.height/100 }
-					sprpointer.expand = {y: -1}; info.sprite[i].expand = {y: 1.75}
+					sprpointer.expand = {y: -1}; info.sprite[i].expand = {y: 2.7}
 					sprpointer.position.y = -2; info.sprite[i].add(sprpointer); info.sprite[i].obj = sprite
 					info.sprite[i].add(info.sprite[i].obj)
 
@@ -406,9 +399,10 @@ function loader(){
 						}//init finish: display UI, whereas normally we just collapse it?
 						//(nav stays in normal load)
 						console.log('enable controls and UI')
-
 						loading = false
 						controls.noZoom = false
+						fade(seseme['plr'+facing].outline,1,400,100)
+						fade(seseme['plr'+facing].outcap,1,400,100)
 						if(perspective.height==='isometric'){ info.prev[facing].show() }
 						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
 						else if(perspective.height==='plan'){  }
@@ -431,19 +425,15 @@ function loader(){
 		})
 
 		//dom UI element interactions
-
+		var ui = [nav, help, text]
 		ui.forEach(function(ele){
 			ele.openbtn.addEventListener('click',view['expand'+ele.getAttribute('id')])
 			ele.closebtn.addEventListener('click',view['collapse'+ele.getAttribute('id')])
 		})
 
-		nav.addEventListener('click',function(){
-			if(nav.isOpen){ //nav is open, close it
-				view.collapsenav()
-			}else{ //nav is closed, open it
-				view.expandnav()
-			}
-		})
+		// nav.addEventListener('click',function(){
+		// 	if(!nav.isOpen){ 	view.expandnav()}
+		// })
 
 		// var domUis = document.querySelectorAll('.ui-element')
 		// for(var i = 0; i<domUis.length; i++){
@@ -469,21 +459,23 @@ function loader(){
 
 					if(facing!==i){
 						console.log('facing diff plr')
-						if(perspective.height==='isometric'&&perspective.zoom!=='far'&&!loading){
+						if(perspective.height==='isometric'&&perspective.zoom!=='close'&&perspective.zoom!=='far'&&!loading){
 							info.prev[facing].hide();	info.prev[i].show()
+							fade(seseme['plr'+i].outline,1,350,0)
+							fade(seseme['plr'+i].outcap,1,350,0)
+							fade(seseme['plr'+facing].outline,0,300,0)
+							fade(seseme['plr'+facing].outcap,0,300,0)
 						}
 
-						fade(seseme['plr'+i].outline,1,250,0)
-						fade(seseme['plr'+i].outcap,1,250,0)
-						fade(seseme['plr'+facing].outline,0,300,0)
-						fade(seseme['plr'+facing].outcap,0,300,0)
 
+						view.cyclePoints(i)
 						facing = i
 
 						if(perspective.zoom==='close'){
 							perspective.zoomswitch = true
 							zoomswitchcallback = function(){perspective.zoomswitch = false}
-							move(scene,{x:0,y:-(seseme['plr'+facing].position.y)*addzoom-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
+							move(scene,{x:0,y:-(seseme['plr'+facing].position.y)*(addzoom/1.5)-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
+
 						}
 					}
 				return true }
@@ -500,19 +492,24 @@ function loader(){
 				if(perspective.height!=='isometric'){
 					for(var i = 0; i<4; i++){
 						info.prev[i].hide()
+						fade(seseme['plr'+i].outline,0,350,0)
+						fade(seseme['plr'+i].outcap,0,350,0)
 						if(perspective.height==='elevation'&&perspective.zoom!=='far'){info.sprite[i].show()}
-						else if(perspective.height==='plan'&&perspective.zoom!=='far'){ info.birdview.show() }
+						else if(perspective.height==='plan'&&perspective.zoom!=='far'){  }
 					}
 				}else if(!loading&&zoom!=='far'){
-					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}; info.birdview.hide()
+					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
+					fade(seseme['plr'+facing].outline,1,350,0)
+					fade(seseme['plr'+facing].outcap,1,350,0)
 				}
 			}
 			if(perspective.zoom!==zoom){ //on zoom change
-				if(perspective.zoom==='close' && zoom === 'normal'){ info.prev.forEach(function(ele){ ele.normal()})}
 				perspective.zoom = zoom
-				if(zoom === 'close'){ view.point(); info.prev.forEach(function(ele){ele.detail()})	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()}); info.birdview.hide(); view.story(); }
-				else{	if(perspective.height==='isometric'){info.prev[facing].show();}
+				if(zoom === 'close'){ view.point(); for(var i=0;i<4;i++){
+					fade(seseme['plr'+i].outline,0,500,0); fade(seseme['plr'+i].outcap,0,500,0); info.prev[i].hide()}; 	}
+				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()
+					fade(seseme['plr'+i].outline,0,500,0); fade(seseme['plr'+i].outcap,0,500,0)}) }
+				else{	if(perspective.height==='isometric'){info.prev[facing].show(); fade(seseme['plr'+facing].outline,1,500,0); fade(seseme['plr'+facing].outcap,1,500,0)}
 				else if(perspective.height==='elevation'){for(var i =0;i<4;i++){info.sprite[i].show()}} view.part() }
 			}
 
@@ -520,10 +517,7 @@ function loader(){
 				info.sprite.forEach(function(ele){ele.scale.set(1-addzoom/4,1-addzoom/4,1-addzoom/4)})
 				if(perspective.zoomswitch===false){//scene moves up and down at close zoom levels
 				scene.position.y = -(seseme['plr'+facing].position.y)*(addzoom/1.5)-(addzoom*4)
-				info.prev.forEach(function(ele){
-					ele.position.y = addzoom * 3; ele.scale.set(1-addzoom/2.5,1-addzoom/2.5,1+addzoom/2.5)
-					ele.labelgroup.position.y = -addzoom * 20; ele.labelgroup.scale.set(1-addzoom/3,1-addzoom/3,1-addzoom/3)
-				})}
+				}
 			}
 
 		})//end controls 'change' event

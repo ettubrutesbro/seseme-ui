@@ -47,53 +47,12 @@ body { color: white; } /* apply univ. text styles here? */
    top: 0;left: 0;
    border: .25rem solid #ededed;
    font-weight: 500; letter-spacing: 0.08rem;
+   border: 2px blue solid;
  }
-
-   #nav .close{
-     position: absolute;
-     width: 0; height: 0;
-     border: 1.25rem solid transparent;
-     border-left-color: #ededed;
-     border-top-color: #ededed;
-     z-index: 4;
-     /*transform: translateX(-1rem);*/
-   }
-   #nav .close::before{
-     content: '';
-     position: absolute; width: 0; height: 0;
-     left: -1.25rem; top: -1.25rem;
-     border: 1rem solid transparent;
-     border-left-color: red;
-     border-top-color: red;
-   }
-   #nav .open{
-     position: absolute; z-index: 2;
-     background-color: black;
-     width: 2.5rem; height: 2.5rem;
-     left: -.25rem; top: -.2rem;
-     border-radius: 50%;
-     box-sizing: border-box;
-     border: solid #ededed .25rem;
-   }
-
-   #nav .stuff {
-     position: absolute; z-index: 2;
-     width: auto; height: 100%;
-     background-color: black;
-     text-indent: 2.25rem; text-transform: uppercase;
-     padding-right: .4rem;
-     padding-top: .25rem;
-     font-size: .75rem;
-     box-sizing: border-box;
-     overflow: hidden;
-   }
-    #nav_icons{ padding: 0; margin: 0; list-style: none; position: absolute; left: .25rem; top: .25rem; z-index: 9; height: 1.5rem; overflow: hidden; }
-    .nav_icon{ width: 1.25rem; height: 1.25rem; border:2px solid white;}
-    .nav_icon:not(:first-child){margin-top: .5rem;}
-    #nav_list{margin: 0; padding:0; list-style: none;  }
-    .nav_list_item{ padding: 0; white-space: nowrap;}
-    .nav_list_item:not(:first-child){margin-top: 1.25rem;}
-
+  #nav .open{
+    width: 5rem;
+    background-color: black;
+  }
 
 
 #bottom_ui{
@@ -141,6 +100,16 @@ body { color: white; } /* apply univ. text styles here? */
     color: white; font-family: 'Fira Sans', sans-serif; font-weight: 200;
     font-size: 0.65rem; text-align: justify;
   }
+    #text #part{
+      position: absolute; top: 0.75rem;
+      width: 91%; left: 0; right: 0; margin: 0 auto;
+    }
+    #text .point{
+      opacity: 0;
+      position: absolute; top: 0.75rem;
+      width: 91%; left: 0; right: 0; margin: 0 auto;
+      /*transform: translateY(1.5rem)*/
+    }
 
 #bottom_line {
   position: absolute; width: 100%;

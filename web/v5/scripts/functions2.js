@@ -4,8 +4,6 @@ var view = {
 		var bottomUi = document.querySelector('#bottom_ui')
 		Velocity(bottomUi, {translateY: [0,bottomUi.offsetHeight]},'easeOutCubic', {duration: 300})
 
-		// Velocity(nav, {translateY: [0, '-2.25rem']},'easeOutCubic', {duration: 300})
-		// Velocity(helpbutton, {translateX: [0,help.offsetWidth*1.5]},'easeOutCubic',{delay: 200, duration: 400})
 		uiEnabled = true
 	},
 	disableUI: function(){
@@ -19,30 +17,44 @@ var view = {
 	},
 
 	expandnav: function(){
-		Velocity(nav.stuff, {height: '8rem'})
-		Velocity(nav, {height: '8rem'})
-		Velocity(document.querySelector('#nav_list'), {translateY: '2.25rem'})
-		Velocity(document.querySelector('#nav_icons'), {translateY: '2rem', height: '6rem'})
+		nav.isOpen = true
+		Velocity(nav, "stop"); Velocity(nav.stuff, "stop"); Velocity(nav.closebtn, "stop")
+		Velocity(nav.list, "stop"); Velocity(nav.icons, "stop")
+
+		Velocity(nav.stuff, {height: '8.25rem'})
+		Velocity(nav, {height: '8.25rem'})
+		Velocity(nav.closebtn, {translateX: [0,'-3rem']}, {delay: 200})
+		Velocity(nav.list, {translateY: '2.25rem', height: '100%'})
+		Velocity(nav.icons, {translateY: '2rem', height: '6rem'})
+	},
+	collapsenav: function(){
+		nav.isOpen = false
+		Velocity(nav, "stop"); Velocity(nav.stuff, "stop"); Velocity(nav.closebtn, "stop")
+		Velocity(nav.list, "stop"); Velocity(nav.icons, "stop")
+
+		Velocity(nav.stuff, {height: '1.25rem'})
+		Velocity(nav, {height: '1.25rem'})
+		Velocity(nav.closebtn, {translateX: ['-3rem',0]})
+		Velocity(nav.list, {translateY: 0, height: '1rem'})
+		Velocity(nav.icons, {translateY: 0, height: '1.5rem'})
 	},
 	expandhelp: function(){
 		console.log('expand help')
 	},
 	expandtext: function(){
-		Velocity(text, {translateY: [-text.stuff.offsetHeight + rem,0]})
+		Velocity(text, {translateY: [-text.targetHeight,0]})
 		Velocity(text.openbtn, {translateY: ['4rem',0]})
 		Velocity(text.closebtn, {translateY: ['-4rem',0]})
+		text.isOpen = true
 	},
 	collapsetext: function(){
 		Velocity(text, {translateY: 0})
 		Velocity(text.openbtn, {translateY: 0})
 		Velocity(text.closebtn, {translateY: 0})
+		text.isOpen = false
 	},
 
-	next: function(){
-		part+=1; view.fill()
-	},
 	story: function(){
-		info.storyring.show()
 		// Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(whitebox,'stop')
 		// Velocity(collapser, 'stop')
 		// Velocity(whitebox, {scaleY: 0, opacity: 0})
@@ -51,8 +63,18 @@ var view = {
 		// Velocity(collapser, {translateX: '3rem'})
 	},
 	part: function(){
-		info.storyring.hide()
 		console.log(collapsed)
+
+		text.part.focus = true
+
+		text.targetHeight = text.part.offsetHeight + rem
+		Velocity(text.stuff, {height: text.targetHeight})
+		Velocity(text.part, {opacity: 1})
+		Velocity(text.points[facing], {opacity: 0})
+
+		if(text.isOpen){
+			Velocity(text, {translateY: -text.targetHeight})
+		}
 		// if(!collapsed){
 		// Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
 		// Velocity(whitebox, 'stop'); Velocity(collapser, 'stop'); Velocity(toppartinfo, 'stop')
@@ -69,6 +91,19 @@ var view = {
 		// }
 	},
 	point: function(){
+
+		text.part.focus = false
+
+		text.targetHeight = text.points[facing].offsetHeight + rem
+		Velocity(text.stuff, {height: text.targetHeight})
+		Velocity(text.part, {opacity: 0})
+		Velocity(text.points[facing], {opacity: 1})
+
+		if(text.isOpen){
+			Velocity(text, {translateY: -text.targetHeight})
+		}
+
+
 		console.log(collapsed)
 		// if(!collapsed){
 		// Velocity(part_title, 'stop'); Velocity(part_text, 'stop'); Velocity(points_info, 'stop')
@@ -90,24 +125,26 @@ var view = {
 		// }
 	},
 	cyclePoints: function(show){
-		// Velocity(points[show].name, 'stop'); Velocity(points[facing].name, 'stop')
-		// Velocity(points[show].text, 'stop'); Velocity(points[facing].text, 'stop')
-		// 	if(perspective.zoom==='close'){
-		// 		if(!collapsed){
-		// 			Velocity(collapser, {top: (window.innerHeight-points[show].text.offsetHeight)/rem - .75 + 'rem' })
-		// 		}
-		// 	}
-		// 	if(show===1&&facing===3 || show > facing){
-		// 	Velocity(points[show].name, {opacity: 1, translateX: ['0', '4rem']}, {duration: 400})
-		// 	Velocity(points[show].text, {opacity: 1, translateX: ['0', '3rem']}, {duration: 300})
-		// 	Velocity(points[facing].name, {opacity: 0, translateX: ['-4rem',0]}, {duration: 300})
-		// 	Velocity(points[facing].text, {opacity: 0, translateX: ['-3rem',0]}, {duration: 200})
-		// }else{
-		// 	Velocity(points[show].name, {opacity: 1, translateX: [0, '-4rem']}, {duration: 400})
-		// 	Velocity(points[show].text, {opacity: 1, translateX: [0, '-3rem']}, {duration: 300})
-		// 	Velocity(points[facing].name, {opacity: 0, translateX: ['4rem',0]}, {duration: 300})
-		// 	Velocity(points[facing].text, {opacity: 0, translateX: ['3rem',0]}, {duration: 200})
-		// }
+
+		if(!text.part.focus){
+			text.targetHeight = text.points[show].offsetHeight + rem
+			if(text.isOpen){
+				Velocity(text.stuff, {height: text.targetHeight})
+				Velocity(text, {translateY: -text.targetHeight})
+				if(show===1&&facing===3 || show > facing){
+					Velocity(text.points[facing], {opacity: 0, translateX: ['-3rem',0]})
+					Velocity(text.points[show], {opacity: 1, translateX: [0,'3rem']})
+				}else{
+					Velocity(text.points[facing], {opacity: 0, translateX: ['3rem',0]})
+					Velocity(text.points[show], {opacity: 1, translateX: [0,'-3rem']})
+				}
+			}else{
+				Velocity(text.points[facing], {opacity: 0, translateX: 0}, {duration: 0})
+				Velocity(text.points[show], {opacity: 1, translateX: 0}, {duration: 0})
+			}
+		}else{
+			Velocity(text.points[show], {translateX: 0}, {duration: 0})
+		}
 	},
 	collapse: function(){
 		// collapser.classList.remove('close')
@@ -151,6 +188,23 @@ var view = {
 		}
 	},
 	newInfo: function(){
+		view.collapsetext()
+		text.part.textContent = stories[story].parts[part].text
+		var rgb = hexToRgb(stories[story].parts[part].color)
+		console.log(rgb)
+		for(var i = 0; i < 4; i++){
+			recolor(seseme['plr'+i].outline, {r: rgb.r, g: rgb.g, b: rgb.b}, 1500)
+			recolor(seseme['plr'+i].outcap, {r: rgb.r, g: rgb.g, b: rgb.b}, 1500)
+			text.points[i].textContent = stories[story].parts[part].pointText[i]
+		}
+		text.targetHeight = text.part.offsetHeight + rem
+		text.stuff.style.height = text.targetHeight
+
+		text.openbtn.style.backgroundColor = text.stuff.style.backgroundColor =
+		stories[story].parts[part].color
+
+
+
 		// Velocity(part_title, {opacity: 0, translateX: '-3.5rem'}, {delay: 50, complete: function(){
 		// 	part_title.textContent = stories[story].parts[part].name
 		// 	part_text.textContent = stories[story].parts[part].text
@@ -175,6 +229,16 @@ var view = {
 function degs(rads){return rads*(180/Math.PI)}
 function rads(degs){return degs*(Math.PI/180)}
 function dice(possibilities){return Math.floor(Math.random()*possibilities)}
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+
 
 function move(obj,pos,spd,multiplier,twntype,twninout,callback,delay){
 	// console.log('move operation')
@@ -221,9 +285,9 @@ function rotate(obj,tgtrotation,spd,delay,callback){
 }
 function recolor(obj,tgt,spd){
 	if(obj.colorTween){obj.colorTween.stop()}
-	var start = {r: obj.material.r, g: obj.material.g, b: obj.material.b}
+	var start = {r: obj.material.color.r, g: obj.material.color.g, b: obj.material.color.b}
 	obj.colorTween = new TWEEN.Tween(start).to({r: tgt.r/255, g: tgt.g/255, b: tgt.b/255},spd).onUpdate(function(){
-		obj.material.r = start.r; obj.material.g = start.g; obj.material.b = start.b
+		obj.material.color.r = start.r; obj.material.color.g = start.g; obj.material.color.b = start.b
 	}).start()
 }
 
