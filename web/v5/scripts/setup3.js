@@ -10,19 +10,17 @@ var plrmax = 12, defaultiso
 var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
 var thresholds = {zoom: [.7,1], height: [-3,-60]}
 
-var socket = io('http://169.237.123.19:5000')
+//use var online to test with socket integration or not (false )
+var online = false
 
-var rem = parseInt(window.getComputedStyle(document.querySelector('html'), null).getPropertyValue('font-size'))
+var rem = parseInt(window.getComputedStyle($('html'), null).getPropertyValue('font-size'))
 
-var nav = document.querySelector('#nav'), help = document.querySelector('#help'),
-text = document.querySelector('#text')
-
-
+var nav = $('#nav'), help = $('#help'), text = $('#text')
 
 //consider moving many of these global vars to inside the loader function, which includes
 //basically all setup functions
 
-var init = true, collapsed = false, loading = true, uiEnabled = false
+var init = true, loading = true, uiEnabled = false
 
 function setup(){
 	loader()
@@ -37,7 +35,7 @@ function loader(){
 		console.log('all resources done')
 		//////////////////////////////////////////////////////////////////////////////////
 		///--------------CORE FUNCTIONS FOR INITIALIZING EVERYTHING--------------------//
-		query(); build(); display()
+		query(); build(); if(!online){view.fill()}; display()
 		//-----------------------END CORE FUNCTIONS FOR INIT---------------------------//
 		//////////////////////////////////////////////////////////////////////////////////
 	}
@@ -76,43 +74,27 @@ function loader(){
 
 
 	function query(){
-		socket.emit('whereWeAt')
-		socket.on('hereWeAt',function(d){
-			part = d.page
-			view.fill()
-
-			if(stories[story].parts[part].valueType === 'smallerIsHigher'){
-				var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
-			}else if(stories[story].parts[part].valueType === 'biggerIsHigher'){
-				var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
-			}
-			range = Math.abs(bottom-top)
-
-			var delayMotor = function(i){
-				setTimeout(function(){
-					var mpos = Math.abs(bottom-stories[story].parts[part].pointValues[i-1])/range * 100
-					socket.emit('moveMotorJack',{name: 'm'+i, position: mpos})
-				}, i*500 )
-			}
-			var unisonMotor = function(i){
-				var mpos = Math.abs(bottom-stories[story].parts[part].pointValues[i-1])/range * 100
-				socket.emit('moveMotorJack',{name: 'm'+i, position: mpos})
-			}
-
-				// for(var i=1; i<5; i++){delayMotor(i)}
-				for(var i=1; i<5; i++){unisonMotor(i)}
-
-			socket.emit('setHSL',stories[story].parts[part].fakeHueVal)
-		})
-
-		socket.on('buttonPressed',function(){
+		//doesnt run if !online, so that there's no waiting on socket
+		if(online){ //server is hooked up
+			var socket = io('http://169.237.123.19:5000')
 			socket.emit('whereWeAt')
-		})
+			socket.on('hereWeAt',function(d){
+				part = d.page
+				view.fill()
+				for(var i=1; i<5; i++){
+					var mpos = (seseme['plr'+i].position.y / plrmax) * 100
+					socket.emit('moveMotorJack',{name: 'm'+i, position: mpos})
+				}
+				//current hue value doesnt translate the UI color - not sustainable
+				//if we want there to be crowd sourced stories eventually
+				socket.emit('setHSL',stories[story].parts[part].hueVal)
+			})
 
-		//socket.emit('get')
-		//socket.on('data',function(d){
-			// story = d.story ; part = d.part
-		// })
+			socket.on('buttonPressed',function(){
+				//this eventually should be different bc data wont be clientside
+				socket.emit('whereWeAt')
+			})
+		}
 	}
 	function build(){
 		//camera/renderer/dom
@@ -191,8 +173,6 @@ function loader(){
 	view.fill = function(){
 //booleans lock down user input when we are filling w/ new data
 		loading = true; controls.noZoom = true
-// stat type: how to fill statbox??? [0] = normal, [1] = detail
-		var uiColor = stories[story].parts[part].color
 
 //values-to-heights handling
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
@@ -208,19 +188,18 @@ function loader(){
 		})
 		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
 
-// FILLING ACTIONS: FIRST TIME (ON RUN): INIT ANIMATION
+// the first time it runs, fill does this:
 		if(init){
 			var initAnim = dice(3) //2=flyin, 1=riseup, 0/other= flower
 			var pillarAnim = function(which){
 				move(seseme['plr'+which],{x: seseme['plr'+which].position.x,
 				y: Math.abs(bottom-stories[story].parts[part].pointValues[which])/range * plrmax,
-				z: seseme['plr'+which].position.z}, 3500, 5, 'Quadratic', 'Out', function(){
+				z: seseme['plr'+which].position.z}, 1500, 5, 'Quadratic', 'Out', function(){
 					projection(which)
-				}, which*200)
+				}, 500+which*300)
 			}
 			//init anim: set position and rotation of quads, then animate them to correct position
 			if(initAnim === 2){ //fly in (sides) animation
-				console.log('flyin')
 				for(var i = 0; i<4; i++){
 					var q = seseme['quad'+i]
 					q.position.set(q.end.x*-13, 0, q.end.z*-13)
@@ -229,7 +208,6 @@ function loader(){
 				}
 				fade(shadow, 1, 800, 1200)
 			} else if (initAnim === 1){ // rise up animation
-				console.log('riseup')
 				for(var i = 0; i<4; i++){
 					var q = seseme['quad'+i]
 					q.position.set(q.end.x, -31, q.end.z)
@@ -238,7 +216,6 @@ function loader(){
 				}
 				fade(shadow, 1, 800, 1200)
 			} else { //flower animation
-				console.log('flower')
 				for(var i = 0; i<4; i++){
 					var q = seseme['quad'+i]
 					q.position.set(q.end.x*-1.5,q.end.y,q.end.z*-1.5)
@@ -251,58 +228,67 @@ function loader(){
 	// defining DOM relationships
 			var ui = [nav, help, text]
 			ui.forEach(function(ele){
-				ele.isOpen = false
-				ele.openbtn = ele.querySelector('.open')
-				ele.closebtn = ele.querySelector('.close')
-				ele.stuff = ele.querySelector('.stuff')
+				ele.openbtn = ele.querySelector('.open'); ele.closebtn = ele.querySelector('.close')
+				ele.stuff = ele.querySelector('.stuff'); ele.isOpen = false
 			})
+			text.part = $('#part');	text.points = $$('.point')
 
-			text.part = text.querySelector('#part')
-			text.points = text.querySelectorAll('.point')
-
-	//DOM manipulations to get sizing, textContent, color info during fill()
-
-
-	var rgb = hexToRgb(stories[story].parts[part].color)
-	console.log(rgb)
-
+		//DOM snap-ins (animate after init)
+			text.openbtn.style.backgroundColor = text.stuff.style.backgroundColor =
+			stories[story].parts[part].color
 			text.part.textContent = stories[story].parts[part].text
+			text.targetHeight = text.part.offsetHeight
 			for(var i = 0; i < 4; i++){
 				text.points[i].textContent = stories[story].parts[part].pointText[i]
-				recolor(seseme['plr'+i].outline, {r: rgb.r, g: rgb.g, b: rgb.b}, 100)
-				recolor(seseme['plr'+i].outcap, {r: rgb.r, g: rgb.g, b: rgb.b}, 100)
-			}
-			text.targetHeight = text.part.offsetHeight + rem
-			text.stuff.style.height = text.targetHeight
 
-			text.openbtn.style.backgroundColor = text.stuff.style.backgroundColor =
-			 stories[story].parts[part].color
-
-
-
-			// navclose.style.borderLeftColor = outlineColor
-			// navclose.style.borderTopColor = outlineColor
-			// helpcontent.style.height = window.innerHeight
-
-			// colorUi.forEach(function(ele,i){
-			// 	document.getElementById(ele).style.backgroundColor = outlineColor
-			// })
-
+			// init behaviors (event listeners)
 			behaviors()
+		}
 
-		}// end INITIAL 3D FILL
-
-		// EVERY TIME FILLING 3D, EXCEPT THE FIRST  --------------------
-		else{
-			view.newInfo()
-			var zoomout = new TWEEN.Tween({zoom: camera.zoom, sceneY: scene.position.y}).to({zoom: .875, sceneY: 0},500).onUpdate(function(){
-			camera.zoom = this.zoom; camera.updateProjectionMatrix(); scene.position.y = this.sceneY}).start()
+		}// end INITIAL FILL
+		else{ // after the first time, fill does the following instead
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
 				info.prev[i].disappear(); info.sprite[i].disappear()
 				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
 				,6000,45,'Cubic','InOut',function(){projection(i)})
 			})
-		}//end after first timeL ----------------------------
+			// DOM re-fill: colors and text
+			Velocity(text.openbtn, {backgroundColor: stories[story].parts[part].color})
+			Velocity(text.stuff, {backgroundColor: stories[story].parts[part].color})
+			//user already has text expanded? change in-situ
+			if(text.isOpen){
+				if(text.part.focus){ //zoomed out (part)
+					for(var i = 0; i<4; i++){
+						text.points[i].textContent = stories[story].parts[part].pointText[i]
+					}
+					Velocity(text.part, {opacity: 0},{visibility: 'hidden', complete: function(){
+						text.part.textContent = stories[story].parts[part].text
+						text.targetHeight = text.part.offsetHeight
+						Velocity(text, {translateY: -text.targetHeight})
+					}})
+					Velocity(text.part, {opacity: 1}, {visibility: 'visible'})
+				}else{ //zoomed in (data points)
+					text.part.textContent = stories[story].parts[part].text
+					for(var i = 0; i<4; i++){text.points[i].textContent = stories[story].parts[part].pointText[i]}
+					text.targetHeight = text.points[facing].offsetHeight; Velocity(text, {translateY: -text.targetHeight})
+				}
+			}else{ //user isn't viewing text - stealth snap in
+				text.part.textContent = stories[story].parts[part].text
+				for(var i = 0; i<4; i++){text.points[i].textContent = stories[story].parts[part].pointText[i]	}
+				text.targetHeight = text.part.focus? text.part.offsetHeight : text.points[facing].offsetHeight
+			} // end text.isOpen conditional
+
+		}//end "init conditional" for fill----------------------------
+
+		//stuff that happens everytime below
+		//DOM: get sizing, fill textContent, color info
+		var rgb = hexToRgb(stories[story].parts[part].color)
+		for(var i = 0; i < 4; i++){
+			recolor(seseme['plr'+i].outline, {r: rgb.r, g: rgb.g, b: rgb.b}, 400)
+			recolor(seseme['plr'+i].outcap, {r: rgb.r, g: rgb.g, b: rgb.b}, 400)
+		}
+
+
 
 		function projection(i){
 			 //pillar-matching infos
@@ -401,15 +387,13 @@ function loader(){
 						console.log('enable controls and UI')
 						loading = false
 						controls.noZoom = false
-						fade(seseme['plr'+facing].outline,1,400,100)
-						fade(seseme['plr'+facing].outcap,1,400,100)
-						if(perspective.height==='isometric'){ info.prev[facing].show() }
+						if(text.part.focus){
+							fade(seseme['plr'+facing].outline,1,400,100)
+							fade(seseme['plr'+facing].outcap,1,400,100)
+							if(perspective.height==='isometric'){ info.prev[facing].show() }
+						}
 						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
 						else if(perspective.height==='plan'){  }
-						if(!init){
-							// Velocity(collapser,'stop'); Velocity(collapser,{rotateZ:'360deg',opacity:1},{duration:100})
-							// collapser.classList.remove('loading'); collapser.classList.add('doneload')
-						}
 
 					} // end if last projection (biggestDiff)
 
@@ -435,7 +419,7 @@ function loader(){
 		// 	if(!nav.isOpen){ 	view.expandnav()}
 		// })
 
-		// var domUis = document.querySelectorAll('.ui-element')
+		// var domUis = $All('.ui-element')
 		// for(var i = 0; i<domUis.length; i++){
 		// 	domUis[i].isOpen = false
 		// 	domUis[i].expand = view['expand'+domUis[i].getAttribute('id')]
@@ -444,7 +428,7 @@ function loader(){
 		// 	domUis[i].querySelector('.open').addEventListener('click',domUis[i].expand)
 		// 	domUis[i].querySelector('.open').addEventListener('click',domUis[i].collapse)
 		// }
-		// document.querySelector('#nav').addEventListener('click',view.expandnav)
+		// $('#nav').addEventListener('click',view.expandnav)
 
 
 		//3d controls manipulation

@@ -92,7 +92,7 @@ body { color: white; } /* apply univ. text styles here? */
   #text .stuff{
     position: absolute;
     top: 2.2rem; left: 0; right: 0; margin: 0 auto; bottom: 0
-    width: 100%; height: 1rem; background-color: #000000;
+    width: 100%; height: 31rem; background-color: #000000;
     padding: 0.75rem 0.5rem 1.2rem 0.5rem;
     border-right: .25rem solid #ededed;
     border-left: .25rem solid #ededed;
@@ -103,11 +103,13 @@ body { color: white; } /* apply univ. text styles here? */
     #text #part{
       position: absolute; top: 0.75rem;
       width: 91%; left: 0; right: 0; margin: 0 auto;
+      padding-bottom: .75rem;
     }
     #text .point{
       opacity: 0;
       position: absolute; top: 0.75rem;
       width: 91%; left: 0; right: 0; margin: 0 auto;
+      padding-bottom: .75rem;
       /*transform: translateY(1.5rem)*/
     }
 
