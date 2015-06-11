@@ -5,11 +5,9 @@ var $$ = document.querySelectorAll.bind(document)
 var view = {
 	enableUI: function(){
 		Velocity($('#bottom_ui'), {translateY: [0,$('#bottom_ui').offsetHeight]},'easeOutCubic', {duration: 300})
-		uiEnabled = true
 	},
 	disableUI: function(){
 		Velocity($('#bottom_ui'),{translateY: $('#bottom_ui').offsetHeight}, {duration: 300})
-		uiEnabled = false
 	},
 	expandnav: function(){
 	},
@@ -35,7 +33,6 @@ var view = {
 
 	part: function(){
 		console.log('text shows chapter text')
-		text.part.focus = true
 
 		Velocity(text.part, {opacity: 1}, {visibility: 'visible'})
 		Velocity(text.points[facing], {opacity: 0, translateY: '3rem'}, {visibility: 'hidden'})
@@ -47,8 +44,6 @@ var view = {
 	},
 	point: function(){
 		console.log('text shows data point')
-		text.part.focus = false
-
 
 		Velocity(text.part, {opacity: 0},{visibility: 'hidden'})
 		Velocity(text.points[facing], {opacity: 1, translateY: [0,'3rem']},{visibility: 'visible'})
@@ -60,8 +55,7 @@ var view = {
 
 	},
 	cyclePoints: function(show){
-
-		if(!text.part.focus){ //user is zoomed in, so text = point
+		if(perspective.zoom === 'close'){ //user is zoomed in, so text = point
 			text.targetHeight = text.points[show].offsetHeight
 			if(text.isOpen){
 				Velocity(text, {translateY: -text.targetHeight})
@@ -76,10 +70,14 @@ var view = {
 				Velocity(text.points[facing], {opacity: 0, translateX: 0, translateY: 0}, {duration: 0, visibility: 'hidden'})
 				Velocity(text.points[show], {opacity: 1, translateX: 0, translateY: 0}, {duration: 0, visibility: 'visible'})
 			}
-		}else{ //not even zoomed in
+		}else if(perspective.zoom !== 'close'){ //not zoomed in
 			Velocity(text.points[show], {translateX: 0}, {duration: 0, visibility: 'visible'})
 		}
 	},
+	outline: function(which, opacity, dur){
+		fade(seseme['plr'+which].outline,opacity,dur,0)
+		fade(seseme['plr'+which].outcap,opacity,dur,0)
+	}
 
 }
 
@@ -145,7 +143,7 @@ function recolor(obj,tgt,spd){
 	var start = {r: obj.material.color.r, g: obj.material.color.g, b: obj.material.color.b}
 	obj.colorTween = new TWEEN.Tween(start).to({r: tgt.r/255, g: tgt.g/255, b: tgt.b/255},spd).onUpdate(function(){
 		obj.material.color.r = start.r; obj.material.color.g = start.g; obj.material.color.b = start.b
-	}).start()
+	}).easing(TWEEN.Easing.Quadratic.Out).start()
 }
 
 function Text(words,width,widthmargin,height,color,font,fontSize,fontWeight,align){ //'400 36pt Source Serif Pro'

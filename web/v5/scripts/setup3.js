@@ -1,26 +1,21 @@
+//global data
 var story = 0, part = 0
 
+//objects and resources
 var scene = new THREE.Scene(), camera, renderer, controls,
-resources = {geos: {}, mtls: { prev: {} }}
+resources = {geos: {}, mtls: {}}
 var seseme = new THREE.Group(), ground, lights, shadow, orbitpointer
-var info = {prev: [], sprite: []}
+var info = {prev: [], sprite: [], detail: []}
 
-var plrmax = 12, defaultiso
+//global states (thresholds for zoom and height are packaged in behaviors())
+var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}, init = true
 
-var facing = 0, perspective = {height: 'isometric', zoom: 'normal', zoomswitch: false}
-var thresholds = {zoom: [.7,1], height: [-3,-60]}
-
-//use var online to test with socket integration or not (false )
-var online = false
-
-var rem = parseInt(window.getComputedStyle($('html'), null).getPropertyValue('font-size'))
-
+//DOM
 var nav = $('#nav'), help = $('#help'), text = $('#text')
 
-//consider moving many of these global vars to inside the loader function, which includes
-//basically all setup functions
-
-var init = true, loading = true, uiEnabled = false
+// DEBUG
+//use var online to test with socket integration or not (false )
+var online = false
 
 function setup(){
 	loader()
@@ -28,6 +23,7 @@ function setup(){
 function loader(){
 	var allModels = ['quaped','pillarA','pillarB','pillarA_outline','pillarB_outline'] //symbolgeos?
 	var allTextures = ['orbitpointer','storypointer','diamond','circle','chevron','tri','shadow'] //names of external imgs (PNG)
+	var plrmax = 12, defaultiso //helper values
 	stories.forEach(function(ele){ allModels.push(ele.geo); allTextures.push(ele.geo) })
 	var resourceMgr = new THREE.LoadingManager()
 	resourceMgr.itemStart('mdlMgr'); resourceMgr.itemStart('mtlMgr'); resourceMgr.itemStart('fonts')
@@ -134,7 +130,6 @@ function loader(){
 			seseme['plr'+i].position.set(-3.5,pillarStartY,1)
 			seseme['plr'+i].geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-4,0))
 			seseme['plr'+i].rotation.y = ele.type==='B'?rads(-90) : 0
-			seseme['plr'+i].prevrot = ele.type==='B'? rads(45) : rads(-	45)
 			//outline addition
 			var outline, outlineColor = stories[story].parts[part].color
 			if(ele.type==='A'){
@@ -171,9 +166,6 @@ function loader(){
 
 	}//build
 	view.fill = function(){
-//booleans lock down user input when we are filling w/ new data
-		loading = true; controls.noZoom = true
-
 //values-to-heights handling
 		if(stories[story].parts[part].valueType === 'smallerIsHigher'){
 			var top = stories[story].parts[part].valueRange[0]; var bottom = stories[story].parts[part].valueRange[1]
@@ -181,22 +173,38 @@ function loader(){
 			var top = stories[story].parts[part].valueRange[1]; var bottom = stories[story].parts[part].valueRange[0]
 		}
 		range = Math.abs(bottom-top)
-// deducing largest change, so callback can be assigned to that one
-		var changes = []
-		stories[story].parts[part].pointValues.forEach(function(ele,i){
-			changes.push(Math.abs(seseme['plr'+i].position.y-Math.abs(bottom-ele)/range*plrmax))
-		})
-		var biggestDiff = changes.indexOf(Math.max.apply(Math, changes))
+	//checking when objects finish loading in
+	var plrMgr = new THREE.LoadingManager()
+	var projectionMgr = ''
+	projectionMgr = new THREE.LoadingManager()
+	for(var i= 0; i<4; i++){
+		plrMgr.itemStart('plr'+i)
+		projectionMgr.itemStart('projection'+i)
+	}
+	plrMgr.onLoad = function(){
+		console.log('all pillars done moving')
+		if(init){ view.enableUI(); info.prev[facing].show();
+			view.outline(facing,1,600); init = false }
+	}
+	projectionMgr.onProgress = function(item,loaded,total){console.log(item,loaded,total)}
+	projectionMgr.onLoad = function(){
+		console.log('all projections loaded, show facing')
+		if(!init){
+			if(perspective.zoom === 'normal' && perspective.height === 'isometric'){
+				info.prev[facing].show()
+			}else{}
+		}
+		for(var i = 0; i<4; i++){ projectionMgr.itemStart('projection'+i)} //wtf lol
+	}
 
 // the first time it runs, fill does this:
 		if(init){
 			var initAnim = dice(3) //2=flyin, 1=riseup, 0/other= flower
 			var pillarAnim = function(which){
+				projection(which)
 				move(seseme['plr'+which],{x: seseme['plr'+which].position.x,
 				y: Math.abs(bottom-stories[story].parts[part].pointValues[which])/range * plrmax,
-				z: seseme['plr'+which].position.z}, 1500, 5, 'Quadratic', 'Out', function(){
-					projection(which)
-				}, 500+which*300)
+				z: seseme['plr'+which].position.z}, 1500, 5, 'Quadratic', 'Out', function(){plrMgr.itemEnd('plr'+which)}, 500+(which*300))
 			}
 			//init anim: set position and rotation of quads, then animate them to correct position
 			if(initAnim === 2){ //fly in (sides) animation
@@ -240,24 +248,22 @@ function loader(){
 			text.targetHeight = text.part.offsetHeight
 			for(var i = 0; i < 4; i++){
 				text.points[i].textContent = stories[story].parts[part].pointText[i]
-
+			}
 			// init behaviors (event listeners)
 			behaviors()
-		}
+		}// end first-time FILL
 
-		}// end INITIAL FILL
 		else{ // after the first time, fill does the following instead
 			stories[story].parts[part].pointValues.forEach(function(ele,i){
-				info.prev[i].disappear(); info.sprite[i].disappear()
-				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z}
-				,6000,45,'Cubic','InOut',function(){projection(i)})
+				info.prev[i].change()
+				move(seseme['plr'+i],{x:seseme['plr'+i].position.x,y: Math.abs(bottom-ele)/range * plrmax,z:seseme['plr'+i].position.z},6000,45,'Cubic','InOut',function(){plrMgr.itemEnd('plr'+i)})
 			})
 			// DOM re-fill: colors and text
 			Velocity(text.openbtn, {backgroundColor: stories[story].parts[part].color})
 			Velocity(text.stuff, {backgroundColor: stories[story].parts[part].color})
 			//user already has text expanded? change in-situ
 			if(text.isOpen){
-				if(text.part.focus){ //zoomed out (part)
+				if(perspective.zoom !== 'close'){ //zoomed out (part)
 					for(var i = 0; i<4; i++){
 						text.points[i].textContent = stories[story].parts[part].pointText[i]
 					}
@@ -267,7 +273,7 @@ function loader(){
 						Velocity(text, {translateY: -text.targetHeight})
 					}})
 					Velocity(text.part, {opacity: 1}, {visibility: 'visible'})
-				}else{ //zoomed in (data points)
+				}else if(perspective.zoom = 'close'){ //zoomed in (data points)
 					text.part.textContent = stories[story].parts[part].text
 					for(var i = 0; i<4; i++){text.points[i].textContent = stories[story].parts[part].pointText[i]}
 					text.targetHeight = text.points[facing].offsetHeight; Velocity(text, {translateY: -text.targetHeight})
@@ -288,29 +294,24 @@ function loader(){
 			recolor(seseme['plr'+i].outcap, {r: rgb.r, g: rgb.g, b: rgb.b}, 400)
 		}
 
-
-
 		function projection(i){
 			 //pillar-matching infos
 				//PREVIEWS: label(title,caption,pointer) and stat showing facing pillar data
-				info.prev[i] = new THREE.Group()
-					info.prev[i].position.set(0,0,0)
-					info.prev[i].rotation.y = seseme['plr'+i].prevrot
+				// if(!init){ seseme['quad'+i].remove(info.prev[i]) }
 
+				info.prev[i] = new THREE.Group()
+				info.prev[i].position.set(-3.5,-3.5,1)
+				info.prev[i].rotation.y = rads(-45)
 					var label = meshify(new Text(stories[story].parts[part].pointNames[i],11.5,200,200,'white','Source Serif Pro',
 					36, 400, 'center'))
-					label.rotation.x = defaultiso; label.origin = {x:0,y:-seseme['plr'+i].position.y-1,z:6.5}
-					label.expand = {x: 0, y: -seseme['plr'+i].position.y-4, z:6.5}
-					label.position.set(0,-seseme['plr'+i].position.y-3.5,6.5)
+					label.rotation.x = defaultiso; label.origin = {x:0,y:2.5,z:6.5}
+					label.expand = {x: 0, y: 0, z:6.5}; label.position.set(0,0,6.5)
 						var caption = meshify(new Text(stories[story].parts[part].pointTitles[i],11.5,200,80,'white','Fira Sans',16,500,'center'))
 						caption.origin={x:0,y:3,z:0};caption.expand={x:0,y:2,z:0};
 						caption.position.set(caption.origin.x,caption.origin.y,caption.origin.z)
 						label.add(caption);
-					info.prev[i].labelgroup = new THREE.Group()
 					info.prev[i].label = label
-					info.prev[i].labelgroup.add(label)
-					info.prev[i].add(info.prev[i].labelgroup)
-
+					info.prev[i].add(info.prev[i].label)
 
 						//PREVIEW FUNCTIONS: transform, show, hide, newdata, enable, disable
 						info.prev[i].show = function(){
@@ -319,24 +320,32 @@ function loader(){
 								fade(child,1,200,label_i*100)
 								move(child,child.expand,400,1,'Quadratic','Out',function(){},0);label_i++
 							})
-
 						}
 						info.prev[i].hide = function(){
 							var label_i = 0
 							this.label.traverse(function(child){
-								fade(child,0,400-(label_i*150),0);
+								fade(child,0,400-(label_i*150),0, function(){})
 								move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
 								label_i++
 							})
 						}
-
-						info.prev[i].disappear = function(){
-							this.traverse(function(child){if(child.material){fade(child,0,500,0)}})
-							size(this,{x:0.1,y:0.1,z:0.1},800,function(){
-								seseme['plr'+i].remove(info.prev[i])
+						info.prev[i].change = function(){
+							var finish = new THREE.LoadingManager
+							finish.onLoad = function(){
+								console.log('all prev hidden, removing and re-projecting')
+								seseme['quad'+i].remove(info.prev[i]); projection(i)
+							}
+							var label_i = 0
+							this.label.traverse(function(child){
+								finish.itemStart(child)
+								fade(child,0,400-(label_i*150),0, function(){finish.itemEnd(child)})
+								move(child,child.origin,400,1,'Quadratic','Out',function(){},0)
+								label_i++
 							})
+
 						}
-					seseme['plr'+i].add(info.prev[i])
+
+					seseme['quad'+i].add(info.prev[i])
 
 				//SPRITES: objects for height="elevation"
 					info.sprite[i] = new THREE.Group();
@@ -372,35 +381,16 @@ function loader(){
 							spr_i++
 						})
 					}
-					info.sprite[i].disappear = function(){
-						size(this,{x:0.75,y:0.75,z:1},500, function() {seseme['plr'+i].remove(info.sprite[i]) })
-						this.traverse(function(child){if(child.material){ fade(child,0,200,i*50,function(){}) }})
-					}
-
-				//EVENT: last projection = initialize controls, take off 'loading' boolean
-					if(i===biggestDiff){ //is this pillar the last one to finish?
-						if(init){
-							setTimeout(function(){view.enableUI()},100)
-							init = false
-						}//init finish: display UI, whereas normally we just collapse it?
-						//(nav stays in normal load)
-						console.log('enable controls and UI')
-						loading = false
-						controls.noZoom = false
-						if(text.part.focus){
-							fade(seseme['plr'+facing].outline,1,400,100)
-							fade(seseme['plr'+facing].outcap,1,400,100)
-							if(perspective.height==='isometric'){ info.prev[facing].show() }
-						}
-						else if(perspective.height==='elevation'){ for(var i=0;i<4;i++){info.sprite[i].show()} }
-						else if(perspective.height==='plan'){  }
-
-					} // end if last projection (biggestDiff)
-
+			projectionMgr.itemEnd('projection'+i)
 		} // end projection
 
 	} //end view.fill() --------------------
+
+
 	function behaviors(){
+
+		var thresholds = {zoom: [.7,1], height: [-3,-60]}
+
 
 		Origami.fastclick(document.body) //attaches fastclick so iOS doesnt wait 300ms
 		window.addEventListener('deviceorientation', function(evt){
@@ -440,33 +430,25 @@ function loader(){
 			facingRotations = [-45,45,135,-135]
 			facingRotations.some(function(ele,i){
 				if(Math.abs(degs(camera.rotation.y)-ele)<45){
-
 					if(facing!==i){
 						console.log('facing diff plr')
-						if(perspective.height==='isometric'&&perspective.zoom!=='close'&&perspective.zoom!=='far'&&!loading){
+						if(perspective.height==='isometric'&&perspective.zoom!=='close'&&perspective.zoom!=='far'){
 							info.prev[facing].hide();	info.prev[i].show()
-							fade(seseme['plr'+i].outline,1,350,0)
-							fade(seseme['plr'+i].outcap,1,350,0)
-							fade(seseme['plr'+facing].outline,0,300,0)
-							fade(seseme['plr'+facing].outcap,0,300,0)
+							view.outline(i,1,350); view.outline(facing,0,300)
 						}
-
-
 						view.cyclePoints(i)
 						facing = i
-
 						if(perspective.zoom==='close'){
 							perspective.zoomswitch = true
 							zoomswitchcallback = function(){perspective.zoomswitch = false}
 							move(scene,{x:0,y:-(seseme['plr'+facing].position.y)*(addzoom/1.5)-(addzoom*4),z:0},100,70,'Quadratic','InOut',zoomswitchcallback)
-
 						}
 					}
 				return true }
 			})
 
 			//HEIGHT AND ZOOM: NEW HEIGHt/ZOOM? WHAT ACTION?
-			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation':degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
+			height = degs(camera.rotation.x)>thresholds.height[0]?'elevation': degs(camera.rotation.x)<thresholds.height[1]?'plan':'isometric'
 			zoom = camera.zoom>thresholds.zoom[1]? 'close' : camera.zoom<thresholds.zoom[0]? 'far' : 'normal'
 			addzoom = camera.zoom-thresholds.zoom[1]
 			controls.zoomSpeed = 0.7-(Math.abs(camera.zoom-1)/3)
@@ -476,26 +458,37 @@ function loader(){
 				if(perspective.height!=='isometric'){
 					for(var i = 0; i<4; i++){
 						info.prev[i].hide()
-						fade(seseme['plr'+i].outline,0,350,0)
-						fade(seseme['plr'+i].outcap,0,350,0)
+						fade(seseme['plr'+i].outline,0,350,0);fade(seseme['plr'+i].outcap,0,350,0)
+						view.outline(i,0,350)
 						if(perspective.height==='elevation'&&perspective.zoom!=='far'){info.sprite[i].show()}
 						else if(perspective.height==='plan'&&perspective.zoom!=='far'){  }
 					}
-				}else if(!loading&&zoom!=='far'){
+				}else if(zoom!=='far'&&zoom!=='close'){
 					info.prev[facing].show(); for(var i=0;i<4;i++){info.sprite[i].hide()}
-					fade(seseme['plr'+facing].outline,1,350,0)
-					fade(seseme['plr'+facing].outcap,1,350,0)
+					view.outline(facing,1,350)
 				}
-			}
+			} // end height change check
 			if(perspective.zoom!==zoom){ //on zoom change
 				perspective.zoom = zoom
-				if(zoom === 'close'){ view.point(); for(var i=0;i<4;i++){
-					fade(seseme['plr'+i].outline,0,500,0); fade(seseme['plr'+i].outcap,0,500,0); info.prev[i].hide()}; 	}
-				else if(zoom === 'far'){ info.prev.forEach(function(ele,i){ele.hide();info.sprite[i].hide()
-					fade(seseme['plr'+i].outline,0,500,0); fade(seseme['plr'+i].outcap,0,500,0)}) }
-				else{	if(perspective.height==='isometric'){info.prev[facing].show(); fade(seseme['plr'+facing].outline,1,500,0); fade(seseme['plr'+facing].outcap,1,500,0)}
-				else if(perspective.height==='elevation'){for(var i =0;i<4;i++){info.sprite[i].show()}} view.part() }
-			}
+				if(zoom === 'close'){
+					view.point();
+					for(var i=0;i<4;i++){
+						view.outline(i,0,500)
+						info.prev[i].hide()};
+				} else if(zoom === 'far'){
+					info.prev.forEach(function(ele,i){
+						ele.hide(); info.sprite[i].hide()
+						view.outline(i,0,500)
+					})
+				} else if(zoom === 'normal'){
+					if(perspective.height==='isometric'){
+						info.prev[facing].show()
+						view.outline(facing,1,500)
+					} else if(perspective.height==='elevation'){
+						for(var i =0;i<4;i++){info.sprite[i].show()}}
+					view.part()
+				}
+			} // end check zoom change
 
 			if(perspective.zoom==='close'){
 				info.sprite.forEach(function(ele){ele.scale.set(1-addzoom/4,1-addzoom/4,1-addzoom/4)})
@@ -503,7 +496,6 @@ function loader(){
 				scene.position.y = -(seseme['plr'+facing].position.y)*(addzoom/1.5)-(addzoom*4)
 				}
 			}
-
 		})//end controls 'change' event
 
 		window.addEventListener('resize', function(){
